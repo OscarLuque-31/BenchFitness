@@ -1,6 +1,7 @@
-package com.oscar.benchfitness.screens
+package com.oscar.benchfitness.screens.auth
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,45 +29,47 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.credentials.CredentialManager
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
+import com.oscar.benchfitness.R
+import com.oscar.benchfitness.components.GlobalButton
+import com.oscar.benchfitness.components.GlobalTextField
 import com.oscar.benchfitness.navegation.Inicio
 import com.oscar.benchfitness.navegation.Principal
 import com.oscar.benchfitness.navegation.Registro
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroClaroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
-import com.oscar.benchfitness.widgets.GlobalButton
-import com.oscar.benchfitness.widgets.GlobalTextField
+import com.oscar.benchfitness.viewModels.auth.LoginViewModel
+import kotlinx.coroutines.launch
 
 
 @Composable
-fun LoginScreen(navController: NavController, auth: FirebaseAuth) {
-    val context = LocalContext.current // Obtener el contexto para Toast
+fun LoginScreen(navController: NavController, viewModel: LoginViewModel) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     var email: String by remember { mutableStateOf("") }
     var password: String by remember { mutableStateOf("") }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        contentWindowInsets = WindowInsets(0) // Elimina el padding predeterminado
+        contentWindowInsets = WindowInsets(0)
     ) { paddingValues ->
         LoginBodyContent(
             navController = navController,
@@ -74,23 +78,19 @@ fun LoginScreen(navController: NavController, auth: FirebaseAuth) {
             onEmailChange = { email = it },
             onPasswordChange = { password = it },
             onLoginClick = {
-                val (isValid, errorMessage) = validateLoginFields(email, password)
-                if (!isValid) {
-                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-                } else {
-                    auth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-
-                                navController.navigate(Principal)
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "No se ha encontrado el usuario",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
+                viewModel.loginUser(context,
+                    { navController.navigate(Principal) },
+                    onFailure = { errorMessage ->
+                        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT)
+                            .show()
+                    })
+            },
+            onGoogleLoginClick = {
+                scope.launch {
+                    viewModel.loginWithGoogle(context, navController, onFailure = { errorMessage ->
+                        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT)
+                            .show()
+                    })
                 }
             },
             modifier = Modifier
@@ -103,6 +103,7 @@ fun LoginScreen(navController: NavController, auth: FirebaseAuth) {
     }
 }
 
+
 @Composable
 fun LoginBodyContent(
     navController: NavController,
@@ -111,6 +112,7 @@ fun LoginBodyContent(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onLoginClick: () -> Unit,
+    onGoogleLoginClick: () -> Unit,
     modifier: Modifier
 ) {
     Column(
@@ -120,7 +122,14 @@ fun LoginBodyContent(
         LoginTopBar(navController)
         Spacer(modifier = Modifier.weight(1f))
         // Datos a recoger en el login
-        LoginDatos(navController, email, password, onEmailChange, onPasswordChange, onLoginClick)
+        LoginDatos(
+            email,
+            password,
+            onEmailChange,
+            onPasswordChange,
+            onLoginClick,
+            onGoogleLoginClick
+        )
     }
 }
 
@@ -166,12 +175,12 @@ fun LoginTopBar(navController: NavController) {
 
 @Composable
 fun LoginDatos(
-    navController: NavController,
     email: String,
     password: String,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onLoginClick: () -> Unit,
+    onGoogleLoginClick: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -197,7 +206,7 @@ fun LoginDatos(
                     .height(22.dp)
                     .background(color = negroClaroBench)
             )
-            LoginButtonGoogle()
+            LoginButtonGoogle(onGoogleLoginClick = onGoogleLoginClick)
         }
     }
 }
@@ -258,7 +267,9 @@ fun LoginTextFields(
 
 
 @Composable
-fun LoginButtonGoogle() {
+fun LoginButtonGoogle(
+    onGoogleLoginClick: () -> Unit  // Recibimos el callback
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -266,26 +277,29 @@ fun LoginButtonGoogle() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        GlobalButton(
-            "Continuar con Google",
-            Color.White,
-            negroBench,
+        Button(
+            onClick = onGoogleLoginClick,  // Usamos el callback
+            shape = MaterialTheme.shapes.medium,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.White,
+                contentColor = negroBench
+            ),
             modifier = Modifier
                 .width(310.dp)
-                .height(50.dp),
-            { })
-    }
-}
-
-
-// Función para validar los campos de inicio de sesión
-fun validateLoginFields(email: String, password: String): Pair<Boolean, String> {
-    return when {
-        email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> Pair(
-            false,
-            "Ingresa un email válido."
-        )
-        password.length < 6 -> Pair(false, "La contraseña debe tener al menos 6 caracteres.")
-        else -> Pair(true, "")
+                .height(50.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo_google),
+                contentDescription = "Logo de Google",
+                modifier = Modifier
+                    .size(24.dp)
+                    .padding(end = 8.dp)
+            )
+            Text(
+                "Continuar con Google",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 14.sp
+            )
+        }
     }
 }

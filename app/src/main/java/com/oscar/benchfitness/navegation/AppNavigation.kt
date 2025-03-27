@@ -12,12 +12,15 @@ import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.animations.SplashScreen
-import com.oscar.benchfitness.screens.DatosScreen
+import com.oscar.benchfitness.screens.datos.DatosScreen
 import com.oscar.benchfitness.screens.InicioScreen
-import com.oscar.benchfitness.screens.LoginScreen
+import com.oscar.benchfitness.screens.auth.LoginScreen
 import com.oscar.benchfitness.screens.LogoScreen
-import com.oscar.benchfitness.screens.PrincipalScreen
-import com.oscar.benchfitness.screens.RegistroScreen
+import com.oscar.benchfitness.screens.home.PrincipalScreen
+import com.oscar.benchfitness.screens.auth.RegistroScreen
+import com.oscar.benchfitness.viewModels.auth.LoginViewModel
+import com.oscar.benchfitness.viewModels.auth.RegistroViewModel
+import com.oscar.benchfitness.viewModels.datos.DatosViewModel
 
 @Composable
 fun AppNavegation(auth: FirebaseAuth, db: FirebaseFirestore) {
@@ -67,9 +70,9 @@ fun AppNavegation(auth: FirebaseAuth, db: FirebaseFirestore) {
     NavHost(navController = navController, startDestination = startDestination) {
         composable<Logo> { LogoScreen(navController) }
         composable<Inicio> { InicioScreen(navController) }
-        composable<Login> { LoginScreen(navController, auth) }
-        composable<Registro> { RegistroScreen(navController, auth, db) }
-        composable<Datos> { DatosScreen(navController, db, auth) }
+        composable<Login> { LoginScreen(navController, viewModel = LoginViewModel(auth,db)) }
+        composable<Registro> { RegistroScreen(navController, viewModel = RegistroViewModel(auth,db)) }
+        composable<Datos> { DatosScreen(navController, viewModel = DatosViewModel(auth,db)) }
         composable<Principal> { PrincipalScreen(navController, auth, db) }
         composable<Ejercicios> {}
         composable<Ejercicio> {}

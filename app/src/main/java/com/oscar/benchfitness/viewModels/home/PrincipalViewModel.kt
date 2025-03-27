@@ -1,4 +1,4 @@
-package com.oscar.benchfitness.viewModels
+package com.oscar.benchfitness.viewModels.home
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

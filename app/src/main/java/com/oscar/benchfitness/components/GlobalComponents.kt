@@ -1,8 +1,14 @@
-package com.oscar.benchfitness.widgets
+package com.oscar.benchfitness.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -34,15 +40,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.oscar.benchfitness.screens.convertMillisToDate
+import com.oscar.benchfitness.R
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroClaroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
+import com.oscar.benchfitness.utils.convertMillisToDate
 import java.util.Calendar
 
 @Composable
@@ -90,10 +98,10 @@ fun GlobalButton(
     backgroundColor: Color,
     colorText: Color,
     modifier: Modifier,
-    funcion: () -> Unit
+    onClick: () -> Unit
 ) {
     Button(
-        onClick = funcion,
+        onClick = { onClick() },
         shape = MaterialTheme.shapes.medium,
         colors = ButtonDefaults.buttonColors(
             containerColor = backgroundColor,
@@ -213,7 +221,7 @@ fun DatePickerField(onDateSelected: (String) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GlobalDropDownMenu(nombreSeleccion: String, opciones: List<String>, modifier: Modifier) {
+fun GlobalDropDownMenu(nombreSeleccion: String, opciones: List<String>, modifier: Modifier, onValueChange: (String) -> Unit) {
     // Variable para controlar la visibilidad
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf(nombreSeleccion) }
@@ -275,6 +283,7 @@ fun GlobalDropDownMenu(nombreSeleccion: String, opciones: List<String>, modifier
                         },
                         onClick = {
                             selectedOption = opcion
+                            onValueChange(opcion)
                             expanded = false
                         },
                         modifier = modifier.background(negroClaroBench)
@@ -285,3 +294,43 @@ fun GlobalDropDownMenu(nombreSeleccion: String, opciones: List<String>, modifier
     }
 }
 
+@Composable
+fun GlobalHeader(text: String) {
+    LogoBenchFitness()
+    CabeceraBenchFitness(text)
+}
+
+@Composable
+fun LogoBenchFitness() {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 20.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.End) {
+        Image(
+            painter = painterResource(id = R.drawable.logo_marca),
+            contentDescription = "Logo aplicación",
+            modifier = Modifier.size(90.dp)
+        )
+    }
+}
+
+@Composable
+fun CabeceraBenchFitness(text: String) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 20.dp)) {
+        Text(
+            text,
+            modifier = Modifier.padding(bottom = 10.dp),
+            style = MaterialTheme.typography.bodySmall, fontSize = 24.sp,
+            color = Color.White
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(3.dp)
+                .background(rojoBench)
+        )
+    }
+}

@@ -65,6 +65,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.ui)
     implementation(libs.androidx.compiler)
+    implementation(libs.kotlinx.coroutines.android)
+
 
     // Navegación
     implementation(libs.androidx.navigation.compose)
@@ -79,6 +81,12 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+
+    //  Google
+    implementation (libs.play.services.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
 
     // Gráficos
     implementation (libs.compose.charts)
