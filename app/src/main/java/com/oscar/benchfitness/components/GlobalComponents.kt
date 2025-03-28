@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -123,7 +124,7 @@ fun DatePickerField(onDateSelected: (String) -> Unit) {
     var showDatePickerDialog by remember { mutableStateOf(false) }
     val state = rememberDatePickerState(
         yearRange = IntRange(
-            1900,
+            1950,
             Calendar.getInstance().get(Calendar.YEAR)
         )
     )
@@ -134,7 +135,7 @@ fun DatePickerField(onDateSelected: (String) -> Unit) {
 
     TextField(
         value = selectedDate,
-        onValueChange = { }, // No cambia el estado aquí ya que el DatePicker manejará el estado
+        onValueChange = { },
         placeholder = {
             Text(
                 "Fecha de nacimiento",
@@ -155,7 +156,7 @@ fun DatePickerField(onDateSelected: (String) -> Unit) {
         textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 14.sp),
         shape = MaterialTheme.shapes.medium,
         modifier = Modifier
-            .width(310.dp)
+            .fillMaxWidth()
             .height(55.dp),
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.White,

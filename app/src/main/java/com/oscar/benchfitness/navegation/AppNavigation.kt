@@ -21,6 +21,7 @@ import com.oscar.benchfitness.screens.auth.RegistroScreen
 import com.oscar.benchfitness.viewModels.auth.LoginViewModel
 import com.oscar.benchfitness.viewModels.auth.RegistroViewModel
 import com.oscar.benchfitness.viewModels.datos.DatosViewModel
+import com.oscar.benchfitness.viewModels.home.PrincipalViewModel
 
 @Composable
 fun AppNavegation(auth: FirebaseAuth, db: FirebaseFirestore) {
@@ -73,7 +74,7 @@ fun AppNavegation(auth: FirebaseAuth, db: FirebaseFirestore) {
         composable<Login> { LoginScreen(navController, viewModel = LoginViewModel(auth,db)) }
         composable<Registro> { RegistroScreen(navController, viewModel = RegistroViewModel(auth,db)) }
         composable<Datos> { DatosScreen(navController, viewModel = DatosViewModel(auth,db)) }
-        composable<Principal> { PrincipalScreen(navController, auth, db) }
+        composable<Principal> { PrincipalScreen(navController, viewModel = PrincipalViewModel(auth,db)) }
         composable<Ejercicios> {}
         composable<Ejercicio> {}
         composable<Calculos> {}

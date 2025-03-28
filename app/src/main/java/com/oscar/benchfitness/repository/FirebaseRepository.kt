@@ -19,20 +19,17 @@ class FirebaseRepository(
         email: String,
         password: String,
         username: String,
-        birthday: String,
     ): Result<Unit> {
         return try {
             // Crea el usuario en firebase
             val authResult = auth.createUserWithEmailAndPassword(email, password).await()
-            val user =
-                authResult.user ?: return Result.failure(Exception("Error al obtener usuario"))
+            val user = authResult.user ?: return Result.failure(Exception("Error al obtener usuario"))
 
             // Usuario a guardar en firebase
             val userData = userData(
                 uid = user.uid,
                 username = username,
                 email = email,
-                birthday = birthday,
             )
 
             db.collection("users").document(user.uid).set(userData).await()
@@ -49,7 +46,6 @@ class FirebaseRepository(
     fun guardarDatosUsuario(userData: userData, onSuccess: () -> Unit, onFailure: (String) -> Unit): Result<Unit> {
         val user = auth.currentUser
         return if (user != null) {
-            // Guardamos todo el objeto `userData` en Firestore
             db.collection("users").document(user.uid)
                 .update(
                     "altura", userData.altura,
@@ -59,6 +55,7 @@ class FirebaseRepository(
                     "nivelActividad",userData.nivelActividad,
                     "objetivo",userData.objetivo,
                     "peso",userData.peso,
+                    "birthday", userData.birthday
                 ).addOnSuccessListener {
                     onSuccess()
                 }.addOnFailureListener { e ->
@@ -113,6 +110,8 @@ class FirebaseRepository(
             Log.e("EliminarUsuario", "No hay usuario autenticado")
         }
     }
+
+
 }
 
 

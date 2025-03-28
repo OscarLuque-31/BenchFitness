@@ -23,8 +23,33 @@ class DatosViewModel(
     var experiencia by mutableStateOf("Experiencia")
     var nivelActividad by mutableStateOf("Nivel de actividad física")
     var objetivo by mutableStateOf("Objetivo fitness")
+    var birthday by mutableStateOf("")
+
+    var isBirthdayChecked by mutableStateOf(false)  // Para controlar si ya se comprobó el birthday
+
 
     private val firebaseRepository = FirebaseRepository(auth, db)
+
+    fun comprobarBirthdayUsuario() {
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            db.collection("users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener { document->
+                    // Verificar si el campo "birthday" existe y tiene valor
+                    var birthdayDB = document.data?.get("birthday") as? String ?: ""
+                    if (!birthdayDB.isNullOrEmpty()) {
+                        birthday = birthdayDB // Si tiene un cumpleaños, actualizar el estado
+                        isBirthdayChecked = true
+                    }
+                }
+                .addOnFailureListener { e ->
+                    // Manejar error en la consulta
+                    birthday = ""
+                }
+        }
+    }
 
     fun guardarDatosUsuario(context: Context, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
 
@@ -34,7 +59,8 @@ class DatosViewModel(
             nivelActividad = nivelActividad,
             objetivo = objetivo,
             peso = peso,
-            experiencia = experiencia
+            experiencia = experiencia,
+            birthday = birthday
         )
 
         if (!isValid) {
@@ -48,7 +74,8 @@ class DatosViewModel(
                     peso = peso,
                     experiencia = experiencia,
                     nivelActividad = nivelActividad,
-                    objetivo = objetivo
+                    objetivo = objetivo,
+                    birthday = birthday
                 ),
                 onSuccess = onSuccess,
                 onFailure = onFailure

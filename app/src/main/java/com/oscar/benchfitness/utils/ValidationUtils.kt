@@ -1,8 +1,7 @@
 package com.oscar.benchfitness.utils
 
 fun validateFields(
-    username: String, email: String, password: String, confirmPassword: String,
-    birthday: String, acceptTerms: Boolean
+    username: String, email: String, password: String, confirmPassword: String, acceptTerms: Boolean
 ): Pair<Boolean, String> {
     return when {
         username.isBlank() -> Pair(false, "El nombre de usuario no puede estar vacío.")
@@ -14,7 +13,6 @@ fun validateFields(
 
         password.length < 6 -> Pair(false, "La contraseña debe tener al menos 6 caracteres.")
         password != confirmPassword -> Pair(false, "Las contraseñas no coinciden.")
-        birthday.isBlank() -> Pair(false, "Selecciona una fecha de nacimiento.")
         !acceptTerms -> Pair(false, "Debes aceptar los términos y condiciones.")
         else -> Pair(true, "")
     }
@@ -36,7 +34,7 @@ fun validateLoginFields(email: String, password: String): Pair<Boolean, String> 
 
 fun validateFieldsDatos(
     altura: String, genero: String, nivelActividad: String, objetivo: String,
-    peso: String, experiencia: String
+    peso: String, experiencia: String, birthday: String
 ): Pair<Boolean, String> {
     return when {
         altura.isBlank() -> Pair(false, "La altura es obligatoria")
@@ -45,6 +43,7 @@ fun validateFieldsDatos(
         objetivo.isBlank() -> Pair(false, "Debes seleccionar un objetivo fitness")
         peso.isBlank() -> Pair(false, "El peso es obligatorio")
         experiencia.isBlank() -> Pair(false, "Debes seleccionar tu nivel de experiencia")
+        birthday.isBlank() -> Pair(false, "Selecciona una fecha de nacimiento.")
         else -> Pair(true, "")
     }
 }

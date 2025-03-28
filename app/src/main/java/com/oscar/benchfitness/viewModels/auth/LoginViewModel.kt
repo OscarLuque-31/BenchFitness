@@ -16,6 +16,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.navegation.Datos
+import com.oscar.benchfitness.navegation.Principal
 import com.oscar.benchfitness.repository.FirebaseRepository
 import com.oscar.benchfitness.utils.validateLoginFields
 import kotlinx.coroutines.launch
@@ -103,7 +104,17 @@ class LoginViewModel(
                                             db.collection("users").document(document.id)
                                                 .update("uid", uid)
                                                 .addOnSuccessListener {
-                                                    navController.navigate(Datos)
+
+                                                    val datosCompletados = document.getBoolean("datosCompletados") ?: false
+
+                                                    if (datosCompletados) {
+                                                        // Si los datos están completos, navega a la pantalla principal
+                                                        navController.navigate(Principal)
+                                                    } else {
+                                                        // Si los datos no están completos, navega a la pantalla para completar los datos
+                                                        navController.navigate(Datos)
+                                                    }
+
                                                 }
                                                 .addOnFailureListener { e ->
                                                     onFailure("Error al actualizar UID: ${e.message}")

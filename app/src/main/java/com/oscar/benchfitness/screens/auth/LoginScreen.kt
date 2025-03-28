@@ -64,19 +64,16 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    var email: String by remember { mutableStateOf("") }
-    var password: String by remember { mutableStateOf("") }
-
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         contentWindowInsets = WindowInsets(0)
     ) { paddingValues ->
         LoginBodyContent(
             navController = navController,
-            email = email,
-            password = password,
-            onEmailChange = { email = it },
-            onPasswordChange = { password = it },
+            email = viewModel.email.value,
+            password = viewModel.password.value,
+            onEmailChange = { viewModel.email.value = it },
+            onPasswordChange = { viewModel.password.value = it },
             onLoginClick = {
                 viewModel.loginUser(context,
                     { navController.navigate(Principal) },

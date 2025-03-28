@@ -46,6 +46,8 @@ fun InicioBodyContent(navController: NavController, modifier: Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(0.67f) // Ocupa el espacio disponible
+            ,
+            modifierImagen = Modifier.size(150.dp)
         )
 
         // Contenedor de bienvenida en la parte inferior
@@ -60,7 +62,7 @@ fun InicioBodyContent(navController: NavController, modifier: Modifier) {
 
 
 @Composable
-fun ColumnaPrincipal(modifier: Modifier = Modifier) {
+fun ColumnaPrincipal(modifier: Modifier, modifierImagen: Modifier) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center, // Centra verticalmente
@@ -68,7 +70,8 @@ fun ColumnaPrincipal(modifier: Modifier = Modifier) {
     ) {
         Image(
             painter = painterResource(id = R.drawable.logo_marca),
-            contentDescription = "Logo aplicación"
+            contentDescription = "Logo aplicación",
+            modifier = modifierImagen
         )
     }
 }

@@ -140,7 +140,7 @@ fun RegisterDatos(navController: NavController, viewModel: RegistroViewModel) {
         )
         Column(
             modifier = Modifier
-                .height(600.dp)
+                .height(550.dp)
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp))
                 .background(color = negroBench),
@@ -164,8 +164,8 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
     ) {
         GlobalTextField(
             nombre = "Nombre de usuario",
-            text = viewModel.username.value,
-            onValueChange = { viewModel.username.value = it },
+            text = viewModel.username,
+            onValueChange = { viewModel.username = it },
             modifier = Modifier
                 .width(310.dp)
                 .height(55.dp)
@@ -174,21 +174,19 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
 
         GlobalTextField(
             nombre = "Email",
-            text = viewModel.email.value,
-            onValueChange = { viewModel.email.value = it },
+            text = viewModel.email,
+            onValueChange = { viewModel.email = it },
             modifier = Modifier
                 .width(310.dp)
                 .height(55.dp)
         )
         Spacer(modifier = Modifier.height(25.dp))
 
-        DatePickerField(onDateSelected = { viewModel.birthday.value = it })
-        Spacer(modifier = Modifier.height(25.dp))
 
         GlobalTextField(
             nombre = "Contraseña",
-            text = viewModel.password.value,
-            onValueChange = { viewModel.password.value = it },
+            text = viewModel.password,
+            onValueChange = { viewModel.password = it },
             isPassword = true,
             modifier = Modifier
                 .width(310.dp)
@@ -198,8 +196,8 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
 
         GlobalTextField(
             nombre = "Repetir contraseña",
-            text = viewModel.confirmPassword.value,
-            onValueChange = { viewModel.confirmPassword.value = it },
+            text = viewModel.confirmPassword,
+            onValueChange = { viewModel.confirmPassword = it },
             isPassword = true,
             modifier = Modifier
                 .width(310.dp)
@@ -208,10 +206,11 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
         Spacer(modifier = Modifier.height(25.dp))
 
         ConfirmarTerminosYCondiciones(
-            checked = viewModel.acceptTerms.value,
-            onCheckedChange = { viewModel.acceptTerms.value = it })
+            checked = viewModel.acceptTerms,
+            onCheckedChange = { viewModel.acceptTerms = it })
         Spacer(modifier = Modifier.height(25.dp))
 
+        Spacer(modifier = Modifier.height(25.dp))
         GlobalButton(
             "Registrar",
             rojoBench,

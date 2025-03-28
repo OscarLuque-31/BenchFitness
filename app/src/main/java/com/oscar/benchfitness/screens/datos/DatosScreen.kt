@@ -10,8 +10,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.oscar.benchfitness.components.DatePickerField
 import com.oscar.benchfitness.components.GlobalButton
 import com.oscar.benchfitness.components.GlobalDropDownMenu
 import com.oscar.benchfitness.components.GlobalTextField
@@ -36,6 +40,9 @@ import com.oscar.benchfitness.viewModels.datos.DatosViewModel
 @Composable
 fun DatosScreen(navController: NavController, viewModel: DatosViewModel) {
     val context = LocalContext.current
+
+    // Cargar los datos del usuario al mostrar la pantalla
+    viewModel.comprobarBirthdayUsuario()
 
     DatosBodyContent(
         viewModel = viewModel,
@@ -63,11 +70,13 @@ fun DatosBodyContent(
         modifier = Modifier
             .fillMaxSize()
             .background(color = negroBench)
+            .verticalScroll(rememberScrollState())
     ) {
         ColumnaPrincipal(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.25f)
+                .weight(0.25f),
+            modifierImagen = Modifier.size(120.dp)
         )
 
         ContenedorDatos(
@@ -110,6 +119,8 @@ fun ContenedorDatos(
         FilaAlturayGenero(viewModel)
         ColumnaNivelYObjetivo(viewModel)
         FilaPesoYExperiencia(viewModel)
+        FilaEdad(viewModel)
+        Spacer(Modifier.height(25.dp))
         GlobalButton(
             "Empezar", negroBench,
             modifier = Modifier
@@ -129,7 +140,7 @@ fun FilaAlturayGenero(viewModel: DatosViewModel) {
 
     Row(
         modifier = Modifier
-            .height(130.dp)
+            .height(100.dp)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -171,7 +182,7 @@ fun FilaPesoYExperiencia(viewModel: DatosViewModel) {
 
     Row(
         modifier = Modifier
-            .height(130.dp)
+            .height(100.dp)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -198,7 +209,7 @@ fun FilaPesoYExperiencia(viewModel: DatosViewModel) {
         // GlobalDropDownMenu para la experiencia
         GlobalDropDownMenu(
             nombreSeleccion = viewModel.experiencia,
-            onValueChange = { viewModel.experiencia = it},
+            onValueChange = { viewModel.experiencia = it },
             opciones = opcionesExperiencia, // Lista de opciones de experiencia
             modifier = Modifier
                 .width(160.dp)
@@ -216,18 +227,18 @@ fun ColumnaNivelYObjetivo(viewModel: DatosViewModel) {
         "Ligera actividad (1-3 días/semana)",
         "Actividad moderada (3-5 días/semana)",
         "Alta actividad (6-7 días/semana)",
-        "Actividad muy intensa (entrenamientos físicos extremos)"
+        "Actividad muy intensa (entrenamientos extremos)"
     )
     val opcionesObjetivoFit: List<String> = listOf(
         "Pérdida de peso",
         "Mantener peso",
-        "Ganar masa muscular"
+        "Masa muscular"
     )
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(140.dp),
+            .height(125.dp),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -250,3 +261,9 @@ fun ColumnaNivelYObjetivo(viewModel: DatosViewModel) {
     }
 }
 
+@Composable
+fun FilaEdad(
+    viewModel: DatosViewModel,
+) {
+    DatePickerField(onDateSelected = { viewModel.birthday = it })
+}

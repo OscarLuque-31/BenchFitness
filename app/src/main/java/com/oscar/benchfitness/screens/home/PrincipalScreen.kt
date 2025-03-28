@@ -44,11 +44,10 @@ import com.oscar.benchfitness.ui.theme.rojoBench
 import com.oscar.benchfitness.viewModels.home.PrincipalViewModel
 
 @Composable
-fun PrincipalScreen(navController: NavController, auth: FirebaseAuth, db: FirebaseFirestore) {
-    val viewModel: PrincipalViewModel = viewModel();
+fun PrincipalScreen(navController: NavController, viewModel: PrincipalViewModel) {
 
     LaunchedEffect(Unit) {
-        viewModel.cargarNombreUsuario(auth, db)
+        viewModel.cargarDatosUsuario()
     }
 
     Scaffold { paddingValues ->
@@ -70,13 +69,13 @@ fun PrincipalBodyContent(
         modifier = Modifier
             .fillMaxSize()
             .background(color = negroBench)
-            .verticalScroll(rememberScrollState()) // 🔹 Hace que la pantalla sea scrolleable
+            .verticalScroll(rememberScrollState())
     ) {
         GlobalHeader("Bienvenido ${viewModel.nombre}")
         Spacer(modifier = Modifier.height(20.dp))
-        ObjetivoUsuario("Perder peso")
+        ObjetivoUsuario(viewModel.objetivo)
         Spacer(modifier = Modifier.height(5.dp))
-        RecomendacionObjetivo("Deficit", "2000")
+        RecomendacionObjetivo(viewModel.interpretarObjetivo(objetivo = viewModel.objetivo), viewModel.calorias)
     }
 }
 
