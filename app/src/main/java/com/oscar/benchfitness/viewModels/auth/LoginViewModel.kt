@@ -1,7 +1,9 @@
 package com.oscar.benchfitness.viewModels.auth
 
 import android.content.Context
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -16,6 +18,8 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.navegation.Datos
+import com.oscar.benchfitness.navegation.Inicio
+import com.oscar.benchfitness.navegation.Login
 import com.oscar.benchfitness.navegation.Principal
 import com.oscar.benchfitness.repository.FirebaseRepository
 import com.oscar.benchfitness.utils.validateLoginFields
@@ -28,30 +32,95 @@ class LoginViewModel(
     private val db: FirebaseFirestore
 ) : ViewModel() {
 
-    var email = mutableStateOf("")
-    var password = mutableStateOf("")
-    var loading = mutableStateOf(false)
+    var email by mutableStateOf("")
+    var password by mutableStateOf("")
+    var loading by mutableStateOf(false)
 
     private val firebaseRepository = FirebaseRepository(auth, db)
 
 
-    fun loginUser(context: Context, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
-        val (isValid, errorMessage) = validateLoginFields(email.value, password.value)
+    fun loginUser(
+        navController: NavController,
+        onFailure: (String) -> Unit
+    ) {
+        val (isValid, errorMessage) = validateLoginFields(email, password)
         if (!isValid) {
             onFailure(errorMessage)
             return
         }
 
-        loading.value = true
+        loading = true
         viewModelScope.launch {
-            val result = firebaseRepository.loginUser(email.value, password.value)
-            loading.value = false
+            val result = firebaseRepository.loginUser(email, password)
 
             result.fold(
-                onSuccess = { onSuccess() },
-                onFailure = { onFailure(it.message ?: "Error en el inicio de sesión") }
+                onSuccess = {
+                    // Verificar estado de los datos
+                    checkUserDataComplete(
+                        onSuccess = { datosCompletos ->
+                            loading = false
+                            if (datosCompletos) {
+                                navController.navigate(Principal) {
+                                    popUpTo(Inicio) {
+                                        inclusive = true
+                                    }
+                                }
+                            } else {
+                                navController.navigate(Datos) {
+                                    popUpTo(Inicio) {
+                                        inclusive = true
+                                    }
+                                }
+                            }
+                        },
+                        onFailure = { error ->
+                            loading = false
+                            onFailure("Error al verificar datos: $error")
+                        }
+                    )
+                },
+                onFailure = {
+                    loading = false
+                    onFailure(it.message ?: "Error en el inicio de sesión")
+                }
             )
         }
+    }
+
+    fun checkUserDataComplete(
+        onSuccess: (Boolean) -> Unit,
+        onFailure: (String) -> Unit = { _ -> }
+    ) {
+        val currentUser = auth.currentUser ?: run {
+            onFailure("No hay usuario autenticado")
+            return
+        }
+
+        db.collection("users").document(currentUser.uid).get()
+            .addOnSuccessListener { document ->
+                if (!document.exists()) {
+                    onFailure("El documento del usuario no existe")
+                    return@addOnSuccessListener
+                }
+
+                try {
+                    val camposRequeridos = listOf(
+                        "altura", "peso", "genero", "birthday",
+                        "nivelActividad", "objetivo", "experiencia"
+                    )
+
+                    val datosCompletos = camposRequeridos.all { field ->
+                        document.getString(field)?.isNotEmpty() == true
+                    }
+
+                    onSuccess(datosCompletos)
+                } catch (e: Exception) {
+                    onFailure("Error al verificar datos: ${e.message}")
+                }
+            }
+            .addOnFailureListener { e ->
+                onFailure("Error al acceder a Firestore: ${e.message}")
+            }
     }
 
     fun loginWithGoogle(
@@ -63,7 +132,7 @@ class LoginViewModel(
             val credentialManager: CredentialManager = CredentialManager.create(context)
 
             try {
-                loading.value = true
+                loading = true
 
                 val googleIdOption = GetGoogleIdOption.Builder()
                     .setServerClientId(context.getString(R.string.default_web_client_id))
@@ -105,7 +174,9 @@ class LoginViewModel(
                                                 .update("uid", uid)
                                                 .addOnSuccessListener {
 
-                                                    val datosCompletados = document.getBoolean("datosCompletados") ?: false
+                                                    val datosCompletados =
+                                                        document.getBoolean("datosCompletados")
+                                                            ?: false
 
                                                     if (datosCompletados) {
                                                         // Si los datos están completos, navega a la pantalla principal
@@ -124,7 +195,8 @@ class LoginViewModel(
                                         // Si no existe se guarda el usuario en Firestore
                                         val userData = hashMapOf(
                                             "uid" to uid,
-                                            "username" to (firebaseUser.displayName?.split(" ")?.firstOrNull() ?: ""),
+                                            "username" to (firebaseUser.displayName?.split(" ")
+                                                ?.firstOrNull() ?: ""),
                                             "email" to email
                                         )
 
@@ -153,7 +225,7 @@ class LoginViewModel(
             } catch (e: Exception) {
                 onFailure("Error inesperado: ${e.message}")
             } finally {
-                loading.value = false
+                loading = false
             }
         }
     }

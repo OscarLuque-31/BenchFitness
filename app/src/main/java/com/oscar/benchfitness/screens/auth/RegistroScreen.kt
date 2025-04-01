@@ -37,7 +37,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.oscar.benchfitness.components.DatePickerField
 import com.oscar.benchfitness.components.GlobalButton
 import com.oscar.benchfitness.components.GlobalTextField
 import com.oscar.benchfitness.navegation.Datos
@@ -220,7 +219,13 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
             colorText = Color.White
         ) {
             viewModel.registerUser(
-                onSuccess = { navController.navigate(Datos) },
+                onSuccess = {
+                    navController.navigate(Datos) {
+                        popUpTo(Inicio) {
+                            inclusive = true
+                        }
+                    }
+                },
                 onFailure = { error -> Toast.makeText(context, error, Toast.LENGTH_SHORT).show() }
             )
         }

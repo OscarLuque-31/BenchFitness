@@ -70,17 +70,14 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel) {
     ) { paddingValues ->
         LoginBodyContent(
             navController = navController,
-            email = viewModel.email.value,
-            password = viewModel.password.value,
-            onEmailChange = { viewModel.email.value = it },
-            onPasswordChange = { viewModel.password.value = it },
+            email = viewModel.email,
+            password = viewModel.password,
+            onEmailChange = { viewModel.email = it },
+            onPasswordChange = { viewModel.password = it },
             onLoginClick = {
-                viewModel.loginUser(context,
-                    { navController.navigate(Principal) },
-                    onFailure = { errorMessage ->
-                        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT)
-                            .show()
-                    })
+                viewModel.loginUser(navController) { errorMessage ->
+                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                }
             },
             onGoogleLoginClick = {
                 scope.launch {

@@ -31,6 +31,7 @@ import com.oscar.benchfitness.components.DatePickerField
 import com.oscar.benchfitness.components.GlobalButton
 import com.oscar.benchfitness.components.GlobalDropDownMenu
 import com.oscar.benchfitness.components.GlobalTextField
+import com.oscar.benchfitness.navegation.Inicio
 import com.oscar.benchfitness.navegation.Principal
 import com.oscar.benchfitness.screens.ColumnaPrincipal
 import com.oscar.benchfitness.ui.theme.negroBench
@@ -41,16 +42,15 @@ import com.oscar.benchfitness.viewModels.datos.DatosViewModel
 fun DatosScreen(navController: NavController, viewModel: DatosViewModel) {
     val context = LocalContext.current
 
-    // Cargar los datos del usuario al mostrar la pantalla
-    viewModel.comprobarBirthdayUsuario()
-
     DatosBodyContent(
         viewModel = viewModel,
         onStartClick = {
             viewModel.guardarDatosUsuario(
                 context,
                 onSuccess = {
-                    navController.navigate(Principal)
+                    navController.navigate(Principal) {
+                        popUpTo<Inicio> { inclusive = true }
+                    }
                 },
                 onFailure = { errorMessage ->
                     Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT)
@@ -230,7 +230,7 @@ fun ColumnaNivelYObjetivo(viewModel: DatosViewModel) {
         "Actividad muy intensa (entrenamientos extremos)"
     )
     val opcionesObjetivoFit: List<String> = listOf(
-        "Pérdida de peso",
+        "Perder peso",
         "Mantener peso",
         "Masa muscular"
     )

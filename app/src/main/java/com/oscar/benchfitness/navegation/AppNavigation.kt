@@ -2,6 +2,7 @@ package com.oscar.benchfitness.navegation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -11,16 +12,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.oscar.benchfitness.animations.LoadingScreen
 import com.oscar.benchfitness.animations.SplashScreen
-import com.oscar.benchfitness.screens.datos.DatosScreen
 import com.oscar.benchfitness.screens.InicioScreen
-import com.oscar.benchfitness.screens.auth.LoginScreen
 import com.oscar.benchfitness.screens.LogoScreen
-import com.oscar.benchfitness.screens.home.PrincipalScreen
+import com.oscar.benchfitness.screens.auth.LoginScreen
 import com.oscar.benchfitness.screens.auth.RegistroScreen
+import com.oscar.benchfitness.screens.datos.DatosScreen
+import com.oscar.benchfitness.screens.exercises.EjerciciosScreen
+import com.oscar.benchfitness.screens.home.PrincipalScreen
 import com.oscar.benchfitness.viewModels.auth.LoginViewModel
 import com.oscar.benchfitness.viewModels.auth.RegistroViewModel
 import com.oscar.benchfitness.viewModels.datos.DatosViewModel
+import com.oscar.benchfitness.viewModels.exercises.EjerciciosViewModel
 import com.oscar.benchfitness.viewModels.home.PrincipalViewModel
 
 @Composable
@@ -71,11 +75,31 @@ fun AppNavegation(auth: FirebaseAuth, db: FirebaseFirestore) {
     NavHost(navController = navController, startDestination = startDestination) {
         composable<Logo> { LogoScreen(navController) }
         composable<Inicio> { InicioScreen(navController) }
-        composable<Login> { LoginScreen(navController, viewModel = LoginViewModel(auth,db)) }
-        composable<Registro> { RegistroScreen(navController, viewModel = RegistroViewModel(auth,db)) }
-        composable<Datos> { DatosScreen(navController, viewModel = DatosViewModel(auth,db)) }
-        composable<Principal> { PrincipalScreen(navController, viewModel = PrincipalViewModel(auth,db)) }
-        composable<Ejercicios> {}
+        composable<Login> { LoginScreen(navController, viewModel = LoginViewModel(auth, db)) }
+        composable<Registro> {
+            RegistroScreen(
+                navController,
+                viewModel = RegistroViewModel(auth, db)
+            )
+        }
+        composable<Datos> { DatosScreen(navController, viewModel = DatosViewModel(auth, db)) }
+        composable<Principal> {
+
+            val principalViewModel = remember { PrincipalViewModel(auth, db) }
+
+            LaunchedEffect(Unit) {
+                principalViewModel.cargarDatosUsuario()
+            }
+
+            val isLoading by principalViewModel.isLoading.collectAsState()
+
+            if (isLoading) {
+                LoadingScreen()
+            } else {
+                PrincipalScreen(navController, viewModel = principalViewModel)
+            }
+        }
+        composable<Ejercicios> { EjerciciosScreen(navController, viewModel = EjerciciosViewModel()) }
         composable<Ejercicio> {}
         composable<Calculos> {}
         composable<Perfil> {}

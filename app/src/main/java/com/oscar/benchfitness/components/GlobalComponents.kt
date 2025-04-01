@@ -1,16 +1,17 @@
 package com.oscar.benchfitness.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -50,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroClaroBench
+import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
 import com.oscar.benchfitness.utils.convertMillisToDate
 import java.util.Calendar
@@ -222,7 +224,12 @@ fun DatePickerField(onDateSelected: (String) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GlobalDropDownMenu(nombreSeleccion: String, opciones: List<String>, modifier: Modifier, onValueChange: (String) -> Unit) {
+fun GlobalDropDownMenu(
+    nombreSeleccion: String,
+    opciones: List<String>,
+    modifier: Modifier,
+    onValueChange: (String) -> Unit
+) {
     // Variable para controlar la visibilidad
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf(nombreSeleccion) }
@@ -303,11 +310,13 @@ fun GlobalHeader(text: String) {
 
 @Composable
 fun LogoBenchFitness() {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 20.dp),
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.End) {
+        horizontalAlignment = Alignment.End
+    ) {
         Image(
             painter = painterResource(id = R.drawable.logo_marca),
             contentDescription = "Logo aplicación",
@@ -318,9 +327,11 @@ fun LogoBenchFitness() {
 
 @Composable
 fun CabeceraBenchFitness(text: String) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 20.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+    ) {
         Text(
             text,
             modifier = Modifier.padding(bottom = 10.dp),
@@ -332,6 +343,55 @@ fun CabeceraBenchFitness(text: String) {
                 .fillMaxWidth()
                 .height(3.dp)
                 .background(rojoBench)
+        )
+    }
+}
+
+@Composable
+fun GlobalBarraNavegacion() {
+    var selectedItem by remember { mutableStateOf("Home") }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .padding(horizontal = 20.dp)
+            .clip(RoundedCornerShape(15.dp))
+            .background(negroOscuroBench),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceAround
+    ) {
+        NavigationIcon("Home", R.drawable.home, selectedItem) { selectedItem = it }
+        NavigationIcon("Pesas", R.drawable.iconopesas, selectedItem) { selectedItem = it }
+        NavigationIcon("Báscula", R.drawable.bascula, selectedItem) { selectedItem = it }
+        NavigationIcon("User", R.drawable.user, selectedItem) { selectedItem = it }
+    }
+}
+
+@Composable
+fun NavigationIcon(
+    label: String,
+    iconRes: Int,
+    selectedItem: String,
+    onClick: (String) -> Unit
+) {
+    val color by animateColorAsState(
+        targetValue = if (selectedItem == label) rojoBench else negroOscuroBench,
+        label = ""
+    )
+
+    IconButton(
+        onClick = { onClick(label) },
+        modifier = Modifier
+            .size(30.dp)
+            .clip(RoundedCornerShape(50.dp))
+            .background(color)
+    ) {
+        Icon(
+            painter = painterResource(iconRes),
+            contentDescription = label,
+            tint = Color.White,
+            modifier = Modifier.size(22.dp)
         )
     }
 }
