@@ -1,11 +1,9 @@
 package com.oscar.benchfitness.repository
 
 import android.util.Log
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.models.userData
-import com.oscar.benchfitness.navegation.Principal
 import kotlinx.coroutines.tasks.await
 
 class FirebaseRepository(

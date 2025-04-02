@@ -32,7 +32,7 @@ import com.oscar.benchfitness.components.GlobalButton
 import com.oscar.benchfitness.components.GlobalDropDownMenu
 import com.oscar.benchfitness.components.GlobalTextField
 import com.oscar.benchfitness.navegation.Inicio
-import com.oscar.benchfitness.navegation.Principal
+import com.oscar.benchfitness.navegation.Main
 import com.oscar.benchfitness.screens.ColumnaPrincipal
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
@@ -48,7 +48,7 @@ fun DatosScreen(navController: NavController, viewModel: DatosViewModel) {
             viewModel.guardarDatosUsuario(
                 context,
                 onSuccess = {
-                    navController.navigate(Principal) {
+                    navController.navigate(Main) {
                         popUpTo<Inicio> { inclusive = true }
                     }
                 },

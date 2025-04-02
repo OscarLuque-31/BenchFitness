@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.utils.CalorieCalculator
@@ -21,11 +22,10 @@ import java.time.LocalDate
 import java.time.Period
 import java.time.format.DateTimeFormatter
 
-class PrincipalViewModel(
+class HomeViewModel(
     private val auth: FirebaseAuth,
     private val db: FirebaseFirestore
 ) : ViewModel() {
-
 
     private val _nombre = MutableStateFlow("")
     val nombre = _nombre.asStateFlow()
@@ -73,8 +73,6 @@ class PrincipalViewModel(
             }
         }
     }
-
-
 
     fun interpretarObjetivo(objetivo: String): String {
         return when (objetivo) {

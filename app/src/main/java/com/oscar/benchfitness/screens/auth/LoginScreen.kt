@@ -50,7 +50,6 @@ import com.oscar.benchfitness.R
 import com.oscar.benchfitness.components.GlobalButton
 import com.oscar.benchfitness.components.GlobalTextField
 import com.oscar.benchfitness.navegation.Inicio
-import com.oscar.benchfitness.navegation.Principal
 import com.oscar.benchfitness.navegation.Registro
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroClaroBench

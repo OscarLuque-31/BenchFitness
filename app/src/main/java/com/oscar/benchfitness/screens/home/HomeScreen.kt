@@ -3,7 +3,6 @@ package com.oscar.benchfitness.screens.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,13 +13,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -35,45 +35,36 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.oscar.benchfitness.R
-import com.oscar.benchfitness.components.GlobalBarraNavegacion
 import com.oscar.benchfitness.components.GlobalHeader
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
-import com.oscar.benchfitness.viewModels.home.PrincipalViewModel
+import com.oscar.benchfitness.viewModels.home.HomeViewModel
+
 
 @Composable
-fun PrincipalScreen(navController: NavController, viewModel: PrincipalViewModel) {
+fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
 
     val nombre by viewModel.nombre.collectAsState()
     val objetivo by viewModel.objetivo.collectAsState()
     val calorias by viewModel.calorias.collectAsState()
 
-    Scaffold(bottomBar = {
-        Box(
-            modifier = Modifier
-                .padding(vertical = 15.dp)
-        ) {
-            GlobalBarraNavegacion()
-        }
-    }) { paddingValues ->
-        PrincipalBodyContent(
-            navController = navController,
-            modifier = Modifier.padding(paddingValues),
-            viewModel = viewModel,
-            objetivo = objetivo,
-            nombre = nombre,
-            calorias = calorias
-        )
-    }
+
+    HomeBodyContent(
+        navController = navController,
+        nombre = nombre,
+        viewModel = viewModel,
+        calorias = calorias,
+        objetivo = objetivo
+
+    )
 
 }
 
 @Composable
-fun PrincipalBodyContent(
+fun HomeBodyContent(
     navController: NavController,
-    modifier: Modifier,
-    viewModel: PrincipalViewModel,
+    viewModel: HomeViewModel,
     nombre: String,
     objetivo: String,
     calorias: String
@@ -82,6 +73,7 @@ fun PrincipalBodyContent(
         modifier = Modifier
             .fillMaxSize()
             .background(color = negroBench)
+            .verticalScroll(rememberScrollState())
     ) {
         GlobalHeader("Bienvenido $nombre")
         Spacer(modifier = Modifier.height(15.dp))
@@ -205,7 +197,7 @@ fun BloqueApuntarRutina() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(325.dp)
+            .height(360.dp)
             .padding(horizontal = 20.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(

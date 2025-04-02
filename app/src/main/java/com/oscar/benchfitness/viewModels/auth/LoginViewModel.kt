@@ -20,7 +20,7 @@ import com.oscar.benchfitness.R
 import com.oscar.benchfitness.navegation.Datos
 import com.oscar.benchfitness.navegation.Inicio
 import com.oscar.benchfitness.navegation.Login
-import com.oscar.benchfitness.navegation.Principal
+import com.oscar.benchfitness.navegation.Main
 import com.oscar.benchfitness.repository.FirebaseRepository
 import com.oscar.benchfitness.utils.validateLoginFields
 import kotlinx.coroutines.launch
@@ -60,7 +60,7 @@ class LoginViewModel(
                         onSuccess = { datosCompletos ->
                             loading = false
                             if (datosCompletos) {
-                                navController.navigate(Principal) {
+                                navController.navigate(Main) {
                                     popUpTo(Inicio) {
                                         inclusive = true
                                     }
@@ -180,7 +180,7 @@ class LoginViewModel(
 
                                                     if (datosCompletados) {
                                                         // Si los datos están completos, navega a la pantalla principal
-                                                        navController.navigate(Principal)
+                                                        navController.navigate(Main)
                                                     } else {
                                                         // Si los datos no están completos, navega a la pantalla para completar los datos
                                                         navController.navigate(Datos)

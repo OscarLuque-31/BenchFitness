@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -48,7 +47,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.oscar.benchfitness.R
+import com.oscar.benchfitness.navegation.Ejercicios
+import com.oscar.benchfitness.navegation.Estadisticas
+import com.oscar.benchfitness.navegation.Home
+import com.oscar.benchfitness.navegation.Perfil
+import com.oscar.benchfitness.screens.exercises.EjerciciosScreen
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroClaroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
@@ -304,26 +309,9 @@ fun GlobalDropDownMenu(
 
 @Composable
 fun GlobalHeader(text: String) {
-    LogoBenchFitness()
     CabeceraBenchFitness(text)
 }
 
-@Composable
-fun LogoBenchFitness() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.End
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.logo_marca),
-            contentDescription = "Logo aplicación",
-            modifier = Modifier.size(90.dp)
-        )
-    }
-}
 
 @Composable
 fun CabeceraBenchFitness(text: String) {
@@ -332,12 +320,22 @@ fun CabeceraBenchFitness(text: String) {
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
     ) {
-        Text(
-            text,
-            modifier = Modifier.padding(bottom = 10.dp),
-            style = MaterialTheme.typography.bodySmall, fontSize = 24.sp,
-            color = Color.White
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text,
+                modifier = Modifier.padding(bottom = 10.dp),
+                style = MaterialTheme.typography.bodySmall, fontSize = 24.sp,
+                color = Color.White
+            )
+            Image(
+                painter = painterResource(id = R.drawable.logo_marca),
+                contentDescription = "Logo aplicación",
+                modifier = Modifier.size(100.dp)
+            )
+        }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -348,7 +346,7 @@ fun CabeceraBenchFitness(text: String) {
 }
 
 @Composable
-fun GlobalBarraNavegacion() {
+fun GlobalBarraNavegacion(navController: NavController) {
     var selectedItem by remember { mutableStateOf("Home") }
 
     Row(
@@ -361,10 +359,22 @@ fun GlobalBarraNavegacion() {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround
     ) {
-        NavigationIcon("Home", R.drawable.home, selectedItem) { selectedItem = it }
-        NavigationIcon("Pesas", R.drawable.iconopesas, selectedItem) { selectedItem = it }
-        NavigationIcon("Báscula", R.drawable.bascula, selectedItem) { selectedItem = it }
-        NavigationIcon("User", R.drawable.user, selectedItem) { selectedItem = it }
+        NavigationIcon("Home", R.drawable.home, selectedItem) {
+            selectedItem = "Home"
+            navController.navigate(Home)
+        }
+        NavigationIcon("Ejercicios", R.drawable.iconopesas, selectedItem) {
+            selectedItem = "Ejercicios"
+            navController.navigate(Ejercicios)
+        }
+        NavigationIcon("Estadisticas", R.drawable.bascula, selectedItem) {
+            selectedItem = "Estadisticas"
+            navController.navigate(Estadisticas)
+        }
+        NavigationIcon("Perfil", R.drawable.user, selectedItem) {
+            selectedItem = "Perfil"
+            navController.navigate(Perfil)
+        }
     }
 }
 
@@ -373,7 +383,7 @@ fun NavigationIcon(
     label: String,
     iconRes: Int,
     selectedItem: String,
-    onClick: (String) -> Unit
+    onClick: () -> Unit,
 ) {
     val color by animateColorAsState(
         targetValue = if (selectedItem == label) rojoBench else negroOscuroBench,
@@ -381,7 +391,7 @@ fun NavigationIcon(
     )
 
     IconButton(
-        onClick = { onClick(label) },
+        onClick = onClick,
         modifier = Modifier
             .size(30.dp)
             .clip(RoundedCornerShape(50.dp))
