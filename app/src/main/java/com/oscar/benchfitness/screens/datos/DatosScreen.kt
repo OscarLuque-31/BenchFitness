@@ -35,6 +35,7 @@ import com.oscar.benchfitness.navegation.Inicio
 import com.oscar.benchfitness.navegation.Main
 import com.oscar.benchfitness.screens.ColumnaPrincipal
 import com.oscar.benchfitness.ui.theme.negroBench
+import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
 import com.oscar.benchfitness.viewModels.datos.DatosViewModel
 
@@ -160,7 +161,9 @@ fun FilaAlturayGenero(viewModel: DatosViewModel) {
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .width(140.dp)
-                .height(50.dp)
+                .height(50.dp),
+            backgroundColor = Color.White,
+            colorText = negroOscuroBench
         )
 
         GlobalDropDownMenu(
@@ -169,7 +172,8 @@ fun FilaAlturayGenero(viewModel: DatosViewModel) {
             onValueChange = { viewModel.genero = it },
             modifier = Modifier
                 .width(140.dp)
-                .height(50.dp)
+                .height(50.dp),
+            backgroundColor = Color.White
         )
     }
 }
@@ -203,7 +207,9 @@ fun FilaPesoYExperiencia(viewModel: DatosViewModel) {
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .width(140.dp)
-                .height(50.dp)
+                .height(50.dp),
+            backgroundColor = Color.White,
+            colorText = negroOscuroBench
         )
 
         // GlobalDropDownMenu para la experiencia
@@ -213,7 +219,8 @@ fun FilaPesoYExperiencia(viewModel: DatosViewModel) {
             opciones = opcionesExperiencia, // Lista de opciones de experiencia
             modifier = Modifier
                 .width(160.dp)
-                .height(50.dp)
+                .height(50.dp),
+            backgroundColor = Color.White
         )
     }
 }
@@ -248,7 +255,8 @@ fun ColumnaNivelYObjetivo(viewModel: DatosViewModel) {
             onValueChange = { viewModel.nivelActividad = it },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .height(50.dp),
+            backgroundColor = Color.White
         )
         GlobalDropDownMenu(
             viewModel.objetivo,
@@ -256,7 +264,8 @@ fun ColumnaNivelYObjetivo(viewModel: DatosViewModel) {
             onValueChange = { viewModel.objetivo = it },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .height(50.dp),
+            backgroundColor = Color.White
         )
     }
 }

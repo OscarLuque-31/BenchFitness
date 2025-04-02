@@ -44,6 +44,7 @@ import com.oscar.benchfitness.navegation.Inicio
 import com.oscar.benchfitness.navegation.Login
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroClaroBench
+import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
 import com.oscar.benchfitness.viewModels.auth.RegistroViewModel
 
@@ -167,7 +168,9 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
             onValueChange = { viewModel.username = it },
             modifier = Modifier
                 .width(310.dp)
-                .height(55.dp)
+                .height(55.dp),
+            backgroundColor = Color.White,
+            colorText = negroOscuroBench
         )
         Spacer(modifier = Modifier.height(25.dp))
 
@@ -177,7 +180,9 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
             onValueChange = { viewModel.email = it },
             modifier = Modifier
                 .width(310.dp)
-                .height(55.dp)
+                .height(55.dp),
+            backgroundColor = Color.White,
+            colorText = negroOscuroBench
         )
         Spacer(modifier = Modifier.height(25.dp))
 
@@ -189,7 +194,9 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
             isPassword = true,
             modifier = Modifier
                 .width(310.dp)
-                .height(55.dp)
+                .height(55.dp),
+            backgroundColor = Color.White,
+            colorText = negroOscuroBench
         )
         Spacer(modifier = Modifier.height(25.dp))
 
@@ -200,7 +207,9 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
             isPassword = true,
             modifier = Modifier
                 .width(310.dp)
-                .height(55.dp)
+                .height(55.dp),
+            backgroundColor = Color.White,
+            colorText = negroOscuroBench
         )
         Spacer(modifier = Modifier.height(25.dp))
 

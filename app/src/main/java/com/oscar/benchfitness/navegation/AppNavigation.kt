@@ -79,7 +79,7 @@ fun AppNavegation(auth: FirebaseAuth, db: FirebaseFirestore) {
         }
         composable<Datos> { DatosScreen(navController, viewModel = DatosViewModel(auth, db)) }
         composable<Main> {
-            MainContainer(navController = navController, auth, db)
+            MainContainer(auth, db)
         }
     }
 }

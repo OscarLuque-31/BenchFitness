@@ -1,9 +1,13 @@
+
 package com.oscar.benchfitness.navegation
 
 import kotlinx.serialization.Serializable
 
 @Serializable
 object Main
+
+@Serializable
+object MainExercises
 
 @Serializable
 object Logo
@@ -28,6 +32,12 @@ object Ejercicios
 
 @Serializable
 object Ejercicio
+
+@Serializable
+object Rutinas
+
+@Serializable
+object Favs
 
 @Serializable
 object Estadisticas

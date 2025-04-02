@@ -52,6 +52,7 @@ import com.oscar.benchfitness.R
 import com.oscar.benchfitness.navegation.Ejercicios
 import com.oscar.benchfitness.navegation.Estadisticas
 import com.oscar.benchfitness.navegation.Home
+import com.oscar.benchfitness.navegation.MainExercises
 import com.oscar.benchfitness.navegation.Perfil
 import com.oscar.benchfitness.screens.exercises.EjerciciosScreen
 import com.oscar.benchfitness.ui.theme.negroBench
@@ -69,7 +70,9 @@ fun GlobalTextField(
     isPassword: Boolean = false,
     trailingIcon: @Composable (() -> Unit)? = null,
     textAlign: TextAlign = TextAlign.Start,
-    modifier: Modifier
+    modifier: Modifier,
+    backgroundColor: Color,
+    colorText: Color
 ) {
     TextField(
         value = text,
@@ -79,7 +82,7 @@ fun GlobalTextField(
                 nombre,
                 style = MaterialTheme.typography.bodyLarge,
                 fontSize = 14.sp,
-                color = negroBench
+                color = colorText
             )
         },
         trailingIcon = trailingIcon,
@@ -91,8 +94,8 @@ fun GlobalTextField(
         modifier = modifier,
         visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
+            focusedContainerColor = backgroundColor,
+            unfocusedContainerColor = backgroundColor,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         )
@@ -233,7 +236,8 @@ fun GlobalDropDownMenu(
     nombreSeleccion: String,
     opciones: List<String>,
     modifier: Modifier,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    backgroundColor: Color
 ) {
     // Variable para controlar la visibilidad
     var expanded by remember { mutableStateOf(false) }
@@ -266,22 +270,21 @@ fun GlobalDropDownMenu(
                     textAlign = TextAlign.Center
                 ),
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
+                    focusedContainerColor = backgroundColor,
+                    unfocusedContainerColor = backgroundColor,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 ),
                 modifier = modifier
                     .menuAnchor()
-                    .background(Color.White) // Fondo blanco del TextField
-                // Fondo blanco del TextField
+                    .background(backgroundColor)
             )
 
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
                 modifier = Modifier
-                    .background(negroClaroBench) // Ancho fijo del menú
+                    .background(negroOscuroBench) // Ancho fijo del menú
             ) {
                 opciones.forEach { opcion ->
                     DropdownMenuItem(
@@ -299,7 +302,7 @@ fun GlobalDropDownMenu(
                             onValueChange(opcion)
                             expanded = false
                         },
-                        modifier = modifier.background(negroClaroBench)
+                        modifier = modifier.background(negroOscuroBench)
                     )
                 }
             }
@@ -365,7 +368,7 @@ fun GlobalBarraNavegacion(navController: NavController) {
         }
         NavigationIcon("Ejercicios", R.drawable.iconopesas, selectedItem) {
             selectedItem = "Ejercicios"
-            navController.navigate(Ejercicios)
+            navController.navigate(MainExercises)
         }
         NavigationIcon("Estadisticas", R.drawable.bascula, selectedItem) {
             selectedItem = "Estadisticas"

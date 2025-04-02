@@ -30,11 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,7 +40,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.credentials.CredentialManager
 import androidx.navigation.NavController
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.components.GlobalButton
@@ -53,6 +48,7 @@ import com.oscar.benchfitness.navegation.Inicio
 import com.oscar.benchfitness.navegation.Registro
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroClaroBench
+import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
 import com.oscar.benchfitness.viewModels.auth.LoginViewModel
 import kotlinx.coroutines.launch
@@ -226,7 +222,9 @@ fun LoginTextFields(
             onValueChange = onEmailChange,
             modifier = Modifier
                 .width(310.dp)
-                .height(55.dp)
+                .height(55.dp),
+            backgroundColor = Color.White,
+            colorText = negroOscuroBench
         )
         Spacer(modifier = Modifier.height(25.dp))
         GlobalTextField(
@@ -236,7 +234,9 @@ fun LoginTextFields(
             isPassword = true,
             modifier = Modifier
                 .width(310.dp)
-                .height(55.dp)
+                .height(55.dp),
+            backgroundColor = Color.White,
+            colorText = negroOscuroBench
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
