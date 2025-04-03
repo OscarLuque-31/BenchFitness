@@ -91,6 +91,10 @@ dependencies {
     // Gráficos
     implementation (libs.compose.charts)
 
+    // Llamada a API
+    implementation(libs.retrofit2.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.gson)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

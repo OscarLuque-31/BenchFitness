@@ -2,9 +2,11 @@
 agp = "8.6.0"
 compiler = "1.5.15"
 composeCharts = "0.1.2"
+converterGson = "2.9.0"
 credentials = "1.5.0"
 dotenvKotlin = "6.4.1"
 firebaseBom = "33.10.0"
+gson = "2.10.1"
 kotlin = "2.1.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -18,6 +20,7 @@ materialIconsExtended = "1.7.6"
 navigationCompose = "2.8.5"
 kotlinxSerialization = "1.6.3"
 playServicesAuth = "21.3.0"
+retrofitVersion = "2.9.0"
 services= "4.4.2"
 crashlytics = "3.0.2"
 ui = "1.7.8"
@@ -32,7 +35,9 @@ androidx-credentials-play-services-auth = { module = "androidx.credentials:crede
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 compose-charts = { module = "io.github.ehsannarmani:compose-charts", version.ref = "composeCharts" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 dotenv-kotlin = { module = "io.github.cdimascio:dotenv-kotlin", version.ref = "dotenvKotlin" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -49,6 +54,7 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+retrofit2-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
 ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
