@@ -6,11 +6,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -18,7 +21,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,13 +31,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.oscar.benchfitness.components.GlobalButton
 import com.oscar.benchfitness.components.GlobalDropDownMenu
 import com.oscar.benchfitness.components.GlobalTextField
+import com.oscar.benchfitness.models.ExerciseData
+import com.oscar.benchfitness.ui.theme.amarilloAvanzado
+import com.oscar.benchfitness.ui.theme.azulIntermedio
 import com.oscar.benchfitness.ui.theme.negroClaroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
+import com.oscar.benchfitness.ui.theme.verdePrincipiante
 import com.oscar.benchfitness.viewModels.exercises.EjerciciosViewModel
 
 @Composable
@@ -52,7 +59,7 @@ fun EjerciciosBodyContent(navController: NavController, viewModel: EjerciciosVie
 
     Column(modifier = Modifier.padding(horizontal = 20.dp)) {
         FiltrosEjercicio(viewModel)
-        Ejercicios(viewModel)
+        ListaEjercicios(viewModel)
     }
 }
 
@@ -74,7 +81,9 @@ fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
                 backgroundColor = negroOscuroBench,
                 colorText = Color.White,
                 onClick = { filtrosVisibles = !filtrosVisibles },
-                modifier = Modifier.height(50.dp).width(110.dp)
+                modifier = Modifier
+                    .height(50.dp)
+                    .width(110.dp)
             )
             Spacer(Modifier.width(30.dp))
             GlobalTextField(
@@ -152,14 +161,62 @@ fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
 }
 
 @Composable
-fun Ejercicios(viewModel: EjerciciosViewModel) {
+fun ListaEjercicios(viewModel: EjerciciosViewModel) {
     val ejercicios by viewModel.ejercicios.collectAsState()
 
-    ejercicios.forEach { ejercicio ->
-        Text("${ejercicio.nombre}: ${ejercicio.nivel}")
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        items(ejercicios) { ejercicio ->
+            CajaEjercicio(ejercicio)
+        }
     }
 
 
 }
 
+@Composable
+fun CajaEjercicio(ejercicio: ExerciseData) {
 
+    Column (modifier = Modifier.height(120.dp).padding(bottom = 15.dp).clip(RoundedCornerShape(20.dp))){
+        Row (modifier = Modifier.fillMaxWidth().weight(0.65f).background(negroOscuroBench).padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center) {
+            Text(
+                text = ejercicio.nombre,
+                fontSize = 19.sp,
+                color = rojoBench
+            )
+        }
+        Row (modifier = Modifier.fillMaxWidth().weight(0.35f).background(negroClaroBench),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround) {
+            Text(
+                text = ejercicio.musculo_principal,
+                fontSize = 15.sp,
+                color = Color.White
+
+            )
+            Text(
+                text = ejercicio.categoria,
+                fontSize = 15.sp,
+                color = Color.White
+
+            )
+            Text(
+                text = ejercicio.nivel,
+                fontSize = 15.sp,
+                color = colorPorNivel(ejercicio.nivel)
+
+            )
+        }
+    }
+
+}
+
+fun colorPorNivel(nivel: String): Color{
+    return when(nivel) {
+        "Principiante" -> verdePrincipiante
+        "Intermedio" -> azulIntermedio
+        "Avanzado" -> amarilloAvanzado
+        else -> Color.White
+    }
+}

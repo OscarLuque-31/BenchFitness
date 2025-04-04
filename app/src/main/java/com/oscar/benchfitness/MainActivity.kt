@@ -9,6 +9,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.oscar.benchfitness.navegation.AppNavegation
+import com.oscar.benchfitness.services.RetrofitClient
 import com.oscar.benchfitness.ui.theme.BenchfitnessTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,6 +22,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         auth = Firebase.auth
         db = FirebaseFirestore.getInstance()
+
+        // Inicializa Retrofit con el contexto
+        RetrofitClient.init(applicationContext)
 
         enableEdgeToEdge()
         setContent {
