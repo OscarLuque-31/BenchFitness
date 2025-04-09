@@ -1,1 +1,292 @@
 package com.oscar.benchfitness.screens.exercises
+
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.oscar.benchfitness.R
+import com.oscar.benchfitness.animations.AnimatedFavoriteStar
+import com.oscar.benchfitness.components.AdaptiveGifRow
+import com.oscar.benchfitness.models.ExerciseData
+import com.oscar.benchfitness.ui.theme.negroBench
+import com.oscar.benchfitness.ui.theme.negroOscuroBench
+import com.oscar.benchfitness.ui.theme.rojoBench
+import com.oscar.benchfitness.viewModels.exercises.EjercicioViewModel
+
+@Composable
+fun EjercicioScreen(
+    navController: NavController,
+    viewModel: EjercicioViewModel,
+    ejercicio: ExerciseData
+) {
+    Column(
+        modifier = Modifier
+            .padding(top = 15.dp, start = 20.dp, end = 20.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        EjercicioBodyContent(navController, ejercicio, viewModel)
+    }
+}
+
+@Composable
+fun EjercicioBodyContent(
+    navController: NavController,
+    ejercicio: ExerciseData,
+    viewModel: EjercicioViewModel
+) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(
+                RoundedCornerShape(20.dp)
+            )
+            .background(negroOscuroBench)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(20.dp)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.flechita_atras),
+                    contentDescription = "Flechita atrás",
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clickable { navController.popBackStack() }
+                )
+                IconToggleButton(
+                    checked = viewModel.isFavorite,
+                    onCheckedChange = {
+                        viewModel.toogleFavorite(ejercicio)
+                    }
+                ) {
+                    AnimatedFavoriteStar(isFavorite = viewModel.isFavorite)
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+            Text(ejercicio.nombre, color = rojoBench)
+            Spacer(Modifier.height(10.dp))
+            Text(ejercicio.descripcion, color = Color.White, fontSize = 15.sp)
+            Spacer(Modifier.height(30.dp))
+            DatosEspecificosEjercicio(ejercicio)
+        }
+    }
+}
+
+@Composable
+fun DatosEspecificosEjercicio(ejercicio: ExerciseData) {
+
+    // Columna principal
+    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
+        FilaPrincipal(ejercicio)
+        FilaEquipamiento(ejercicio.equipamiento)
+        FilaGif(ejercicio.url_image)
+        FilaInstrucciones(ejercicio.instrucciones)
+
+    }
+}
+
+
+@Composable
+fun FilaPrincipal(ejercicio: ExerciseData) {
+    // Fila de categoria/tipo_fuerza y musculo principal y secundario
+    Row(
+        modifier = Modifier.height(200.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+
+        // Columna de categoria / fuerza
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(0.5f)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(negroBench)
+                    .weight(0.5f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.categoria),
+                    contentDescription = "Categoria",
+                    modifier = Modifier
+                        .size(20.dp)
+                )
+                Spacer(Modifier.width(10.dp))
+                Text(
+                    ejercicio.categoria,
+                    color = rojoBench,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+            Spacer(Modifier.height(10.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(negroBench)
+                    .weight(0.5f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.tipo_fuerza),
+                    contentDescription = "Tipo fuerza",
+                    modifier = Modifier
+                        .size(35.dp)
+                )
+                Spacer(Modifier.width(10.dp))
+                Text(
+                    ejercicio.tipo_fuerza,
+                    color = rojoBench,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
+        Spacer(Modifier.width(10.dp))
+        // Columna de musculo principal y secundario
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .clip(RoundedCornerShape(20.dp))
+                .background(negroBench)
+                .weight(0.5f),
+            verticalArrangement = Arrangement.SpaceAround,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.musculo_principal),
+                    contentDescription = "musculo principal",
+                    modifier = Modifier
+                        .size(25.dp)
+                )
+                Spacer(Modifier.width(10.dp))
+                Text(
+                    ejercicio.musculo_principal, color = rojoBench,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.musculo_secundario),
+                    contentDescription = "musculo secundario",
+                    modifier = Modifier
+                        .size(25.dp)
+                )
+                Spacer(Modifier.width(10.dp))
+                Text(
+                    ejercicio.musculo_secundario, color = rojoBench,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun FilaEquipamiento(equipamiento: String) {
+    Spacer(Modifier.height(10.dp))
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(70.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(negroBench),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center) {
+            Image(
+                painter = painterResource(id = R.drawable.equipamiento),
+                contentDescription = "equipamiento",
+                modifier = Modifier
+                    .size(30.dp)
+            )
+            Spacer(Modifier.width(10.dp))
+            Text(
+                equipamiento, color = rojoBench,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+
+@Composable
+fun FilaGif(urlImagen: String) {
+    Spacer(Modifier.height(10.dp))
+    Row (modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(20.dp))){
+        AdaptiveGifRow(urlImagen)
+    }
+    Spacer(Modifier.height(10.dp))
+}
+
+@Composable
+fun FilaInstrucciones(instrucciones: String) {
+    Row(modifier = Modifier.fillMaxHeight().clip(RoundedCornerShape(20.dp)).background(negroBench)) {
+        Column (modifier = Modifier.padding(10.dp),
+            verticalArrangement = Arrangement.SpaceAround,
+            horizontalAlignment = Alignment.CenterHorizontally){
+            Text("Instrucciones",color = rojoBench,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(10.dp))
+            Text(instrucciones, color = Color.White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Normal)
+        }
+    }
+}

@@ -1,5 +1,10 @@
 package com.oscar.benchfitness.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
+
+@Parcelize
 data class ExerciseData(
     var id_ejercicio: String,
     var nombre: String,
@@ -12,4 +17,4 @@ data class ExerciseData(
     var musculo_secundario: String,
     var instrucciones: String,
     var url_image: String,
-)
+) : Parcelable

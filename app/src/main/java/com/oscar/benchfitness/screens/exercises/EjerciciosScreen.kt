@@ -1,11 +1,11 @@
 package com.oscar.benchfitness.screens.exercises
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,6 +37,7 @@ import com.oscar.benchfitness.components.GlobalButton
 import com.oscar.benchfitness.components.GlobalDropDownMenu
 import com.oscar.benchfitness.components.GlobalTextField
 import com.oscar.benchfitness.models.ExerciseData
+import com.oscar.benchfitness.navegation.Ejercicio
 import com.oscar.benchfitness.ui.theme.amarilloAvanzado
 import com.oscar.benchfitness.ui.theme.azulIntermedio
 import com.oscar.benchfitness.ui.theme.negroClaroBench
@@ -59,13 +60,17 @@ fun EjerciciosBodyContent(navController: NavController, viewModel: EjerciciosVie
 
     Column(modifier = Modifier.padding(horizontal = 20.dp)) {
         FiltrosEjercicio(viewModel)
-        ListaEjercicios(viewModel)
+        ListaEjercicios(navController,viewModel)
     }
 }
 
 @Composable
 fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
     var filtrosVisibles by remember { mutableStateOf(false) }
+
+    val musculos by viewModel.musculos.collectAsState()
+    val categorias by viewModel.categorias.collectAsState()
+    val niveles by viewModel.niveles.collectAsState()
 
     Column(
         modifier = Modifier.padding(vertical = 10.dp)
@@ -83,7 +88,7 @@ fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
                 onClick = { filtrosVisibles = !filtrosVisibles },
                 modifier = Modifier
                     .height(50.dp)
-                    .width(110.dp)
+                    .weight(0.3f)
             )
             Spacer(Modifier.width(30.dp))
             GlobalTextField(
@@ -92,7 +97,7 @@ fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
                 text = viewModel.busqueda,
                 onValueChange = { viewModel.busqueda = it },
                 modifier = Modifier
-                    .weight(0.3f)
+                    .weight(0.5f)
                     .height(50.dp),
                 colorText = Color.White,
                 backgroundColor = negroOscuroBench
@@ -112,30 +117,30 @@ fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
                 Column {
                     GlobalDropDownMenu(
                         nombreSeleccion = viewModel.musculo,
-                        opciones = viewModel.opcionesMusculo,
+                        opciones = musculos.map { it.nombre },
                         onValueChange = { viewModel.musculo = it },
                         modifier = Modifier
-                            .width(200.dp)
+                            .width(250.dp)
                             .height(50.dp),
                         backgroundColor = rojoBench
                     )
                     Spacer(Modifier.height(20.dp))
                     GlobalDropDownMenu(
                         nombreSeleccion = viewModel.categoria,
-                        opciones = viewModel.opcionesCategoria,
+                        opciones = categorias.map { it.nombre },
                         onValueChange = { viewModel.categoria = it },
                         modifier = Modifier
-                            .width(200.dp)
+                            .width(250.dp)
                             .height(50.dp),
                         backgroundColor = rojoBench
                     )
                     Spacer(Modifier.height(20.dp))
                     GlobalDropDownMenu(
                         nombreSeleccion = viewModel.nivel,
-                        opciones = viewModel.opcionesNivel,
+                        opciones = niveles.map { it.nombre },
                         onValueChange = { viewModel.nivel = it },
                         modifier = Modifier
-                            .width(200.dp)
+                            .width(250.dp)
                             .height(50.dp),
                         backgroundColor = rojoBench
                     )
@@ -161,34 +166,51 @@ fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
 }
 
 @Composable
-fun ListaEjercicios(viewModel: EjerciciosViewModel) {
+fun ListaEjercicios(navController: NavController, viewModel: EjerciciosViewModel) {
     val ejercicios by viewModel.ejercicios.collectAsState()
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(ejercicios) { ejercicio ->
-            CajaEjercicio(ejercicio)
+            CajaEjercicio(navController,ejercicio)
         }
     }
-
-
 }
 
 @Composable
-fun CajaEjercicio(ejercicio: ExerciseData) {
+fun CajaEjercicio(navController: NavController,ejercicio: ExerciseData) {
 
-    Column (modifier = Modifier.height(120.dp).padding(bottom = 15.dp).clip(RoundedCornerShape(20.dp))){
-        Row (modifier = Modifier.fillMaxWidth().weight(0.65f).background(negroOscuroBench).padding(10.dp),
+    Column(
+        modifier = Modifier
+            .height(150.dp)
+            .padding(bottom = 25.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .clickable {
+                navController.currentBackStackEntry?.savedStateHandle?.set("ejercicio", ejercicio)
+                navController.navigate(Ejercicio)
+            }) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.65f)
+                .background(negroOscuroBench)
+                .padding(10.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center) {
+            horizontalArrangement = Arrangement.Center
+        ) {
             Text(
                 text = ejercicio.nombre,
                 fontSize = 19.sp,
                 color = rojoBench
             )
         }
-        Row (modifier = Modifier.fillMaxWidth().weight(0.35f).background(negroClaroBench),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.35f)
+                .background(negroClaroBench),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround) {
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
             Text(
                 text = ejercicio.musculo_principal,
                 fontSize = 15.sp,
@@ -212,8 +234,8 @@ fun CajaEjercicio(ejercicio: ExerciseData) {
 
 }
 
-fun colorPorNivel(nivel: String): Color{
-    return when(nivel) {
+fun colorPorNivel(nivel: String): Color {
+    return when (nivel) {
         "Principiante" -> verdePrincipiante
         "Intermedio" -> azulIntermedio
         "Avanzado" -> amarilloAvanzado

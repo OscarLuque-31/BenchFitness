@@ -33,11 +33,14 @@ import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.R
+import com.oscar.benchfitness.models.ExerciseData
+import com.oscar.benchfitness.navegation.Ejercicio
 import com.oscar.benchfitness.navegation.Ejercicios
 import com.oscar.benchfitness.navegation.Favs
 import com.oscar.benchfitness.navegation.Rutinas
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
+import com.oscar.benchfitness.viewModels.exercises.EjercicioViewModel
 import com.oscar.benchfitness.viewModels.exercises.EjerciciosViewModel
 
 @Composable
@@ -55,7 +58,10 @@ fun MainExercisesContainer(
         NavHost(
             navController = innerNavController,
             startDestination = Ejercicios,
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier.padding(
+                top = paddingValues.calculateTopPadding(),
+                bottom = 0.dp
+            )
         ) {
             composable<Ejercicios> {
                 val ejerciciosViewModel = remember { EjerciciosViewModel(auth, db) }
@@ -68,6 +74,21 @@ fun MainExercisesContainer(
                     navController = innerNavController,
                     viewModel = ejerciciosViewModel,
                 )
+            }
+            composable<Ejercicio> {
+                val ejercicioViewModel = remember { EjercicioViewModel(auth, db) }
+
+                val ejercicio = innerNavController.previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.get<ExerciseData>("ejercicio")
+
+                if (ejercicio != null) {
+                    EjercicioScreen(
+                        navController = innerNavController,
+                        viewModel = ejercicioViewModel,
+                        ejercicio = ejercicio
+                    )
+                }
             }
             composable<Rutinas> {
 

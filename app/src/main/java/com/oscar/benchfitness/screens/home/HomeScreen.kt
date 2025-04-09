@@ -73,19 +73,24 @@ fun HomeBodyContent(
         modifier = Modifier
             .fillMaxSize()
             .background(color = negroBench)
-            .verticalScroll(rememberScrollState())
     ) {
-        GlobalHeader("Bienvenido $nombre")
-        Spacer(modifier = Modifier.height(15.dp))
-        ObjetivoUsuario(objetivo)
-        Spacer(modifier = Modifier.height(15.dp))
-        RecomendacionObjetivo(
-            viewModel.interpretarObjetivo(objetivo = objetivo),
-            calorias
-        )
-        Spacer(modifier = Modifier.height(15.dp))
-        BloqueApuntarRutina()
-        Spacer(modifier = Modifier.height(15.dp))
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+        ) {
+            GlobalHeader("Bienvenido $nombre")
+            Spacer(modifier = Modifier.height(15.dp))
+            ObjetivoUsuario(objetivo)
+            Spacer(modifier = Modifier.height(15.dp))
+            RecomendacionObjetivo(
+                viewModel.interpretarObjetivo(objetivo = objetivo),
+                calorias
+            )
+            Spacer(modifier = Modifier.height(15.dp))
+            BloqueApuntarRutina()
+            Spacer(modifier = Modifier.height(15.dp))
+        }
     }
 }
 
@@ -192,75 +197,77 @@ fun RecomendacionObjetivo(nombreObjetivo: String, calorias: String) {
     }
 }
 
+
 @Composable
 fun BloqueApuntarRutina() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(360.dp)
             .padding(horizontal = 20.dp)
             .clip(RoundedCornerShape(20.dp))
-            .background(
-                negroOscuroBench
-            )
+            .background(negroOscuroBench)
     ) {
         Column(
             modifier = Modifier
-                .weight(0.6f)
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp)
+                .padding(20.dp)
         ) {
+            // Título "Rutina de hoy"
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.3f),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
                 Text(
-                    "Rutina de hoy", style = MaterialTheme.typography.bodySmall,
+                    "Rutina de hoy",
+                    style = MaterialTheme.typography.bodySmall,
                     fontSize = 20.sp,
                     color = Color.White
                 )
             }
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            // Contenedor de "Sin asignar"
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .weight(0.7f)
+                    .fillMaxWidth()
+                    .height(150.dp) // Altura fija para este contenedor
                     .clip(RoundedCornerShape(20.dp))
-                    .background(
-                        negroBench
-                    ),
+                    .background(negroBench)
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    "Sin asignar", style = MaterialTheme.typography.bodySmall,
+                    "Sin asignar",
+                    style = MaterialTheme.typography.bodySmall,
                     fontSize = 18.sp,
                     color = rojoBench
                 )
             }
 
-        }
-        Column(
-            modifier = Modifier
-                .weight(0.4f)
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                "Apunta tu entrenamiento de hoy", style = MaterialTheme.typography.bodyMedium,
-                fontSize = 17.sp,
-                color = Color.White
-            )
-            Spacer(Modifier.height(10.dp))
-            Image(
-                painter = painterResource(id = R.drawable.anadir),
-                contentDescription = "añadir",
-                modifier = Modifier.size(50.dp)
-            )
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Sección de "Apunta tu entrenamiento"
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    "Apunta tu entrenamiento de hoy",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontSize = 17.sp,
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.anadir),
+                    contentDescription = "añadir",
+                    modifier = Modifier.size(50.dp)
+                )
+            }
         }
     }
 }

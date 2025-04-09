@@ -7,8 +7,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,6 +20,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
@@ -41,13 +45,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.decode.GifDecoder
+import coil.request.ImageRequest
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.navegation.Ejercicios
 import com.oscar.benchfitness.navegation.Estadisticas
@@ -283,8 +295,8 @@ fun GlobalDropDownMenu(
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier
-                    .background(negroOscuroBench) // Ancho fijo del menú
+                modifier = Modifier.heightIn(max = 250.dp)
+                    .background(negroOscuroBench)
             ) {
                 opciones.forEach { opcion ->
                     DropdownMenuItem(
@@ -321,7 +333,7 @@ fun CabeceraBenchFitness(text: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 0.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom,
@@ -330,7 +342,7 @@ fun CabeceraBenchFitness(text: String) {
             Text(
                 text,
                 modifier = Modifier.padding(bottom = 10.dp),
-                style = MaterialTheme.typography.bodySmall, fontSize = 24.sp,
+                style = MaterialTheme.typography.bodySmall, fontSize = 20.sp,
                 color = Color.White
             )
             Image(
@@ -407,4 +419,59 @@ fun NavigationIcon(
             modifier = Modifier.size(22.dp)
         )
     }
+}
+
+@Composable
+fun AdaptiveGifRow(
+    url: String,
+    modifier: Modifier = Modifier,
+    placeholder: @Composable () -> Unit = {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(16f / 9f)
+                .background(Color.LightGray),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = rojoBench)
+        }
+    }
+) {
+    var imageSize by remember { mutableStateOf<IntSize?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+    ) {
+        if (isLoading) {
+            placeholder()
+        }
+
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(url)
+                .decoderFactory(GifDecoder.Factory())
+                .build(),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(20.dp))
+                .onGloballyPositioned {
+                    if (imageSize == null) {
+                        imageSize = it.size
+                        isLoading = false
+                    }
+                },
+            contentScale = ContentScale.FillWidth
+        )
+    }
+
+    Spacer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(with(LocalDensity.current) { (imageSize?.height?.toDp() ?: 0.dp) })
+            .padding(top = 10.dp)
+    )
 }

@@ -40,7 +40,7 @@ fun MainContainer(auth: FirebaseAuth, db: FirebaseFirestore) {
     Scaffold(containerColor = negroBench, bottomBar = {
         Box(
             modifier = Modifier
-                .padding(vertical = 15.dp)
+                .padding(bottom = 25.dp, top = 15.dp)
         ) {
             GlobalBarraNavegacion(innerNavController)
         }
