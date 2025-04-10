@@ -38,6 +38,7 @@ import com.oscar.benchfitness.navegation.Ejercicio
 import com.oscar.benchfitness.navegation.Ejercicios
 import com.oscar.benchfitness.navegation.Favs
 import com.oscar.benchfitness.navegation.Rutinas
+import com.oscar.benchfitness.repository.ExercisesRepository
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
 import com.oscar.benchfitness.viewModels.exercises.EjercicioViewModel
@@ -82,11 +83,28 @@ fun MainExercisesContainer(
                     ?.savedStateHandle
                     ?.get<ExerciseData>("ejercicio")
 
+                var exercisesRepository = ExercisesRepository()
+
+                // Estado para manejar la URL del GIF
+                var urlGIF by remember { mutableStateOf<String?>(null) }
+
+                LaunchedEffect(ejercicio) {
+                    ejercicio?.let {
+
+                        println(it.url_image.replace("+"," "))
+
+                        urlGIF = exercisesRepository.obtenerURLFirmadaGif(it.url_image.replace("+"," "))
+
+                        println(urlGIF)
+                    }
+                }
+
                 if (ejercicio != null) {
                     EjercicioScreen(
                         navController = innerNavController,
                         viewModel = ejercicioViewModel,
-                        ejercicio = ejercicio
+                        ejercicio = ejercicio,
+                        urlGIF = urlGIF ?: ""
                     )
                 }
             }

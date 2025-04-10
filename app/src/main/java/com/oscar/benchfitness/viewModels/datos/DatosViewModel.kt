@@ -30,9 +30,13 @@ class DatosViewModel(
 
     private val firebaseRepository = FirebaseRepository(auth, db)
 
+    /**
+     * Método que guarda los datos del usuario en base de datos
+     */
     fun guardarDatosUsuario(context: Context, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
         isLoading = true
 
+        // Valida que sean correctos
         val (isValid, errorMessage) = validateFieldsDatos(
             altura = altura,
             genero = genero,
@@ -43,6 +47,7 @@ class DatosViewModel(
             birthday = birthday
         )
 
+        // Si no son válidos lanza un mensaje de error, sino guarda los datos
         if (!isValid) {
             Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
             onFailure(errorMessage)

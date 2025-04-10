@@ -96,10 +96,13 @@ dependencies {
     implementation(libs.retrofit2.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.gson)
+    implementation (libs.converter.scalars)
 
     // Gifs
     implementation(libs.coil.compose)
     implementation(libs.coil.gif)
+
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

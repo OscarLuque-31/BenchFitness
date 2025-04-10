@@ -23,16 +23,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.oscar.benchfitness.animations.LoadingScreen
 import com.oscar.benchfitness.components.GlobalButton
 import com.oscar.benchfitness.components.GlobalDropDownMenu
 import com.oscar.benchfitness.components.GlobalTextField
@@ -56,17 +56,18 @@ fun EjerciciosScreen(navController: NavController, viewModel: EjerciciosViewMode
 
 @Composable
 fun EjerciciosBodyContent(navController: NavController, viewModel: EjerciciosViewModel) {
-
-
     Column(modifier = Modifier.padding(horizontal = 20.dp)) {
         FiltrosEjercicio(viewModel)
-        ListaEjercicios(navController,viewModel)
+        if (viewModel.isLoading) {
+            LoadingScreen()
+        } else {
+            ListaEjercicios(navController, viewModel)
+        }
     }
 }
 
 @Composable
 fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
-    var filtrosVisibles by remember { mutableStateOf(false) }
 
     val musculos by viewModel.musculos.collectAsState()
     val categorias by viewModel.categorias.collectAsState()
@@ -82,10 +83,10 @@ fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             GlobalButton(
-                text = if (filtrosVisibles) "Filtros ↑" else "Filtros ↓",
+                text = if (viewModel.filtrosVisibles) "Filtros ↑" else "Filtros ↓",
                 backgroundColor = negroOscuroBench,
                 colorText = Color.White,
-                onClick = { filtrosVisibles = !filtrosVisibles },
+                onClick = { viewModel.filtrosVisibles = !viewModel.filtrosVisibles },
                 modifier = Modifier
                     .height(50.dp)
                     .weight(0.3f)
@@ -100,11 +101,15 @@ fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
                     .weight(0.5f)
                     .height(50.dp),
                 colorText = Color.White,
-                backgroundColor = negroOscuroBench
+                backgroundColor = negroOscuroBench,
+                onDone = {
+                    viewModel.filtrarBusquedaNombre(viewModel.busqueda)
+                },
+                imeAction = ImeAction.Search
             )
         }
 
-        if (filtrosVisibles) {
+        if (viewModel.filtrosVisibles) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -144,13 +149,22 @@ fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
                             .height(50.dp),
                         backgroundColor = rojoBench
                     )
+                    Spacer(Modifier.height(20.dp))
+                    GlobalButton(
+                        text = "Resetear filtros", onClick = { viewModel.cargarEjercicios() },
+                        backgroundColor = negroClaroBench,
+                        colorText = rojoBench,
+                        modifier = Modifier
+                    )
+
                 }
+
 
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = { viewModel.onClickBuscar() }) {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = "buscar",
@@ -171,13 +185,13 @@ fun ListaEjercicios(navController: NavController, viewModel: EjerciciosViewModel
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(ejercicios) { ejercicio ->
-            CajaEjercicio(navController,ejercicio)
+            CajaEjercicio(navController, ejercicio)
         }
     }
 }
 
 @Composable
-fun CajaEjercicio(navController: NavController,ejercicio: ExerciseData) {
+fun CajaEjercicio(navController: NavController, ejercicio: ExerciseData) {
 
     Column(
         modifier = Modifier

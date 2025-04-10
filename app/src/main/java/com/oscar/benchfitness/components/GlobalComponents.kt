@@ -7,14 +7,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
@@ -46,14 +48,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -61,14 +62,11 @@ import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import com.oscar.benchfitness.R
-import com.oscar.benchfitness.navegation.Ejercicios
 import com.oscar.benchfitness.navegation.Estadisticas
 import com.oscar.benchfitness.navegation.Home
 import com.oscar.benchfitness.navegation.MainExercises
 import com.oscar.benchfitness.navegation.Perfil
-import com.oscar.benchfitness.screens.exercises.EjerciciosScreen
 import com.oscar.benchfitness.ui.theme.negroBench
-import com.oscar.benchfitness.ui.theme.negroClaroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
 import com.oscar.benchfitness.utils.convertMillisToDate
@@ -84,8 +82,12 @@ fun GlobalTextField(
     textAlign: TextAlign = TextAlign.Start,
     modifier: Modifier,
     backgroundColor: Color,
-    colorText: Color
+    colorText: Color,
+    onDone: () -> Unit = {},
+    imeAction: ImeAction = ImeAction.Done
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     TextField(
         value = text,
         onValueChange = onValueChange,
@@ -100,17 +102,32 @@ fun GlobalTextField(
         trailingIcon = trailingIcon,
         textStyle = MaterialTheme.typography.bodyLarge.copy(
             fontSize = 14.sp,
-            textAlign = textAlign
+            textAlign = textAlign,
+            color = colorText
         ),
         shape = MaterialTheme.shapes.medium,
         modifier = modifier,
+        singleLine = true,
         visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = backgroundColor,
             unfocusedContainerColor = backgroundColor,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
-        )
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                onDone()
+                keyboardController?.hide()
+            },
+            onSearch = {
+                onDone()
+                keyboardController?.hide()
+            }
+        ),
+        keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = imeAction
+        ),
     )
 }
 
@@ -295,7 +312,8 @@ fun GlobalDropDownMenu(
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.heightIn(max = 250.dp)
+                modifier = Modifier
+                    .heightIn(max = 250.dp)
                     .background(negroOscuroBench)
             ) {
                 opciones.forEach { opcion ->
@@ -425,53 +443,47 @@ fun NavigationIcon(
 fun AdaptiveGifRow(
     url: String,
     modifier: Modifier = Modifier,
+    aspectRatio: Float = 16f / 9f,  // Relación de aspecto por defecto (16:9)
     placeholder: @Composable () -> Unit = {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(16f / 9f)
-                .background(Color.LightGray),
+                .fillMaxHeight()
+                .background(negroOscuroBench),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(color = rojoBench)
         }
     }
 ) {
-    var imageSize by remember { mutableStateOf<IntSize?>(null) }
-    var isLoading by remember { mutableStateOf(true) }
-
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
     ) {
-        if (isLoading) {
+        // Mostrar el Placeholder mientras se carga
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(aspectRatio)
+        ) {
+            // Este es el placeholder que se muestra mientras la imagen está cargando
             placeholder()
         }
 
+        // Cargar la imagen (y reemplazar el placeholder cuando se cargue)
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(url)
                 .decoderFactory(GifDecoder.Factory())
+                .crossfade(true)  // Animación suave entre placeholder y la imagen cargada
                 .build(),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(20.dp))
-                .onGloballyPositioned {
-                    if (imageSize == null) {
-                        imageSize = it.size
-                        isLoading = false
-                    }
-                },
+                .clip(RoundedCornerShape(20.dp)),
             contentScale = ContentScale.FillWidth
         )
     }
-
-    Spacer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(with(LocalDensity.current) { (imageSize?.height?.toDp() ?: 0.dp) })
-            .padding(top = 10.dp)
-    )
 }
+

@@ -70,11 +70,11 @@ fun LoadingScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(negroBench), // Fondo semitransparente
+            .background(negroBench),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            CircularProgressIndicator(color = Color.Red) // Spinner de carga
+            CircularProgressIndicator(color = Color.Red)
             Spacer(modifier = Modifier.height(16.dp))
             Text("Cargando...", color = Color.White, fontSize = 18.sp)
         }

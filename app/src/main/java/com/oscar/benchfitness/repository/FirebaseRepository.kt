@@ -21,7 +21,8 @@ class FirebaseRepository(
         return try {
             // Crea el usuario en firebase
             val authResult = auth.createUserWithEmailAndPassword(email, password).await()
-            val user = authResult.user ?: return Result.failure(Exception("Error al obtener usuario"))
+            val user =
+                authResult.user ?: return Result.failure(Exception("Error al obtener usuario"))
 
             // Usuario a guardar en firebase
             val userData = userData(
@@ -30,6 +31,7 @@ class FirebaseRepository(
                 email = email,
             )
 
+            // Registra al usuario en firebase
             db.collection("users").document(user.uid).set(userData).await()
 
             Result.success(Unit)
@@ -41,18 +43,24 @@ class FirebaseRepository(
     /**
      * Método para guardar los datos del usuario en Firebase
      */
-    fun guardarDatosUsuario(userData: userData, onSuccess: () -> Unit, onFailure: (String) -> Unit): Result<Unit> {
+    fun guardarDatosUsuario(
+        userData: userData,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ): Result<Unit> {
         val user = auth.currentUser
+        // Si el usuario no es nulo se actualizan todos sus datos a los
+        // introducidos en la pantalla de datos
         return if (user != null) {
             db.collection("users").document(user.uid)
                 .update(
                     "altura", userData.altura,
                     "datosCompletados", true,
                     "experiencia", userData.experiencia,
-                    "genero",userData.genero,
-                    "nivelActividad",userData.nivelActividad,
-                    "objetivo",userData.objetivo,
-                    "peso",userData.peso,
+                    "genero", userData.genero,
+                    "nivelActividad", userData.nivelActividad,
+                    "objetivo", userData.objetivo,
+                    "peso", userData.peso,
                     "birthday", userData.birthday
                 ).addOnSuccessListener {
                     onSuccess()
@@ -72,6 +80,7 @@ class FirebaseRepository(
      */
     suspend fun loginUser(email: String, password: String): Result<Unit> {
         return try {
+            // Se loguea al usuario mediante email y contraseña
             auth.signInWithEmailAndPassword(email, password).await()
             Result.success(Unit)
         } catch (e: Exception) {
@@ -79,6 +88,9 @@ class FirebaseRepository(
         }
     }
 
+    /**
+     * Método para eliminar al usuario
+     */
     fun eliminarUsuario() {
         val user = auth.currentUser
         if (user != null) {
@@ -97,7 +109,11 @@ class FirebaseRepository(
                         if (task.isSuccessful) {
                             Log.d("EliminarUsuario", "Cuenta eliminada completamente")
                         } else {
-                            Log.e("EliminarUsuario", "Error al eliminar la cuenta de Auth", task.exception)
+                            Log.e(
+                                "EliminarUsuario",
+                                "Error al eliminar la cuenta de Auth",
+                                task.exception
+                            )
                         }
                     }
                 }

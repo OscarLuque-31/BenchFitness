@@ -22,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,14 +45,20 @@ import com.oscar.benchfitness.viewModels.exercises.EjercicioViewModel
 fun EjercicioScreen(
     navController: NavController,
     viewModel: EjercicioViewModel,
-    ejercicio: ExerciseData
+    ejercicio: ExerciseData,
+    urlGIF: String
 ) {
+
+    LaunchedEffect(viewModel) {
+        viewModel.checkIfFavorite(ejercicio.id_ejercicio)
+    }
+
     Column(
         modifier = Modifier
             .padding(top = 15.dp, start = 20.dp, end = 20.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        EjercicioBodyContent(navController, ejercicio, viewModel)
+        EjercicioBodyContent(navController, ejercicio, viewModel,urlGIF)
     }
 }
 
@@ -59,7 +66,8 @@ fun EjercicioScreen(
 fun EjercicioBodyContent(
     navController: NavController,
     ejercicio: ExerciseData,
-    viewModel: EjercicioViewModel
+    viewModel: EjercicioViewModel,
+    urlGIF: String
 ) {
 
     Column(
@@ -89,8 +97,7 @@ fun EjercicioBodyContent(
                 )
                 IconToggleButton(
                     checked = viewModel.isFavorite,
-                    onCheckedChange = {
-                        viewModel.toogleFavorite(ejercicio)
+                    onCheckedChange = { isCheked ->
                     }
                 ) {
                     AnimatedFavoriteStar(isFavorite = viewModel.isFavorite)
@@ -101,19 +108,19 @@ fun EjercicioBodyContent(
             Spacer(Modifier.height(10.dp))
             Text(ejercicio.descripcion, color = Color.White, fontSize = 15.sp)
             Spacer(Modifier.height(30.dp))
-            DatosEspecificosEjercicio(ejercicio)
+            DatosEspecificosEjercicio(ejercicio,urlGIF)
         }
     }
 }
 
 @Composable
-fun DatosEspecificosEjercicio(ejercicio: ExerciseData) {
+fun DatosEspecificosEjercicio(ejercicio: ExerciseData, urlGIF: String) {
 
     // Columna principal
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
         FilaPrincipal(ejercicio)
         FilaEquipamiento(ejercicio.equipamiento)
-        FilaGif(ejercicio.url_image)
+        FilaGif(urlGIF)
         FilaInstrucciones(ejercicio.instrucciones)
 
     }
@@ -266,10 +273,10 @@ fun FilaEquipamiento(equipamiento: String) {
 }
 
 @Composable
-fun FilaGif(urlImagen: String) {
+fun FilaGif(urlGIF: String) {
     Spacer(Modifier.height(10.dp))
     Row (modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(20.dp))){
-        AdaptiveGifRow(urlImagen)
+        AdaptiveGifRow(urlGIF)
     }
     Spacer(Modifier.height(10.dp))
 }
@@ -277,7 +284,7 @@ fun FilaGif(urlImagen: String) {
 @Composable
 fun FilaInstrucciones(instrucciones: String) {
     Row(modifier = Modifier.fillMaxHeight().clip(RoundedCornerShape(20.dp)).background(negroBench)) {
-        Column (modifier = Modifier.padding(10.dp),
+        Column (modifier = Modifier.padding(20.dp),
             verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally){
             Text("Instrucciones",color = rojoBench,

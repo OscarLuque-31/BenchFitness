@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.repository.FirebaseRepository
-import com.oscar.benchfitness.utils.validateFields
+import com.oscar.benchfitness.utils.validateRegisterFields
 import kotlinx.coroutines.launch
 
 class RegistroViewModel(
@@ -24,9 +24,13 @@ class RegistroViewModel(
 
     private val firebaseRepository = FirebaseRepository(auth, db)
 
+    /**
+     * Método que registra al usuario en base de datos
+     */
     fun registerUser(onSuccess: () -> Unit, onFailure: (String) -> Unit) {
 
-        val (isValid, errorMessage) = validateFields(
+        // Valida los datos
+        val (isValid, errorMessage) = validateRegisterFields(
             username= username,
             email = email,
             password = password,
@@ -34,6 +38,7 @@ class RegistroViewModel(
             acceptTerms = acceptTerms
         )
 
+        // Si no es válida tira un mensaje de error
         if (!isValid) {
             onFailure(errorMessage)
             return

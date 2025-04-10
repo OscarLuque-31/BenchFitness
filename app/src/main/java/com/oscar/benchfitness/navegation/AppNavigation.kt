@@ -41,6 +41,7 @@ fun AppNavegation(auth: FirebaseAuth, db: FirebaseFirestore) {
             }
         }
 
+        // Si el usuario no es nulo comprueba que existan sus datos
         if (currentUser != null) {
             db.collection("users").document(currentUser.uid).get()
                 .addOnSuccessListener { document ->
@@ -55,6 +56,7 @@ fun AppNavegation(auth: FirebaseAuth, db: FirebaseFirestore) {
         }
     }
 
+    // Si es true se muestra la pantalla de carga
     if (showSplash) {
         SplashScreen { showSplash = false }
         return
@@ -67,6 +69,7 @@ fun AppNavegation(auth: FirebaseAuth, db: FirebaseFirestore) {
         else -> Datos
     }
 
+    // NavHost principal
     NavHost(navController = navController, startDestination = startDestination) {
         composable<Logo> { LogoScreen(navController) }
         composable<Inicio> { InicioScreen(navController) }

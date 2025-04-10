@@ -4,7 +4,9 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
+
 @Parcelize
+// Clase que representa un ejercicio con todos sus datos
 data class ExerciseData(
     var id_ejercicio: String,
     var nombre: String,

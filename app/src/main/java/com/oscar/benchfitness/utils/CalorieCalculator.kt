@@ -13,6 +13,9 @@ class CalorieCalculator {
     private val INDICE_ACTIVIDAD_FUERTE = 1.725
     private val INDICE_ACTIVIDAD_MUYFUERTE = 1.9
 
+    /**
+     * Método que calcula las calorías de una persona según su objetivo fitness
+     */
     fun calcularCaloriasConObjetivo(
         objetivo: String,
         altura: String,

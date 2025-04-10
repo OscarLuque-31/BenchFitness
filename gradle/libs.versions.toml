@@ -22,6 +22,8 @@ navigationCompose = "2.8.5"
 kotlinxSerialization = "1.6.3"
 playServicesAuth = "21.3.0"
 retrofitVersion = "2.9.0"
+s3 = "2.20.136"
+s3Presigner = "2.20.136"
 services= "4.4.2"
 crashlytics = "3.0.2"
 ui = "1.7.8"
@@ -39,6 +41,7 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose"
 coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coilCompose" }
 compose-charts = { module = "io.github.ehsannarmani:compose-charts", version.ref = "composeCharts" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+converter-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "converterGson" }
 dotenv-kotlin = { module = "io.github.cdimascio:dotenv-kotlin", version.ref = "dotenvKotlin" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -58,6 +61,8 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 retrofit2-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
+s3 = { module = "software.amazon.awssdk:s3", version.ref = "s3" }
+s3-presigner = { module = "software.amazon.awssdk:s3-presigner", version.ref = "s3Presigner" }
 ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }

@@ -38,12 +38,16 @@ class LoginViewModel(
 
     private val firebaseRepository = FirebaseRepository(auth, db)
 
-
+    /**
+     * Método que loguea al usuario con email y contraseña
+     */
     fun loginUser(
         navController: NavController,
         onFailure: (String) -> Unit
     ) {
+        // Comprueba si es válido
         val (isValid, errorMessage) = validateLoginFields(email, password)
+        // Si no lo es muestra un mensaje de error
         if (!isValid) {
             onFailure(errorMessage)
             return
@@ -51,6 +55,7 @@ class LoginViewModel(
 
         loading = true
         viewModelScope.launch {
+            // Trata de loguear al usuario
             val result = firebaseRepository.loginUser(email, password)
 
             result.fold(
@@ -87,7 +92,10 @@ class LoginViewModel(
         }
     }
 
-    fun checkUserDataComplete(
+    /**
+     * Método que verifica si el usuario tiene o no los datos completados
+     */
+    private fun checkUserDataComplete(
         onSuccess: (Boolean) -> Unit,
         onFailure: (String) -> Unit = { _ -> }
     ) {
@@ -96,6 +104,7 @@ class LoginViewModel(
             return
         }
 
+        // Recoge al usuario
         db.collection("users").document(currentUser.uid).get()
             .addOnSuccessListener { document ->
                 if (!document.exists()) {
@@ -109,6 +118,7 @@ class LoginViewModel(
                         "nivelActividad", "objetivo", "experiencia"
                     )
 
+                    // Si todos los campos estan completados marcará true
                     val datosCompletos = camposRequeridos.all { field ->
                         document.getString(field)?.isNotEmpty() == true
                     }
@@ -123,26 +133,33 @@ class LoginViewModel(
             }
     }
 
+    /**
+     * Método que loguea al usuario con google
+     */
     fun loginWithGoogle(
         context: Context,
         navController: NavController,
         onFailure: (String) -> Unit
     ) {
         viewModelScope.launch {
+            // Crea el manejador de credenciales
             val credentialManager: CredentialManager = CredentialManager.create(context)
 
             try {
                 loading = true
 
+                // Crea el dialogo para seleccionar las cuentas
                 val googleIdOption = GetGoogleIdOption.Builder()
                     .setServerClientId(context.getString(R.string.default_web_client_id))
                     .setFilterByAuthorizedAccounts(false)
                     .build()
 
+                // Crea la request con la opción seleccionada
                 val request = GetCredentialRequest.Builder()
                     .addCredentialOption(googleIdOption)
                     .build()
 
+                // Obtiene la credencial de la request anterior
                 val credentialResponse = credentialManager.getCredential(
                     request = request,
                     context = context
@@ -158,6 +175,7 @@ class LoginViewModel(
                         null
                     )
 
+                    // Inicia sesión con la credencial
                     val authResult = auth.signInWithCredential(firebaseCredential).await()
                     authResult.user?.let { firebaseUser ->
                         val email = firebaseUser.email ?: ""

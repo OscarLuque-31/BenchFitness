@@ -1,6 +1,9 @@
 package com.oscar.benchfitness.utils
 
-fun validateFields(
+/**
+ * Método para validar los datos del registro
+ */
+fun validateRegisterFields(
     username: String, email: String, password: String, confirmPassword: String, acceptTerms: Boolean
 ): Pair<Boolean, String> {
     return when {
@@ -19,7 +22,9 @@ fun validateFields(
 }
 
 
-// Función para validar los campos de inicio de sesión
+/**
+ * Método para validar los datos del login
+ */
 fun validateLoginFields(email: String, password: String): Pair<Boolean, String> {
     return when {
         email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> Pair(
@@ -32,6 +37,9 @@ fun validateLoginFields(email: String, password: String): Pair<Boolean, String> 
     }
 }
 
+/**
+ * Método para validar los datos de la pantalla de datos
+ */
 fun validateFieldsDatos(
     altura: String, genero: String, nivelActividad: String, objetivo: String,
     peso: String, experiencia: String, birthday: String

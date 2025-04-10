@@ -1,5 +1,6 @@
 package com.oscar.benchfitness.models
 
+// Clase que representa los datos que se recogen del usuario
 data class userData(
     val uid: String = "",
     val username: String = "",
