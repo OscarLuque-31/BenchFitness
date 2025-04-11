@@ -491,3 +491,43 @@ fun AdaptiveGifRow(
     }
 }
 
+@Composable
+fun InfoDialog(
+    showDialog: Boolean,
+    onDismiss: () -> Unit,
+    cuerpo: @Composable () -> Unit
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                Text(
+                    text = "Cerrar",
+                    color = rojoBench,
+                    modifier = Modifier
+                        .clickable { onDismiss() }
+                        .padding(10.dp),
+                    fontSize = 15.sp
+                )
+            },
+            title = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Información",
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            },
+            text = {
+                cuerpo()
+            },
+            containerColor = negroBench,
+            titleContentColor = Color.White,
+            textContentColor = Color.White
+        )
+    }
+}

@@ -26,17 +26,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.components.GlobalHeader
+import com.oscar.benchfitness.components.InfoDialog
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
@@ -147,6 +152,8 @@ fun RecomendacionObjetivo(nombreObjetivo: String, calorias: String) {
             horizontalArrangement = Arrangement.SpaceEvenly
 
         ) {
+            var showInfoDialog by remember { mutableStateOf(false) }
+
             Column(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
@@ -160,8 +167,17 @@ fun RecomendacionObjetivo(nombreObjetivo: String, calorias: String) {
                         fontSize = 22.sp
                     )
                     Spacer(modifier = Modifier.width(20.dp))
-                    Icon(Icons.Filled.Info, contentDescription = "Info", tint = rojoBench)
+                    IconButton(
+                        onClick = {
+                            showInfoDialog = !showInfoDialog
+                        }, modifier = Modifier.size(20.dp) // Tamaño más compacto
+                    ) {
+                        Icon(Icons.Filled.Info, contentDescription = "Info", tint = rojoBench)
+                    }
                 }
+                InfoDialog(showInfoDialog,
+                    onDismiss = { showInfoDialog = false },
+                    cuerpo = { InfoObjetivo(nombreObjetivo) })
                 Spacer(modifier = Modifier.height(15.dp))
                 Text(
                     "$calorias kcal", color = rojoBench,
@@ -272,5 +288,37 @@ fun BloqueApuntarRutina() {
                 )
             }
         }
+    }
+}
+
+@Composable
+fun InfoObjetivo(objetivo: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp),
+        verticalArrangement = Arrangement.SpaceAround,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                "Estas son las calorías aproximadas que debes consumir si tu objetivo es $objetivo",
+                color = rojoBench
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                "Recuerda que estas son unas cifras aproximadas para más información contacte con un profesional",
+                textAlign = TextAlign.Justify
+            )
+        }
+
     }
 }

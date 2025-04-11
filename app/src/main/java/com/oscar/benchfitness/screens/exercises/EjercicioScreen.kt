@@ -44,6 +44,7 @@ import androidx.navigation.NavController
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.animations.AnimatedFavoriteStar
 import com.oscar.benchfitness.components.AdaptiveGifRow
+import com.oscar.benchfitness.components.InfoDialog
 import com.oscar.benchfitness.models.ExerciseData
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
@@ -233,6 +234,7 @@ fun FilaPrincipal(ejercicio: ExerciseData) {
             InfoDialog(
                 showDialog = showInfoDialog,
                 onDismiss = { showInfoDialog = false },
+                cuerpo = { InfoIconos() }
             )
             Spacer(Modifier.height(20.dp))
             Row(
@@ -352,132 +354,99 @@ fun FilaInstrucciones(instrucciones: String) {
     }
 }
 
+
+
 @Composable
-fun InfoDialog(
-    showDialog: Boolean,
-    onDismiss: () -> Unit,
-) {
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            confirmButton = {
-                Text(
-                    text = "Cerrar",
-                    color = rojoBench,
-                    modifier = Modifier
-                        .clickable { onDismiss() }
-                        .padding(10.dp),
-                    fontSize = 15.sp
-                )
-            },
-            title = {
-                Row (modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center) {
-                    Text(
-                        text = "Información",
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-            },
-            text = {
-                Column(
-                    modifier = Modifier.height(300.dp),
-                    verticalArrangement = Arrangement.SpaceAround,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.categoria),
-                            contentDescription = "categoría",
-                            modifier = Modifier
-                                .size(25.dp)
-                        )
-                        Text(
-                            "Categoría", color = rojoBench,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.tipo_fuerza),
-                            contentDescription = "movimiento",
-                            modifier = Modifier
-                                .size(40.dp)
-                        )
-                        Text(
-                            "Movimiento", color = rojoBench,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.musculo_principal),
-                            contentDescription = "musculo_principal",
-                            modifier = Modifier
-                                .size(30.dp)
-                        )
-                        Text(
-                            "Músculo Principal", color = rojoBench,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.musculo_secundario),
-                            contentDescription = "musculo_secundario",
-                            modifier = Modifier
-                                .size(30.dp)
-                        )
-                        Text(
-                            "Músculo Secundario", color = rojoBench,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.equipamiento),
-                            contentDescription = "equipamiento",
-                            modifier = Modifier
-                                .size(30.dp)
-                        )
-                        Text(
-                            "Equipamiento", color = rojoBench,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-                    }
-                }
-            },
-            containerColor = negroBench,
-            titleContentColor = Color.White,
-            textContentColor = Color.White
-        )
+fun InfoIconos() {
+    Column(
+        modifier = Modifier.height(300.dp),
+        verticalArrangement = Arrangement.SpaceAround,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.categoria),
+                contentDescription = "categoría",
+                modifier = Modifier
+                    .size(25.dp)
+            )
+            Text(
+                "Categoría", color = rojoBench,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Normal
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.tipo_fuerza),
+                contentDescription = "movimiento",
+                modifier = Modifier
+                    .size(40.dp)
+            )
+            Text(
+                "Movimiento", color = rojoBench,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Normal
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.musculo_principal),
+                contentDescription = "musculo_principal",
+                modifier = Modifier
+                    .size(30.dp)
+            )
+            Text(
+                "Músculo Principal", color = rojoBench,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Normal
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.musculo_secundario),
+                contentDescription = "musculo_secundario",
+                modifier = Modifier
+                    .size(30.dp)
+            )
+            Text(
+                "Músculo Secundario", color = rojoBench,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Normal
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.equipamiento),
+                contentDescription = "equipamiento",
+                modifier = Modifier
+                    .size(30.dp)
+            )
+            Text(
+                "Equipamiento", color = rojoBench,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Normal
+            )
+        }
     }
 }
-
-
