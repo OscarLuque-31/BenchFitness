@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -188,11 +189,13 @@ fun RecomendacionObjetivo(nombreObjetivo: String, calorias: String) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Icon(
-                Icons.AutoMirrored.Filled.ArrowForwardIos,
-                contentDescription = "arrowForward",
-                tint = rojoBench
-            )
+            IconButton(onClick = {}) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowForwardIos,
+                    contentDescription = "arrowForward",
+                    tint = rojoBench
+                )
+            }
         }
     }
 }

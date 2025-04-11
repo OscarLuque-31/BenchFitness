@@ -5,10 +5,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,10 +19,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,7 +67,7 @@ fun EjercicioScreen(
             .padding(top = 15.dp, start = 20.dp, end = 20.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        EjercicioBodyContent(navController, ejercicio, viewModel,urlGIF)
+        EjercicioBodyContent(navController, ejercicio, viewModel, urlGIF)
     }
 }
 
@@ -97,7 +106,8 @@ fun EjercicioBodyContent(
                 )
                 IconToggleButton(
                     checked = viewModel.isFavorite,
-                    onCheckedChange = { isCheked ->
+                    onCheckedChange = {
+                        viewModel.toogleFavorite(exerciseData = ejercicio)
                     }
                 ) {
                     AnimatedFavoriteStar(isFavorite = viewModel.isFavorite)
@@ -108,7 +118,7 @@ fun EjercicioBodyContent(
             Spacer(Modifier.height(10.dp))
             Text(ejercicio.descripcion, color = Color.White, fontSize = 15.sp)
             Spacer(Modifier.height(30.dp))
-            DatosEspecificosEjercicio(ejercicio,urlGIF)
+            DatosEspecificosEjercicio(ejercicio, urlGIF)
         }
     }
 }
@@ -197,9 +207,34 @@ fun FilaPrincipal(ejercicio: ExerciseData) {
                 .clip(RoundedCornerShape(20.dp))
                 .background(negroBench)
                 .weight(0.5f),
-            verticalArrangement = Arrangement.SpaceAround,
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            var showInfoDialog by remember { mutableStateOf(false) }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp, end = 10.dp),
+                contentAlignment = Alignment.TopEnd
+            ) {
+                IconButton(
+                    onClick = { showInfoDialog = !showInfoDialog },
+                    modifier = Modifier.size(28.dp) // Tamaño más compacto
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Info,
+                        contentDescription = "Info",
+                        tint = rojoBench,
+                        modifier = Modifier.size(18.dp) // Tamaño del ícono más pequeño
+                    )
+                }
+            }
+            InfoDialog(
+                showDialog = showInfoDialog,
+                onDismiss = { showInfoDialog = false },
+            )
+            Spacer(Modifier.height(20.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -219,6 +254,7 @@ fun FilaPrincipal(ejercicio: ExerciseData) {
                     fontWeight = FontWeight.Medium
                 )
             }
+            Spacer(Modifier.height(50.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -238,6 +274,7 @@ fun FilaPrincipal(ejercicio: ExerciseData) {
                     fontWeight = FontWeight.Medium
                 )
             }
+            Spacer(Modifier.height(20.dp))
         }
     }
 }
@@ -254,8 +291,10 @@ fun FilaEquipamiento(equipamiento: String) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.equipamiento),
                 contentDescription = "equipamiento",
@@ -275,7 +314,11 @@ fun FilaEquipamiento(equipamiento: String) {
 @Composable
 fun FilaGif(urlGIF: String) {
     Spacer(Modifier.height(10.dp))
-    Row (modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(20.dp))){
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(20.dp))
+    ) {
         AdaptiveGifRow(urlGIF)
     }
     Spacer(Modifier.height(10.dp))
@@ -283,17 +326,158 @@ fun FilaGif(urlGIF: String) {
 
 @Composable
 fun FilaInstrucciones(instrucciones: String) {
-    Row(modifier = Modifier.fillMaxHeight().clip(RoundedCornerShape(20.dp)).background(negroBench)) {
-        Column (modifier = Modifier.padding(20.dp),
+    Row(
+        modifier = Modifier
+            .fillMaxHeight()
+            .clip(RoundedCornerShape(20.dp))
+            .background(negroBench)
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
             verticalArrangement = Arrangement.SpaceAround,
-            horizontalAlignment = Alignment.CenterHorizontally){
-            Text("Instrucciones",color = rojoBench,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                "Instrucciones", color = rojoBench,
                 fontSize = 20.sp,
-                fontWeight = FontWeight.Bold)
+                fontWeight = FontWeight.Bold
+            )
             Spacer(Modifier.height(10.dp))
-            Text(instrucciones, color = Color.White,
+            Text(
+                instrucciones, color = Color.White,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Normal)
+                fontWeight = FontWeight.Normal
+            )
         }
     }
 }
+
+@Composable
+fun InfoDialog(
+    showDialog: Boolean,
+    onDismiss: () -> Unit,
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                Text(
+                    text = "Cerrar",
+                    color = rojoBench,
+                    modifier = Modifier
+                        .clickable { onDismiss() }
+                        .padding(10.dp),
+                    fontSize = 15.sp
+                )
+            },
+            title = {
+                Row (modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center) {
+                    Text(
+                        text = "Información",
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier.height(300.dp),
+                    verticalArrangement = Arrangement.SpaceAround,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.categoria),
+                            contentDescription = "categoría",
+                            modifier = Modifier
+                                .size(25.dp)
+                        )
+                        Text(
+                            "Categoría", color = rojoBench,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.tipo_fuerza),
+                            contentDescription = "movimiento",
+                            modifier = Modifier
+                                .size(40.dp)
+                        )
+                        Text(
+                            "Movimiento", color = rojoBench,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.musculo_principal),
+                            contentDescription = "musculo_principal",
+                            modifier = Modifier
+                                .size(30.dp)
+                        )
+                        Text(
+                            "Músculo Principal", color = rojoBench,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.musculo_secundario),
+                            contentDescription = "musculo_secundario",
+                            modifier = Modifier
+                                .size(30.dp)
+                        )
+                        Text(
+                            "Músculo Secundario", color = rojoBench,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.equipamiento),
+                            contentDescription = "equipamiento",
+                            modifier = Modifier
+                                .size(30.dp)
+                        )
+                        Text(
+                            "Equipamiento", color = rojoBench,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal
+                        )
+                    }
+                }
+            },
+            containerColor = negroBench,
+            titleContentColor = Color.White,
+            textContentColor = Color.White
+        )
+    }
+}
+
+
