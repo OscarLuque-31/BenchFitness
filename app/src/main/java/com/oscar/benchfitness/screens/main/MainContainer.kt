@@ -10,7 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -18,18 +17,17 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.animations.LoadingScreen
 import com.oscar.benchfitness.components.GlobalBarraNavegacion
-import com.oscar.benchfitness.navegation.Ejercicios
+import com.oscar.benchfitness.models.userData
 import com.oscar.benchfitness.navegation.Estadisticas
-import com.oscar.benchfitness.navegation.Favs
+import com.oscar.benchfitness.navegation.Goal
 import com.oscar.benchfitness.navegation.Home
 import com.oscar.benchfitness.navegation.MainExercises
 import com.oscar.benchfitness.navegation.Perfil
-import com.oscar.benchfitness.navegation.Rutinas
-import com.oscar.benchfitness.screens.exercises.EjerciciosScreen
 import com.oscar.benchfitness.screens.exercises.MainExercisesContainer
+import com.oscar.benchfitness.screens.home.GoalScreen
 import com.oscar.benchfitness.screens.home.HomeScreen
 import com.oscar.benchfitness.ui.theme.negroBench
-import com.oscar.benchfitness.viewModels.exercises.EjerciciosViewModel
+import com.oscar.benchfitness.viewModels.home.GoalViewModel
 import com.oscar.benchfitness.viewModels.home.HomeViewModel
 
 @Composable
@@ -71,6 +69,17 @@ fun MainContainer(auth: FirebaseAuth, db: FirebaseFirestore) {
             }
             composable<MainExercises> {
                 MainExercisesContainer(auth, db)
+            }
+            composable<Goal> {
+
+                val user = innerNavController.previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.get<userData>("userData")
+
+                if (user != null) {
+                    val goalViewModel = remember { GoalViewModel(user) }
+                    GoalScreen(user, goalViewModel, navController = innerNavController)
+                }
             }
             composable<Estadisticas> {
 

@@ -493,6 +493,7 @@ fun AdaptiveGifRow(
 
 @Composable
 fun InfoDialog(
+    title: String,
     showDialog: Boolean,
     onDismiss: () -> Unit,
     cuerpo: @Composable () -> Unit
@@ -517,7 +518,7 @@ fun InfoDialog(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Información",
+                        text = title,
                         fontWeight = FontWeight.Bold,
                     )
                 }
@@ -528,6 +529,24 @@ fun InfoDialog(
             containerColor = negroBench,
             titleContentColor = Color.White,
             textContentColor = Color.White
+        )
+    }
+}
+
+@Composable
+fun FlechitaAtras(navController: NavController) {
+    Row(
+        modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.flechita_atras),
+            contentDescription = "Flechita atrás",
+            modifier = Modifier
+                .size(20.dp)
+                .clickable {
+                    navController.popBackStack()
+                }
         )
     }
 }

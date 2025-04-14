@@ -25,29 +25,29 @@ class CalorieCalculator {
         edad: String
     ): String {
         return when (objetivo) {
-            "Perder peso" -> (calcularMetabolismoTotal(
+            "Perder peso" -> (calcularMetabolismoConIndiceActividad(
                 altura,
                 genero,
                 nivelActividad,
                 peso,
                 edad
-            ) - 200).toString()
+            ) - 200).toString().split(".").first()
 
-            "Mantener peso" -> (calcularMetabolismoTotal(
+            "Mantener peso" -> (calcularMetabolismoConIndiceActividad(
                 altura,
                 genero,
                 nivelActividad,
                 peso,
                 edad
-            )).toString()
+            )).toString().split(".").first()
 
-            "Masa muscular" -> (calcularMetabolismoTotal(
+            "Masa muscular" -> (calcularMetabolismoConIndiceActividad(
                 altura,
                 genero,
                 nivelActividad,
                 peso,
                 edad
-            ) + 200).toString()
+            ) + 200).toString().split(".").first()
 
             else -> "Desconocido"
         }
@@ -57,7 +57,7 @@ class CalorieCalculator {
      * Método que calcula el metabolismo total multiplicado con el índice de actividad
      * Se calcula el metabolismo con la fórmula de Harris Benedict
      */
-    private fun calcularMetabolismoTotal(
+    private fun calcularMetabolismoConIndiceActividad(
         altura: String,
         genero: String,
         nivelActividad: String,
@@ -65,14 +65,31 @@ class CalorieCalculator {
         edad: String
     ): Double {
 
-        if (genero.equals("Hombre")) {
-            return ((INDICE_PESO * peso.toDouble()) + (INDICE_ALTURA * altura.toInt()) - (INDICE_EDAD * edad.toInt()) + INDICE_GENERO_HOMBRE) * indiceNivelActividad(
+        return if (genero == "Hombre") {
+            ((INDICE_PESO * peso.toDouble()) + (INDICE_ALTURA * altura.toInt()) - (INDICE_EDAD * edad.toInt()) + INDICE_GENERO_HOMBRE) * indiceNivelActividad(
                 nivelActividad
             )
         } else {
-            return ((INDICE_PESO * peso.toDouble()) + (INDICE_ALTURA * altura.toInt()) - (INDICE_EDAD * edad.toInt()) - INDICE_GENERO_MUJER) * indiceNivelActividad(
+            ((INDICE_PESO * peso.toDouble()) + (INDICE_ALTURA * altura.toInt()) - (INDICE_EDAD * edad.toInt()) - INDICE_GENERO_MUJER) * indiceNivelActividad(
                 nivelActividad
             )
+        }
+
+    }
+
+    /**
+     * Método que calcula el metabolismo base
+     */
+    fun calcularMetabolismo(
+        altura: String,
+        genero: String,
+        peso: String,
+        edad: String
+    ): String {
+        return if (genero == "Hombre") {
+            ((INDICE_PESO * peso.toDouble()) + (INDICE_ALTURA * altura.toInt()) - (INDICE_EDAD * edad.toInt()) + INDICE_GENERO_HOMBRE).toString().split(".").first()
+        } else {
+            ((INDICE_PESO * peso.toDouble()) + (INDICE_ALTURA * altura.toInt()) - (INDICE_EDAD * edad.toInt()) - INDICE_GENERO_MUJER).toString().split(".").first()
         }
 
     }

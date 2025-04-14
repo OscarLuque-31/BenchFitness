@@ -232,6 +232,7 @@ fun FilaPrincipal(ejercicio: ExerciseData) {
                 }
             }
             InfoDialog(
+                title = "Iconos",
                 showDialog = showInfoDialog,
                 onDismiss = { showInfoDialog = false },
                 cuerpo = { InfoIconos() }

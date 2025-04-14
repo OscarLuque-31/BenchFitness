@@ -28,6 +28,9 @@ object Datos
 object Home
 
 @Serializable
+object Goal
+
+@Serializable
 object Ejercicios
 
 @Serializable

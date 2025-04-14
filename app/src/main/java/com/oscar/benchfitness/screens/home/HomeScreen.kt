@@ -2,6 +2,7 @@ package com.oscar.benchfitness.screens.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,27 +43,27 @@ import androidx.navigation.NavController
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.components.GlobalHeader
 import com.oscar.benchfitness.components.InfoDialog
+import com.oscar.benchfitness.models.userData
+import com.oscar.benchfitness.navegation.Goal
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
+import com.oscar.benchfitness.utils.interpretarObjetivo
 import com.oscar.benchfitness.viewModels.home.HomeViewModel
 
 
 @Composable
 fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
 
-    val nombre by viewModel.nombre.collectAsState()
-    val objetivo by viewModel.objetivo.collectAsState()
+    val user by viewModel.userData.collectAsState()
     val calorias by viewModel.calorias.collectAsState()
 
 
     HomeBodyContent(
         navController = navController,
-        nombre = nombre,
+        userData = user,
         viewModel = viewModel,
-        calorias = calorias,
-        objetivo = objetivo
-
+        calorias = calorias
     )
 
 }
@@ -71,8 +72,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
 fun HomeBodyContent(
     navController: NavController,
     viewModel: HomeViewModel,
-    nombre: String,
-    objetivo: String,
+    userData: userData,
     calorias: String
 ) {
     Column(
@@ -85,13 +85,15 @@ fun HomeBodyContent(
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
         ) {
-            GlobalHeader("Bienvenido $nombre")
+            GlobalHeader("Bienvenido ${userData.username}")
             Spacer(modifier = Modifier.height(15.dp))
-            ObjetivoUsuario(objetivo)
+            ObjetivoUsuario(userData.objetivo)
             Spacer(modifier = Modifier.height(15.dp))
             RecomendacionObjetivo(
-                viewModel.interpretarObjetivo(objetivo = objetivo),
-                calorias
+                interpretarObjetivo(objetivo = userData.objetivo),
+                calorias,
+                navController,
+                userData
             )
             Spacer(modifier = Modifier.height(15.dp))
             BloqueApuntarRutina()
@@ -133,7 +135,12 @@ fun ObjetivoUsuario(objetivo: String) {
 }
 
 @Composable
-fun RecomendacionObjetivo(nombreObjetivo: String, calorias: String) {
+fun RecomendacionObjetivo(
+    nombreObjetivo: String,
+    calorias: String,
+    navController: NavController,
+    userData: userData
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -175,7 +182,9 @@ fun RecomendacionObjetivo(nombreObjetivo: String, calorias: String) {
                         Icon(Icons.Filled.Info, contentDescription = "Info", tint = rojoBench)
                     }
                 }
-                InfoDialog(showInfoDialog,
+                InfoDialog(
+                    title = "Objetivo",
+                    showDialog = showInfoDialog,
                     onDismiss = { showInfoDialog = false },
                     cuerpo = { InfoObjetivo(nombreObjetivo) })
                 Spacer(modifier = Modifier.height(15.dp))
@@ -201,17 +210,21 @@ fun RecomendacionObjetivo(nombreObjetivo: String, calorias: String) {
                 .clip(
                     RoundedCornerShape(20.dp)
                 )
-                .background(negroOscuroBench),
+                .background(negroOscuroBench)
+                .clickable {
+                    navController.currentBackStackEntry?.savedStateHandle?.set("userData", userData)
+                    navController.navigate(Goal) {
+                        launchSingleTop = true
+                    }
+                },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            IconButton(onClick = {}) {
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowForwardIos,
-                    contentDescription = "arrowForward",
-                    tint = rojoBench
-                )
-            }
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowForwardIos,
+                contentDescription = "arrowForward",
+                tint = rojoBench
+            )
         }
     }
 }
@@ -315,7 +328,7 @@ fun InfoObjetivo(objetivo: String) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                "Recuerda que estas son unas cifras aproximadas para más información contacte con un profesional",
+                "Recuerda,estas son unas cifras aproximadas,para más información contacte con un profesional",
                 textAlign = TextAlign.Justify
             )
         }

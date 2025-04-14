@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.oscar.benchfitness.models.userData
 import com.oscar.benchfitness.utils.CalorieCalculator
 import com.oscar.benchfitness.utils.calcularEdad
 import kotlinx.coroutines.CoroutineScope
@@ -27,11 +28,8 @@ class HomeViewModel(
     private val db: FirebaseFirestore
 ) : ViewModel() {
 
-    private val _nombre = MutableStateFlow("")
-    val nombre = _nombre.asStateFlow()
-
-    private val _objetivo = MutableStateFlow("")
-    val objetivo = _objetivo.asStateFlow()
+    private val _userData = MutableStateFlow(userData())
+    val userData: StateFlow<userData> = _userData.asStateFlow()
 
     private val _calorias = MutableStateFlow("")
     val calorias = _calorias.asStateFlow()
@@ -61,27 +59,26 @@ class HomeViewModel(
                 nivelActividad = nivelActividad,
                 genero = genero,
                 edad = calcularEdad(birthday)
-            ).split(".").first()
+            )
+
+            val userData = userData(
+                username = nombre,
+                objetivo = objetivo,
+                peso = peso,
+                altura = altura,
+                nivelActividad = nivelActividad,
+                genero = genero,
+                birthday = birthday
+            )
 
             // Se actualiza el hilo principal
             withContext(Dispatchers.Main) {
-                _nombre.value = nombre
-                _objetivo.value = objetivo
+                _userData.value = userData
                 _calorias.value = calorias
                 _isLoading.value = false // Muestra la pantalla de carga
 
             }
         }
     }
-
-    fun interpretarObjetivo(objetivo: String): String {
-        return when (objetivo) {
-            "Perder peso" -> "Déficit"
-            "Mantener peso" -> "Mantener"
-            "Masa muscular" -> "Superávit"
-            else -> "Desconocido"
-        }
-    }
-
 }
 

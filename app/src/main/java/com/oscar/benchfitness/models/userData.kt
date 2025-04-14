@@ -1,5 +1,9 @@
 package com.oscar.benchfitness.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 // Clase que representa los datos que se recogen del usuario
 data class userData(
     val uid: String = "",
@@ -13,4 +17,4 @@ data class userData(
     val experiencia: String = "",
     val nivelActividad: String = "",
     val objetivo: String = ""
-)
+) : Parcelable
