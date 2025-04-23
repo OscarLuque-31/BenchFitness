@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -37,12 +39,14 @@ import com.oscar.benchfitness.models.ExerciseData
 import com.oscar.benchfitness.navegation.Ejercicio
 import com.oscar.benchfitness.navegation.Ejercicios
 import com.oscar.benchfitness.navegation.Favs
+import com.oscar.benchfitness.navegation.Rutina
 import com.oscar.benchfitness.navegation.Rutinas
 import com.oscar.benchfitness.repository.ExercisesRepository
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
 import com.oscar.benchfitness.viewModels.exercises.EjercicioViewModel
 import com.oscar.benchfitness.viewModels.exercises.EjerciciosViewModel
+import com.oscar.benchfitness.viewModels.exercises.RutinaViewModel
 
 @Composable
 fun MainExercisesContainer(
@@ -110,8 +114,18 @@ fun MainExercisesContainer(
             }
             composable<Rutinas> {
 
+                RutinasScreen(innerNavController)
+
+            }
+            composable<Rutina> {
+
+                val rutinaViewModel = remember { RutinaViewModel() }
+                RutinaScreen(innerNavController, rutinaViewModel)
+
             }
             composable<Favs> {
+
+                FavsScreen()
 
             }
         }
@@ -129,11 +143,13 @@ fun CabeceraOpcionesEjerciciosScreen(navController: NavController) {
             .padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.End
     ) {
+        Spacer(Modifier.height(10.dp))
         Image(
-            painter = painterResource(id = R.drawable.logo_marca),
+            painter = painterResource(id = R.drawable.logo_bench),
             contentDescription = "Logo aplicación",
-            modifier = Modifier.size(100.dp)
+            modifier = Modifier.size(30.dp)
         )
+        Spacer(Modifier.height(10.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.Bottom,

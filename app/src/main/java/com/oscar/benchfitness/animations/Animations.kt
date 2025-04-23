@@ -74,7 +74,7 @@ fun LoadingScreen() {
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            CircularProgressIndicator(color = Color.Red)
+            CircularProgressIndicator(color = rojoBench)
             Spacer(modifier = Modifier.height(16.dp))
             Text("Cargando...", color = Color.White, fontSize = 18.sp)
         }

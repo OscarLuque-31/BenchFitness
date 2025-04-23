@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -65,7 +66,6 @@ import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import com.oscar.benchfitness.R
-import com.oscar.benchfitness.models.ExerciseData
 import com.oscar.benchfitness.navegation.Estadisticas
 import com.oscar.benchfitness.navegation.Home
 import com.oscar.benchfitness.navegation.MainExercises
@@ -270,11 +270,11 @@ fun GlobalDropDownMenu(
     opciones: List<String>,
     modifier: Modifier,
     onValueChange: (String) -> Unit,
-    backgroundColor: Color
+    backgroundColor: Color,
+    colorText: Color = negroBench
 ) {
-    // Variable para controlar la visibilidad
+    // Eliminamos remember aquí, ya que se maneja con el estado del ViewModel
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(nombreSeleccion) }
 
     Column(
         modifier = modifier,
@@ -286,8 +286,8 @@ fun GlobalDropDownMenu(
             modifier = Modifier.clip(shape = RoundedCornerShape(12.dp))
         ) {
             TextField(
-                value = selectedOption,
-                onValueChange = {},
+                value = nombreSeleccion, // Ahora usamos el nombre desde el ViewModel
+                onValueChange = {}, // No necesitamos cambiar el valor del TextField directamente
                 readOnly = true,
                 trailingIcon = {
                     IconButton(onClick = {}) {
@@ -299,7 +299,7 @@ fun GlobalDropDownMenu(
                 },
                 textStyle = MaterialTheme.typography.bodyLarge.copy(
                     fontSize = 14.sp,
-                    color = negroBench,
+                    color = colorText,
                     textAlign = TextAlign.Center
                 ),
                 colors = TextFieldDefaults.colors(
@@ -320,6 +320,7 @@ fun GlobalDropDownMenu(
                     .heightIn(max = 250.dp)
                     .background(negroOscuroBench)
             ) {
+                // Aquí usamos directamente las opciones que vienen del ViewModel
                 opciones.forEach { opcion ->
                     DropdownMenuItem(
                         text = {
@@ -332,8 +333,8 @@ fun GlobalDropDownMenu(
                             )
                         },
                         onClick = {
-                            selectedOption = opcion
-                            onValueChange(opcion)
+                            // Ahora cambiamos directamente el valor en el ViewModel
+                            onValueChange(opcion) // Esto actualiza el valor en el ViewModel
                             expanded = false
                         },
                         modifier = modifier.background(negroOscuroBench)
@@ -343,6 +344,7 @@ fun GlobalDropDownMenu(
         }
     }
 }
+
 
 @Composable
 fun GlobalHeader(text: String) {
@@ -355,7 +357,7 @@ fun CabeceraBenchFitness(text: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, top = 0.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 10.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom,
@@ -363,16 +365,16 @@ fun CabeceraBenchFitness(text: String) {
         ) {
             Text(
                 text,
-                modifier = Modifier.padding(bottom = 10.dp),
                 style = MaterialTheme.typography.bodySmall, fontSize = 20.sp,
                 color = Color.White
             )
             Image(
-                painter = painterResource(id = R.drawable.logo_marca),
+                painter = painterResource(id = R.drawable.logo_bench),
                 contentDescription = "Logo aplicación",
-                modifier = Modifier.size(100.dp)
+                modifier = Modifier.size(30.dp)
             )
         }
+        Spacer(Modifier.height(10.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth()

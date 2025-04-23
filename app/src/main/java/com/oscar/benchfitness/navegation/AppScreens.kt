@@ -40,6 +40,9 @@ object Ejercicio
 object Rutinas
 
 @Serializable
+object Rutina
+
+@Serializable
 object Favs
 
 @Serializable

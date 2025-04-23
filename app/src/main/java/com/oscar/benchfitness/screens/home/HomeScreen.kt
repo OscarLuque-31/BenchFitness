@@ -14,9 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Info
@@ -83,7 +81,6 @@ fun HomeBodyContent(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .verticalScroll(rememberScrollState())
         ) {
             GlobalHeader("Bienvenido ${userData.username}")
             Spacer(modifier = Modifier.height(15.dp))
@@ -96,8 +93,9 @@ fun HomeBodyContent(
                 userData
             )
             Spacer(modifier = Modifier.height(15.dp))
-            BloqueApuntarRutina()
-            Spacer(modifier = Modifier.height(15.dp))
+            BloqueApuntarRutina(
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }
@@ -231,9 +229,9 @@ fun RecomendacionObjetivo(
 
 
 @Composable
-fun BloqueApuntarRutina() {
+fun BloqueApuntarRutina(modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
             .clip(RoundedCornerShape(20.dp))
@@ -246,7 +244,7 @@ fun BloqueApuntarRutina() {
         ) {
             // Título "Rutina de hoy"
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().weight(0.1f),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
@@ -264,7 +262,7 @@ fun BloqueApuntarRutina() {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp) // Altura fija para este contenedor
+                    .weight(0.5f)
                     .clip(RoundedCornerShape(20.dp))
                     .background(negroBench)
                     .padding(16.dp),
@@ -279,12 +277,12 @@ fun BloqueApuntarRutina() {
                 )
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
-
             // Sección de "Apunta tu entrenamiento"
             Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.4f),
+                verticalArrangement = Arrangement.SpaceAround,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -293,7 +291,6 @@ fun BloqueApuntarRutina() {
                     fontSize = 17.sp,
                     color = Color.White
                 )
-                Spacer(modifier = Modifier.height(10.dp))
                 Image(
                     painter = painterResource(id = R.drawable.anadir),
                     contentDescription = "añadir",

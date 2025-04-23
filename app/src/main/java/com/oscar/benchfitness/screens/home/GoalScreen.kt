@@ -165,7 +165,7 @@ fun ColumnaDatosYCalculos(
                     fontWeight = FontWeight.Bold
                 )
 
-                "Masa Muscular" -> Text(
+                "Masa muscular" -> Text(
                     text = "${caloriasVol.value} kcal",
                     fontSize = 33.sp,
                     color = rojoBench,

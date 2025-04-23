@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -224,7 +225,8 @@ fun LoginTextFields(
                 .width(310.dp)
                 .height(55.dp),
             backgroundColor = Color.White,
-            colorText = negroOscuroBench
+            colorText = negroOscuroBench,
+            imeAction = ImeAction.Done
         )
         Spacer(modifier = Modifier.height(25.dp))
         GlobalTextField(

@@ -1,0 +1,7 @@
+package com.oscar.benchfitness.models
+
+data class ExerciseRoutineEntry (
+    val nombre: String = "",
+    val series: Int = 0,
+    val repeticiones: Int = 0
+)

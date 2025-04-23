@@ -23,3 +23,16 @@ fun calcularEdad(birthday: String): String {
     // Retornar la edad en años
     return period.years.toString()
 }
+
+fun interpretarDia(dia: String): String {
+    return when (dia) {
+        "L" -> "Lunes"
+        "M" -> "Martes"
+        "X" -> "Miércoles"
+        "J" -> "Jueves"
+        "V" -> "Viernes"
+        "S" -> "Sábado"
+        "D" -> "Domingo"
+        else -> ""
+    }
+}
