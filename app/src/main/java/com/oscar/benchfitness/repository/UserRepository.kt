@@ -3,13 +3,15 @@ package com.oscar.benchfitness.repository
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.oscar.benchfitness.models.Routine
 import com.oscar.benchfitness.models.userData
 import kotlinx.coroutines.tasks.await
 
-class FirebaseRepository(
+class UserRepository(
     private val auth: FirebaseAuth,
     private val db: FirebaseFirestore
 ) {
+
     /**
      * Método para registrar al usuario en Firebase
      */
@@ -124,6 +126,7 @@ class FirebaseRepository(
             Log.e("EliminarUsuario", "No hay usuario autenticado")
         }
     }
+
 
 
 }

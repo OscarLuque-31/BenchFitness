@@ -7,29 +7,67 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.oscar.benchfitness.models.ExerciseData
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.oscar.benchfitness.models.DayRoutine
 import com.oscar.benchfitness.models.ExerciseRoutineEntry
+import com.oscar.benchfitness.models.Routine
 import com.oscar.benchfitness.repository.ExercisesRepository
+import com.oscar.benchfitness.repository.RoutineRepository
 import kotlinx.coroutines.launch
+import java.util.UUID
 
-class RutinaViewModel: ViewModel() {
+class CrearRutinaViewModel (auth: FirebaseAuth, db: FirebaseFirestore): ViewModel() {
 
     var nombreRutina by mutableStateOf("")
     var objetivo by mutableStateOf("Objetivo")
     var diasSeleccionados by mutableStateOf<List<String>>(listOf())
     var diaSeleccionado by mutableStateOf("")
     var ejerciciosPorDia = mutableStateMapOf<String, List<ExerciseRoutineEntry>>()
-    var ejercicioSeleccionado by mutableStateOf("")
+    var ejercicioSeleccionado by mutableStateOf<ExerciseRoutineEntry?>(null)
+    var nombreEjercicioSeleccionado by mutableStateOf("")
     var listaEjercicios by mutableStateOf<List<String>>(emptyList())
     var showDialog by mutableStateOf(false)
 
 
     // Variables para los datos del ejercicio
-    var ejercicio by mutableStateOf(ExerciseRoutineEntry())  // Cambiar a un objeto completo de ExerciseData
+    var ejercicio by mutableStateOf(ExerciseRoutineEntry())
     var series by mutableIntStateOf(0)
     var repeticiones by mutableIntStateOf(0)
 
     private val repository = ExercisesRepository()
+    private val routineRepository = RoutineRepository(auth,db)
+
+
+    private fun crearRutinaCompleta(): Routine {
+        val diasRutina = diasSeleccionados.map { dia ->
+            DayRoutine(
+                dia = dia,
+                ejercicios = ejerciciosPorDia[dia] ?: emptyList()
+            )
+        }
+
+        return Routine(
+            nombre = nombreRutina,
+            objetivo = objetivo,
+            dias = diasRutina
+        )
+    }
+
+    fun guardarRutinaEnFirebase(
+        onSuccess: (String) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val routine = crearRutinaCompleta()
+                val id = routineRepository.saveRoutine(routine)
+                onSuccess(id)
+            } catch (e: Exception) {
+                onFailure(e)
+            }
+        }
+    }
 
 
     /**

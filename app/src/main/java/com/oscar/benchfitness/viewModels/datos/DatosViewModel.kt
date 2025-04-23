@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.models.userData
-import com.oscar.benchfitness.repository.FirebaseRepository
+import com.oscar.benchfitness.repository.UserRepository
 import com.oscar.benchfitness.utils.validateFieldsDatos
 
 class DatosViewModel(
@@ -28,7 +28,7 @@ class DatosViewModel(
     var isLoading by mutableStateOf(false)
 
 
-    private val firebaseRepository = FirebaseRepository(auth, db)
+    private val userRepository = UserRepository(auth, db)
 
     /**
      * Método que guarda los datos del usuario en base de datos
@@ -52,7 +52,7 @@ class DatosViewModel(
             Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
             onFailure(errorMessage)
         } else {
-            firebaseRepository.guardarDatosUsuario(
+            userRepository.guardarDatosUsuario(
                 userData(
                     altura = altura,
                     genero = genero,

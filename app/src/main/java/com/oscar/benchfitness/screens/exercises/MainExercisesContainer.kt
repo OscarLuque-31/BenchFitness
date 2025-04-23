@@ -44,9 +44,9 @@ import com.oscar.benchfitness.navegation.Rutinas
 import com.oscar.benchfitness.repository.ExercisesRepository
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
+import com.oscar.benchfitness.viewModels.exercises.CrearRutinaViewModel
 import com.oscar.benchfitness.viewModels.exercises.EjercicioViewModel
 import com.oscar.benchfitness.viewModels.exercises.EjerciciosViewModel
-import com.oscar.benchfitness.viewModels.exercises.RutinaViewModel
 
 @Composable
 fun MainExercisesContainer(
@@ -119,8 +119,8 @@ fun MainExercisesContainer(
             }
             composable<Rutina> {
 
-                val rutinaViewModel = remember { RutinaViewModel() }
-                RutinaScreen(innerNavController, rutinaViewModel)
+                val crearRutinaViewModel = remember { CrearRutinaViewModel(auth, db) }
+                CrearRutinaScreen(innerNavController, crearRutinaViewModel)
 
             }
             composable<Favs> {
@@ -140,7 +140,7 @@ fun CabeceraOpcionesEjerciciosScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp),
+            .padding(start = 20.dp, end = 20.dp),
         horizontalAlignment = Alignment.End
     ) {
         Spacer(Modifier.height(10.dp))

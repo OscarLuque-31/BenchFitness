@@ -19,9 +19,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.navegation.Datos
 import com.oscar.benchfitness.navegation.Inicio
-import com.oscar.benchfitness.navegation.Login
 import com.oscar.benchfitness.navegation.Main
-import com.oscar.benchfitness.repository.FirebaseRepository
+import com.oscar.benchfitness.repository.UserRepository
 import com.oscar.benchfitness.utils.validateLoginFields
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -36,7 +35,7 @@ class LoginViewModel(
     var password by mutableStateOf("")
     var loading by mutableStateOf(false)
 
-    private val firebaseRepository = FirebaseRepository(auth, db)
+    private val userRepository = UserRepository(auth, db)
 
     /**
      * Método que loguea al usuario con email y contraseña
@@ -56,7 +55,7 @@ class LoginViewModel(
         loading = true
         viewModelScope.launch {
             // Trata de loguear al usuario
-            val result = firebaseRepository.loginUser(email, password)
+            val result = userRepository.loginUser(email, password)
 
             result.fold(
                 onSuccess = {

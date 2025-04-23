@@ -49,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -88,7 +89,9 @@ fun GlobalTextField(
     backgroundColor: Color,
     colorText: Color,
     onDone: () -> Unit = {},
-    imeAction: ImeAction = ImeAction.Done
+    imeAction: ImeAction = ImeAction.Done,
+    onFocusChange: (FocusState) -> Unit = {},
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -129,9 +132,8 @@ fun GlobalTextField(
                 keyboardController?.hide()
             }
         ),
-        keyboardOptions = KeyboardOptions.Default.copy(
-            imeAction = imeAction
-        ),
+        keyboardOptions = keyboardOptions,
+
     )
 }
 
