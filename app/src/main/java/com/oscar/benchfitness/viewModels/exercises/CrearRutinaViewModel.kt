@@ -28,16 +28,41 @@ class CrearRutinaViewModel (auth: FirebaseAuth, db: FirebaseFirestore): ViewMode
     var nombreEjercicioSeleccionado by mutableStateOf("")
     var listaEjercicios by mutableStateOf<List<String>>(emptyList())
     var showDialog by mutableStateOf(false)
+    var recomendaciones by mutableStateOf("")
+    var errorRutina by mutableStateOf<String?>(null)
+
 
 
     // Variables para los datos del ejercicio
     var ejercicio by mutableStateOf(ExerciseRoutineEntry())
-    var series by mutableIntStateOf(0)
-    var repeticiones by mutableIntStateOf(0)
+
+    var seriesText by mutableStateOf("")
+    var repeticionesText by mutableStateOf("")
 
     private val repository = ExercisesRepository()
     private val routineRepository = RoutineRepository(auth,db)
 
+
+    /**
+     * Función para obtener las recomendaciones según el objetivo
+     */
+    fun obtenerRecomendacionesPorObjetivo() {
+        recomendaciones = when (objetivo) {
+            "Hipertrofia" -> {
+                "Para hipertrofia:\n" +
+                        "- Series: 3-5 series por ejercicio\n" +
+                        "- Repeticiones: 6-12 repeticiones\n" +
+                        "- Ejercicios compuestos y de aislamiento"
+            }
+            "Fuerza" -> {
+                "Para fuerza:\n" +
+                        "- Series: 4-6 series por ejercicio\n" +
+                        "- Repeticiones: 1-5 repeticiones\n" +
+                        "- Ejercicios compuestos (sentadillas, press de banca, etc.)"
+            }
+            else -> "Selecciona un objetivo para recibir recomendaciones."
+        }
+    }
 
     private fun crearRutinaCompleta(): Routine {
         val diasRutina = diasSeleccionados.map { dia ->
@@ -101,8 +126,80 @@ class CrearRutinaViewModel (auth: FirebaseAuth, db: FirebaseFirestore): ViewMode
         }
     }
 
-    // Resetea los valores del formulario de ejercicios
+
+    // Método para validar los ejercicios según el objetivo
+    fun validarEjercicio(): String? {
+        if (nombreEjercicioSeleccionado.isBlank()) {
+            return "Selecciona un ejercicio."
+        }
+
+        val seriesValid = seriesText.toIntOrNull()
+        val repeticionesValid = repeticionesText.toIntOrNull()
+
+        if (seriesValid == null || repeticionesValid == null) {
+            return "Series y repeticiones deben ser números válidos."
+        }
+
+        if (seriesValid <= 0 || repeticionesValid <= 0) {
+            return "Series y repeticiones deben ser mayores que cero."
+        }
+
+        // Validación para hipertrofia
+        if (objetivo == "Hipertrofia") {
+            if (seriesValid < 3 || seriesValid > 5) {
+                return "Para hipertrofia, se recomienda entre 3 y 5 series."
+            }
+            if (repeticionesValid < 6 || repeticionesValid > 12) {
+                return "Para hipertrofia, se recomienda entre 6 y 12 repeticiones."
+            }
+        }
+
+        // Validación para fuerza
+        if (objetivo == "Fuerza") {
+            if (seriesValid < 4 || seriesValid > 6) {
+                return "Para fuerza, se recomienda entre 4 y 6 series."
+            }
+            if (repeticionesValid < 1 || repeticionesValid > 5) {
+                return "Para fuerza, se recomienda entre 1 y 5 repeticiones."
+            }
+        }
+
+        return null
+    }
+
+
+    fun seleccionarEjercicio(nombre: String) {
+        nombreEjercicioSeleccionado = nombre
+    }
+
+    fun deseleccionarEjercicio() {
+        nombreEjercicioSeleccionado = ""
+    }
+
+    fun crearEntryEjercicio(): ExerciseRoutineEntry {
+        return ExerciseRoutineEntry(
+            nombre = nombreEjercicioSeleccionado,
+            series = seriesText.toInt(),
+            repeticiones = repeticionesText.toInt()
+        )
+    }
+
     fun resetFormularioEjercicio() {
-        ejercicio = ExerciseRoutineEntry()
+        nombreEjercicioSeleccionado = ""
+        seriesText = ""
+        repeticionesText = ""
+    }
+
+    fun validarRutina(): Boolean {
+        errorRutina = when {
+            nombreRutina.isBlank() -> "El nombre de la rutina no puede estar vacío."
+            objetivo == "Objetivo" -> "Debes seleccionar un objetivo válido."
+            diasSeleccionados.isEmpty() -> "Debes seleccionar al menos un día."
+            diasSeleccionados.any { ejerciciosPorDia[it].isNullOrEmpty() } ->
+                "Todos los días seleccionados deben tener al menos un ejercicio."
+            else -> null
+        }
+
+        return errorRutina == null
     }
 }

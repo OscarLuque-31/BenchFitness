@@ -6,11 +6,12 @@ import com.oscar.benchfitness.models.Routine
 import kotlinx.coroutines.tasks.await
 
 
-class RoutineRepository (auth: FirebaseAuth, db: FirebaseFirestore) {
+class RoutineRepository(auth: FirebaseAuth, db: FirebaseFirestore) {
 
     private val routinesCollection = db.collection("users")
-            .document(auth.currentUser!!.uid)  // !! porque confiamos en la autenticación
-            .collection("routines")
+        .document(auth.currentUser!!.uid)  // !! porque confiamos en la autenticación
+        .collection("routines")
+
     /**
      * Método para guardar los datos de la rutina creada por el usuario
      */
@@ -19,6 +20,24 @@ class RoutineRepository (auth: FirebaseAuth, db: FirebaseFirestore) {
             routinesCollection.add(routine.toMap()).await().id
         } catch (e: Exception) {
             throw e
+        }
+    }
+
+
+    suspend fun getAllRoutines(): List<Routine> {
+        return try {
+            val rutinas = routinesCollection.get().await()
+            rutinas.documents.mapNotNull { doc ->
+                try {
+                    doc.toObject(Routine::class.java)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    null
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
         }
     }
 }

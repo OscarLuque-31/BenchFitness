@@ -43,6 +43,9 @@ object Rutinas
 object Rutina
 
 @Serializable
+object CrearRutina
+
+@Serializable
 object Favs
 
 @Serializable

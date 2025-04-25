@@ -26,15 +26,19 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,7 +52,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.components.FlechitaAtras
@@ -56,6 +59,7 @@ import com.oscar.benchfitness.components.GlobalButton
 import com.oscar.benchfitness.components.GlobalDropDownMenu
 import com.oscar.benchfitness.components.GlobalTextField
 import com.oscar.benchfitness.models.ExerciseRoutineEntry
+import com.oscar.benchfitness.navegation.Rutinas
 import com.oscar.benchfitness.ui.theme.azulIntermedio
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
@@ -123,9 +127,8 @@ fun ColumnaCreacionRutina(navController: NavController, viewModel: CrearRutinaVi
         Spacer(Modifier.height(20.dp))
         FilaDropdownDias(viewModel)
         Spacer(Modifier.height(20.dp))
-        BoxAnadirEjerciciosPorDia(viewModel)
+        BoxAnadirEjerciciosPorDia(viewModel, navController)
         Spacer(Modifier.height(20.dp))
-        BotonCrearRutina(viewModel)
 
         if (viewModel.showDialog) {
             DialogAddExercise(
@@ -141,7 +144,7 @@ fun ColumnaCreacionRutina(navController: NavController, viewModel: CrearRutinaVi
                     )
                     viewModel.showDialog = false
                 },
-                viewModel = viewModel // Pasar el viewModel al diálogo
+                viewModel = viewModel
             )
         }
     }
@@ -165,7 +168,10 @@ fun FilaObjetivoRutina(viewModel: CrearRutinaViewModel) {
         Spacer(Modifier.width(20.dp))
         GlobalDropDownMenu(
             nombreSeleccion = viewModel.objetivo,
-            onValueChange = { viewModel.objetivo = it },
+            onValueChange = {
+                viewModel.objetivo = it
+                viewModel.obtenerRecomendacionesPorObjetivo()
+            },
             opciones = objetivos,
             modifier = Modifier
                 .width(150.dp)
@@ -174,6 +180,7 @@ fun FilaObjetivoRutina(viewModel: CrearRutinaViewModel) {
             colorText = rojoBench
         )
     }
+    MostrarRecomendaciones(viewModel)
 }
 
 @Composable
@@ -287,7 +294,7 @@ fun FilaDropdownDias(viewModel: CrearRutinaViewModel) {
 }
 
 @Composable
-fun BoxAnadirEjerciciosPorDia(viewModel: CrearRutinaViewModel) {
+fun BoxAnadirEjerciciosPorDia(viewModel: CrearRutinaViewModel, navController: NavController) {
     if (viewModel.diasSeleccionados.isNotEmpty()) {
         Column(
             modifier = Modifier
@@ -341,6 +348,10 @@ fun BoxAnadirEjerciciosPorDia(viewModel: CrearRutinaViewModel) {
                 }
             }
         }
+        Spacer(Modifier.height(20.dp))
+        Row(modifier = Modifier.fillMaxWidth()) {
+            BotonCrearRutina(viewModel, navController = navController)
+        }
     }
 }
 
@@ -353,40 +364,7 @@ fun ListaEjerciciosPorDia(viewModel: CrearRutinaViewModel, dia: String) {
             .fillMaxWidth()
             .padding(10.dp)
     ) {
-        // Encabezado
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-                .background(negroOscuroBench)
-                .padding(vertical = 6.dp, horizontal = 5.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(modifier = Modifier.weight(0.5f), contentAlignment = Alignment.CenterStart) {
-                Text(
-                    "Nombre",
-                    color = Color.White,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            Box(modifier = Modifier.weight(0.25f), contentAlignment = Alignment.Center) {
-                Text(
-                    "Series",
-                    color = Color.White,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            Box(modifier = Modifier.weight(0.25f), contentAlignment = Alignment.Center) {
-                Text(
-                    "Reps",
-                    color = Color.White,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
+        EncabezadoNombreSerieReps()
 
         Spacer(Modifier.height(10.dp))
 
@@ -413,39 +391,11 @@ fun ListaEjerciciosPorDia(viewModel: CrearRutinaViewModel, dia: String) {
                         .padding(vertical = 6.dp, horizontal = 5.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier.weight(0.5f),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        Text(
-                            ejercicio.nombre,
-                            color = rojoBench,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Normal,
-                            maxLines = 3,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    Box(
-                        modifier = Modifier.weight(0.25f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            ejercicio.series.toString(),
-                            color = verdePrincipiante,
-                            fontSize = 15.sp
-                        )
-                    }
-                    Box(
-                        modifier = Modifier.weight(0.25f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            ejercicio.repeticiones.toString(),
-                            color = azulIntermedio,
-                            fontSize = 15.sp
-                        )
-                    }
+                    BoxExerciseEntry(
+                        nombre = ejercicio.nombre,
+                        series = ejercicio.series.toString(),
+                        repeticiones = ejercicio.repeticiones.toString()
+                    )
                 }
 
                 Spacer(Modifier.height(10.dp))
@@ -568,7 +518,7 @@ fun ExerciseListOrSelected(
                     modifier = Modifier.weight(1f)
                 )
                 IconButton(onClick = {
-                    viewModel.nombreEjercicioSeleccionado = ""
+                    viewModel.deseleccionarEjercicio()
                 }) {
                     Icon(
                         imageVector = Icons.Default.Close,
@@ -596,7 +546,7 @@ fun ExerciseListOrSelected(
                                     else negroOscuroBench
                                 )
                                 .clickable {
-                                    viewModel.nombreEjercicioSeleccionado = ejercicio
+                                    viewModel.seleccionarEjercicio(ejercicio)
                                 }
                         ) {
                             Text(
@@ -639,17 +589,11 @@ fun SeriesRepsFields(viewModel: CrearRutinaViewModel) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(Modifier.weight(0.4f)) {
-            Text(
-                text = "Series",
-                color = rojoBench,
-                fontSize = 14.sp,
-                modifier = Modifier.padding(bottom = 4.dp)
-            )
             GlobalTextField(
                 nombre = "Series",
-                text = viewModel.series.toString(),
+                text = viewModel.seriesText,
                 colorText = rojoBench,
-                onValueChange = { viewModel.series = it.toIntOrNull() ?: 0 },
+                onValueChange = { viewModel.seriesText = it },
                 modifier = Modifier.fillMaxWidth(),
                 backgroundColor = negroBench,
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -659,17 +603,11 @@ fun SeriesRepsFields(viewModel: CrearRutinaViewModel) {
         }
         Spacer(Modifier.width(20.dp))
         Column(Modifier.weight(0.4f)) {
-            Text(
-                text = "Repeticiones",
-                color = rojoBench,
-                fontSize = 14.sp,
-                modifier = Modifier.padding(bottom = 4.dp)
-            )
             GlobalTextField(
                 nombre = "Repeticiones",
-                text = viewModel.repeticiones.toString(),
+                text = viewModel.repeticionesText,
                 colorText = rojoBench,
-                onValueChange = { viewModel.repeticiones = it.toIntOrNull() ?: 0 },
+                onValueChange = { viewModel.repeticionesText = it },
                 modifier = Modifier.fillMaxWidth(),
                 backgroundColor = negroBench,
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -723,32 +661,14 @@ fun ActionButtons(
                 .weight(1f)
                 .padding(start = 8.dp),
             onClick = {
-                val seriesValid = viewModel.series
-                val repeticionesValid = viewModel.repeticiones
+                val error = viewModel.validarEjercicio()
 
-                when {
-                    viewModel.nombreEjercicioSeleccionado.isBlank() -> {
-                        errorMessage.value = "Selecciona un ejercicio."
-                    }
-
-                    seriesValid <= 0 -> {
-                        errorMessage.value = "Introduce un número válido de series."
-                    }
-
-                    repeticionesValid <= 0 -> {
-                        errorMessage.value = "Introduce un número válido de repeticiones."
-                    }
-
-                    else -> {
-                        errorMessage.value = ""
-                        val ejercicio = ExerciseRoutineEntry(
-                            nombre = viewModel.nombreEjercicioSeleccionado,
-                            series = seriesValid,
-                            repeticiones = repeticionesValid
-                        )
-                        onAdd(ejercicio)
-                        viewModel.resetFormularioEjercicio()
-                    }
+                if (error != null) {
+                    errorMessage.value = error
+                } else {
+                    errorMessage.value = ""
+                    onAdd(viewModel.crearEntryEjercicio())
+                    viewModel.resetFormularioEjercicio()
                 }
             }
         )
@@ -756,22 +676,196 @@ fun ActionButtons(
 }
 
 @Composable
-fun BotonCrearRutina(viewModel: CrearRutinaViewModel) {
+fun BotonCrearRutina(viewModel: CrearRutinaViewModel, navController: NavController) {
+    var mostrarDialogoError by remember { mutableStateOf(false) }
+    var mostrarDialogoExito by remember { mutableStateOf(false) }
+
+    // Dialogo de error
+    if (mostrarDialogoError && viewModel.errorRutina != null) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogoError = false },
+            confirmButton = {
+                TextButton(onClick = { mostrarDialogoError = false }) {
+                    Text(
+                        "Aceptar", color = rojoBench, fontWeight = FontWeight.Normal,
+                        fontSize = 16.sp,
+                    )
+                }
+            },
+            title = {
+                Text(
+                    text = "Error al crear rutina",
+                    color = rojoBench, fontWeight = FontWeight.Bold,
+                    fontSize = 28.sp,
+                )
+            },
+            text = {
+                Text(
+                    text = viewModel.errorRutina ?: "",
+                    color = Color.White, fontWeight = FontWeight.Normal,
+                    fontSize = 20.sp,
+                )
+            },
+            containerColor = negroBench,
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+
+    // Dialogo de éxito
+    if (mostrarDialogoExito) {
+        AlertDialog(
+            onDismissRequest = {
+                mostrarDialogoExito = false
+                navController.navigate(Rutinas) // Navegar al finalizar
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    mostrarDialogoExito = false
+                    navController.navigate(Rutinas)
+                }) {
+                    Text(
+                        "Ver mis rutinas", color = rojoBench, fontWeight = FontWeight.Normal,
+                        fontSize = 16.sp,
+                    )
+                }
+            },
+            title = {
+                Text(
+                    "¡Rutina creada!", color = rojoBench, fontWeight = FontWeight.Bold,
+                    fontSize = 28.sp,
+                )
+            },
+            text = {
+                Text(
+                    "Tu rutina se ha guardado correctamente.",
+                    color = Color.White,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 20.sp,
+                )
+            },
+            containerColor = negroBench,
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+
+    // Botón principal
     GlobalButton(
         colorText = rojoBench,
-        text = "Crear rutina", modifier = Modifier,
-        backgroundColor = negroOscuroBench
+        text = "Crear rutina",
+        modifier = Modifier.fillMaxWidth(),
+        backgroundColor = negroBench
     ) {
-        viewModel.guardarRutinaEnFirebase(
-            onSuccess = { id ->
-                // Aquí manejas el éxito (id es el String con el ID de la rutina)
-                println("Rutina guardada con ID: $id")
-                // Puedes navegar a otra pantalla o mostrar un mensaje
-            },
-            onFailure = { exception ->
-                // Aquí manejas el error
-                println("Error al guardar: ${exception.message}")
-                // Puedes mostrar un mensaje de error al usuario
-            }
-        )    }
+        val esValido = viewModel.validarRutina()
+
+        if (esValido) {
+            viewModel.guardarRutinaEnFirebase(
+                onSuccess = { mostrarDialogoExito = true },
+                onFailure = {
+                    viewModel.errorRutina = "Error: ${it.message}"
+                    mostrarDialogoError = true
+                }
+            )
+        } else {
+            mostrarDialogoError = true
+        }
+    }
+}
+
+@Composable
+fun MostrarRecomendaciones(viewModel: CrearRutinaViewModel) {
+    Column(modifier = Modifier.padding(vertical = 10.dp)) {
+        if (viewModel.objetivo == "Hipertrofia" || viewModel.objetivo == "Fuerza") {
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = "Recomendaciones para tu objetivo:",
+                color = rojoBench,
+                fontSize = 16.sp
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = viewModel.recomendaciones,
+                color = Color.White,
+                fontSize = 14.sp
+            )
+        }
+    }
+}
+
+@Composable
+fun EncabezadoNombreSerieReps() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(negroOscuroBench)
+            .padding(vertical = 6.dp, horizontal = 5.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(modifier = Modifier.weight(0.5f), contentAlignment = Alignment.CenterStart) {
+            Text(
+                "Nombre",
+                color = Color.White,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        Box(modifier = Modifier.weight(0.25f), contentAlignment = Alignment.Center) {
+            Text(
+                "Series",
+                color = Color.White,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        Box(modifier = Modifier.weight(0.25f), contentAlignment = Alignment.Center) {
+            Text(
+                "Reps",
+                color = Color.White,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+
+@Composable
+fun BoxExerciseEntry(nombre: String, series: String, repeticiones: String) {
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier.weight(0.5f),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Text(
+                nombre,
+                color = rojoBench,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Normal,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+
+        Box(
+            modifier = Modifier.weight(0.25f),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                series,
+                color = verdePrincipiante,
+                fontSize = 15.sp
+            )
+        }
+
+        Box(
+            modifier = Modifier.weight(0.25f),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                repeticiones,
+                color = azulIntermedio,
+                fontSize = 15.sp
+            )
+        }
+    }
 }

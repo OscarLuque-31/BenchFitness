@@ -27,7 +27,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -36,6 +35,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.models.ExerciseData
+import com.oscar.benchfitness.models.Routine
+import com.oscar.benchfitness.navegation.CrearRutina
 import com.oscar.benchfitness.navegation.Ejercicio
 import com.oscar.benchfitness.navegation.Ejercicios
 import com.oscar.benchfitness.navegation.Favs
@@ -47,6 +48,8 @@ import com.oscar.benchfitness.ui.theme.rojoBench
 import com.oscar.benchfitness.viewModels.exercises.CrearRutinaViewModel
 import com.oscar.benchfitness.viewModels.exercises.EjercicioViewModel
 import com.oscar.benchfitness.viewModels.exercises.EjerciciosViewModel
+import com.oscar.benchfitness.viewModels.exercises.RutinaViewModel
+import com.oscar.benchfitness.viewModels.exercises.RutinasViewModel
 
 @Composable
 fun MainExercisesContainer(
@@ -56,9 +59,7 @@ fun MainExercisesContainer(
     val innerNavController = rememberNavController()
 
     Scaffold(containerColor = negroBench, topBar = {
-
         CabeceraOpcionesEjerciciosScreen(innerNavController)
-
     }) { paddingValues ->
         NavHost(
             navController = innerNavController,
@@ -95,9 +96,10 @@ fun MainExercisesContainer(
                 LaunchedEffect(ejercicio) {
                     ejercicio?.let {
 
-                        println(it.url_image.replace("+"," "))
+                        println(it.url_image.replace("+", " "))
 
-                        urlGIF = exercisesRepository.obtenerURLFirmadaGif(it.url_image.replace("+"," "))
+                        urlGIF =
+                            exercisesRepository.obtenerURLFirmadaGif(it.url_image.replace("+", " "))
 
                         println(urlGIF)
                     }
@@ -113,14 +115,33 @@ fun MainExercisesContainer(
                 }
             }
             composable<Rutinas> {
+                val rutinaViewModel = remember { RutinasViewModel(auth, db) }
 
-                RutinasScreen(innerNavController)
+
+
+                RutinasScreen(innerNavController, rutinaViewModel)
+
+
+            }
+            composable<CrearRutina> {
+
+                val crearRutinaViewModel = remember { CrearRutinaViewModel(auth, db) }
+                CrearRutinaScreen(innerNavController, crearRutinaViewModel)
 
             }
             composable<Rutina> {
 
-                val crearRutinaViewModel = remember { CrearRutinaViewModel(auth, db) }
-                CrearRutinaScreen(innerNavController, crearRutinaViewModel)
+                val rutinaViewModel = remember { RutinaViewModel() }
+
+                val rutina = innerNavController.previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.get<Routine>("rutina")
+
+
+                if (rutina != null) {
+                    RutinaScreen(innerNavController, rutinaViewModel, rutina)
+                }
+
 
             }
             composable<Favs> {
@@ -191,7 +212,6 @@ fun CabeceraOpcionesEjerciciosScreen(navController: NavController) {
         )
     }
 }
-
 
 @Composable
 fun ExerciseHeaderOption(text: String, selected: Boolean, onClick: () -> Unit) {

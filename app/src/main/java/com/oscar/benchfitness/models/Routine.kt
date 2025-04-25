@@ -1,15 +1,18 @@
 package com.oscar.benchfitness.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-data class Routine (
-    val nombre: String,
-    val objetivo: String,
-    val dias: List<DayRoutine>,
+@Parcelize
+data class Routine(
+    val nombre: String = "",
+    val objetivo: String = "",
+    val dias: List<DayRoutine> = emptyList(),
     val fechaCreacion: String = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-) {
+) : Parcelable {
     fun toMap(): Map<String, Any> {
         return mapOf(
             "nombre" to nombre,
