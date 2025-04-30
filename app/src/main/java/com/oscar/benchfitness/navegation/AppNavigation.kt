@@ -21,6 +21,7 @@ import com.oscar.benchfitness.screens.main.MainContainer
 import com.oscar.benchfitness.viewModels.auth.LoginViewModel
 import com.oscar.benchfitness.viewModels.auth.RegistroViewModel
 import com.oscar.benchfitness.viewModels.datos.DatosViewModel
+import com.oscar.benchfitness.viewModels.statistics.StatisticsScreen
 
 @Composable
 fun AppNavegation(auth: FirebaseAuth, db: FirebaseFirestore) {
@@ -64,24 +65,24 @@ fun AppNavegation(auth: FirebaseAuth, db: FirebaseFirestore) {
 
     // Decide la pantalla inicial según si los datos están completos
     val startDestination = when {
-        currentUser == null -> Inicio
-        datosCompletados -> Main
-        else -> Datos
+        currentUser == null -> Inicio.route
+        datosCompletados -> Main.route
+        else -> Datos.route
     }
 
     // NavHost principal
     NavHost(navController = navController, startDestination = startDestination) {
-        composable<Logo> { LogoScreen(navController) }
-        composable<Inicio> { InicioScreen(navController) }
-        composable<Login> { LoginScreen(navController, viewModel = LoginViewModel(auth, db)) }
-        composable<Registro> {
+        composable(Logo.route) { LogoScreen(navController) }
+        composable(Inicio.route) { InicioScreen(navController) }
+        composable(Login.route) { LoginScreen(navController, viewModel = LoginViewModel(auth, db)) }
+        composable(Registro.route) {
             RegistroScreen(
                 navController,
                 viewModel = RegistroViewModel(auth, db)
             )
         }
-        composable<Datos> { DatosScreen(navController, viewModel = DatosViewModel(auth, db)) }
-        composable<Main> {
+        composable(Datos.route) { DatosScreen(navController, viewModel = DatosViewModel(auth, db)) }
+        composable(Main.route) {
             MainContainer(auth, db)
         }
     }

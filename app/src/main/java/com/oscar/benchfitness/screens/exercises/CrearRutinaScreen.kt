@@ -255,7 +255,7 @@ fun BotonDia(dia: String, viewModel: CrearRutinaViewModel) {
 @Composable
 fun FilaDropdownDias(viewModel: CrearRutinaViewModel) {
     // Verifica si hay días seleccionados
-    if (viewModel.diasSeleccionados.isNotEmpty()) {
+    if (viewModel.diasSeleccionados.isNotEmpty() && viewModel.objetivo != "Objetivo") {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -285,7 +285,7 @@ fun FilaDropdownDias(viewModel: CrearRutinaViewModel) {
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Selecciona al menos un día",
+                text = "Selecciona al menos un día y un objetivo",
                 color = rojoBench,
                 fontSize = 16.sp
             )
@@ -295,7 +295,7 @@ fun FilaDropdownDias(viewModel: CrearRutinaViewModel) {
 
 @Composable
 fun BoxAnadirEjerciciosPorDia(viewModel: CrearRutinaViewModel, navController: NavController) {
-    if (viewModel.diasSeleccionados.isNotEmpty()) {
+    if (viewModel.diasSeleccionados.isNotEmpty() && viewModel.objetivo != "Objetivo") {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -364,7 +364,7 @@ fun ListaEjerciciosPorDia(viewModel: CrearRutinaViewModel, dia: String) {
             .fillMaxWidth()
             .padding(10.dp)
     ) {
-        EncabezadoNombreSerieReps()
+        EncabezadoNombreSerieReps(negroOscuroBench)
 
         Spacer(Modifier.height(10.dp))
 
@@ -387,14 +387,15 @@ fun ListaEjerciciosPorDia(viewModel: CrearRutinaViewModel, dia: String) {
                             viewModel.ejercicioSeleccionado =
                                 if (viewModel.ejercicioSeleccionado == ejercicio) null
                                 else ejercicio
-                        }
-                        .padding(vertical = 6.dp, horizontal = 5.dp),
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     BoxExerciseEntry(
                         nombre = ejercicio.nombre,
                         series = ejercicio.series.toString(),
-                        repeticiones = ejercicio.repeticiones.toString()
+                        repeticiones = ejercicio.repeticiones.toString(),
+                        negroOscuroBench,
+                        modifier = Modifier
                     )
                 }
 
@@ -464,6 +465,7 @@ fun DialogAddExercise(
 
                 SeriesRepsFields(viewModel)
 
+                MostrarRecomendacionActual(viewModel)
                 ErrorMessage(errorMessage)
 
                 ActionButtons(
@@ -661,7 +663,7 @@ fun ActionButtons(
                 .weight(1f)
                 .padding(start = 8.dp),
             onClick = {
-                val error = viewModel.validarEjercicio()
+                val error = viewModel.validarEjercicio(viewModel.diaSeleccionado)
 
                 if (error != null) {
                     errorMessage.value = error
@@ -716,12 +718,12 @@ fun BotonCrearRutina(viewModel: CrearRutinaViewModel, navController: NavControll
         AlertDialog(
             onDismissRequest = {
                 mostrarDialogoExito = false
-                navController.navigate(Rutinas) // Navegar al finalizar
+                navController.navigate(Rutinas.route) // Navegar al finalizar
             },
             confirmButton = {
                 TextButton(onClick = {
                     mostrarDialogoExito = false
-                    navController.navigate(Rutinas)
+                    navController.navigate(Rutinas.route)
                 }) {
                     Text(
                         "Ver mis rutinas", color = rojoBench, fontWeight = FontWeight.Normal,
@@ -792,12 +794,12 @@ fun MostrarRecomendaciones(viewModel: CrearRutinaViewModel) {
 }
 
 @Composable
-fun EncabezadoNombreSerieReps() {
+fun EncabezadoNombreSerieReps(backgroundColor: Color) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(negroOscuroBench)
+            .background(backgroundColor)
             .padding(vertical = 6.dp, horizontal = 5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -828,43 +830,69 @@ fun EncabezadoNombreSerieReps() {
     }
 }
 
+@Composable
+fun MostrarRecomendacionActual(viewModel: CrearRutinaViewModel) {
+    val recomendacion = viewModel.obtenerRecomendacionActual()
+
+    if (!recomendacion.isNullOrEmpty()) {
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            text = recomendacion,
+            color = Color.White,
+            fontSize = 14.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(negroBench, RoundedCornerShape(8.dp))
+                .padding(12.dp)
+        )
+    }
+}
 
 @Composable
-fun BoxExerciseEntry(nombre: String, series: String, repeticiones: String) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Box(
-            modifier = Modifier.weight(0.5f),
-            contentAlignment = Alignment.CenterStart
-        ) {
+fun BoxExerciseEntry(
+    nombre: String,
+    series: String,
+    repeticiones: String,
+    backgroundColor: Color = negroBench,
+    modifier: Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(backgroundColor),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(modifier = Modifier.padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically) {
+
+            // Nombre del ejercicio (50% ancho)
             Text(
-                nombre,
+                modifier = Modifier.weight(0.5f),
+                text = nombre,
                 color = rojoBench,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Normal,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis
             )
-        }
 
-        Box(
-            modifier = Modifier.weight(0.25f),
-            contentAlignment = Alignment.Center
-        ) {
+            // Series (25% ancho)
             Text(
-                series,
+                modifier = Modifier.weight(0.25f),
+                text = series,
                 color = verdePrincipiante,
-                fontSize = 15.sp
+                fontSize = 15.sp,
+                textAlign = TextAlign.Center // Alineación centralizada
             )
-        }
 
-        Box(
-            modifier = Modifier.weight(0.25f),
-            contentAlignment = Alignment.Center
-        ) {
+            // Repeticiones (25% ancho)
             Text(
-                repeticiones,
+                modifier = Modifier.weight(0.25f),
+                text = repeticiones,
                 color = azulIntermedio,
-                fontSize = 15.sp
+                fontSize = 15.sp,
+                textAlign = TextAlign.Center
             )
         }
     }

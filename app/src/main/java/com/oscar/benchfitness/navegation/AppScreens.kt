@@ -1,55 +1,93 @@
-
 package com.oscar.benchfitness.navegation
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-object Main
+object Main {
+    const val route = "Main"
+}
 
 @Serializable
-object MainExercises
+object MainExercises {
+    const val route = "MainExercises"
+}
 
 @Serializable
-object Logo
+object MainHome {
+    const val route = "MainHome"
+}
 
 @Serializable
-object Inicio
+object Logo {
+    const val route = "Logo"
+}
 
 @Serializable
-object Login
+object Inicio {
+    const val route = "Inicio"
+}
 
 @Serializable
-object Registro
+object Login {
+    const val route = "Login"
+}
 
 @Serializable
-object Datos
+object Registro {
+    const val route = "Registro"
+}
 
 @Serializable
-object Home
+object Datos {
+    const val route = "Datos"
+}
 
 @Serializable
-object Goal
+object Home {
+    const val route = "Home"
+}
 
 @Serializable
-object Ejercicios
+object Goal {
+    const val route = "Goal"
+}
 
 @Serializable
-object Ejercicio
+object Ejercicios {
+    const val route = "Ejercicios"
+}
 
 @Serializable
-object Rutinas
+object Ejercicio {
+    const val route = "Ejercicio"
+}
 
 @Serializable
-object Rutina
+object Rutinas {
+    const val route = "Rutinas"
+}
 
 @Serializable
-object CrearRutina
+object Rutina {
+    const val route = "Rutina"
+}
 
 @Serializable
-object Favs
+object CrearRutina {
+    const val route = "CrearRutina"
+}
 
 @Serializable
-object Estadisticas
+object Favs {
+    const val route = "Favs"
+}
 
 @Serializable
-object Perfil
+object Estadisticas {
+    const val route = "Estadisticas"
+}
+
+@Serializable
+object Perfil {
+    const val route = "Perfil"
+}

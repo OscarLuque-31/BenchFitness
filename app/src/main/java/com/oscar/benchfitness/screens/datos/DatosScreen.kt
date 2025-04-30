@@ -49,8 +49,8 @@ fun DatosScreen(navController: NavController, viewModel: DatosViewModel) {
             viewModel.guardarDatosUsuario(
                 context,
                 onSuccess = {
-                    navController.navigate(Main) {
-                        popUpTo<Inicio> { inclusive = true }
+                    navController.navigate(Main.route) {
+                        popUpTo(Inicio.route) { inclusive = true }
                     }
                 },
                 onFailure = { errorMessage ->

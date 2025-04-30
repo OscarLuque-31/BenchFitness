@@ -4,10 +4,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.models.ExerciseData
-import kotlinx.coroutines.tasks.await
+import com.oscar.benchfitness.repository.FavsRepository
+import kotlinx.coroutines.launch
 
 class EjercicioViewModel(
     private val auth: FirebaseAuth,
@@ -17,34 +19,17 @@ class EjercicioViewModel(
     var isFavorite by mutableStateOf(false)
         private set
 
+    val favsRepository = FavsRepository(auth, db)
 
-    fun toogleFavorite(exerciseData: ExerciseData) {
-        val userId = auth.currentUser?.uid ?: return
-        isFavorite = !isFavorite
-
-        db.collection("users")
-            .document(userId)
-            .collection("favorites")
-            .document(exerciseData.id_ejercicio)
-            .apply {
-                if (isFavorite) {
-                    set(exerciseData)
-                } else {
-                    delete()
-                }
-            }
+    fun toogleFavoriteUI(exerciseData: ExerciseData) {
+        viewModelScope.launch {
+            isFavorite = favsRepository.toogleFavorite(exerciseData)
+        }
     }
 
-    suspend fun checkIfFavorite(exerciseId: String) {
-        val userId = auth.currentUser?.uid ?: return
-        isFavorite = db.collection("users")
-            .document(userId)
-            .collection("favorites")
-            .document(exerciseId)
-            .get()
-            .await()
-            .exists()
+    suspend fun checkIfFavoriteUI(exerciseId: String) {
+        viewModelScope.launch {
+            isFavorite = favsRepository.isFavorite(exerciseId)
+        }
     }
-
-
 }

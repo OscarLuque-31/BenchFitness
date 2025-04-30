@@ -200,7 +200,7 @@ fun CajaEjercicio(navController: NavController, ejercicio: ExerciseData) {
             .clip(RoundedCornerShape(20.dp))
             .clickable {
                 navController.currentBackStackEntry?.savedStateHandle?.set("ejercicio", ejercicio)
-                navController.navigate(Ejercicio)
+                navController.navigate(Ejercicio.route)
             }) {
         Row(
             modifier = Modifier
@@ -245,7 +245,6 @@ fun CajaEjercicio(navController: NavController, ejercicio: ExerciseData) {
             )
         }
     }
-
 }
 
 fun colorPorNivel(nivel: String): Color {

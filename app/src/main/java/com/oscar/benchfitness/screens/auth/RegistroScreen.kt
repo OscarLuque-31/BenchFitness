@@ -98,8 +98,8 @@ fun RegisterTopBar(navController: NavController) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(onClick = {
-            navController.navigate(route = Inicio) {
-                popUpTo<Inicio> {
+            navController.navigate(route = Inicio.route) {
+                popUpTo(Inicio.route) {
                     inclusive = true
                 }
             }
@@ -111,8 +111,8 @@ fun RegisterTopBar(navController: NavController) {
             )
         }
         TextButton(onClick = {
-            navController.navigate(route = Login) {
-                popUpTo<Login> { inclusive = true }
+            navController.navigate(route = Login.route) {
+                popUpTo(Login.route) { inclusive = true }
             }
         }) {
             Text(
@@ -229,8 +229,8 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
         ) {
             viewModel.registerUser(
                 onSuccess = {
-                    navController.navigate(Datos) {
-                        popUpTo(Inicio) {
+                    navController.navigate(Datos.route) {
+                        popUpTo(Inicio.route) {
                             inclusive = true
                         }
                     }

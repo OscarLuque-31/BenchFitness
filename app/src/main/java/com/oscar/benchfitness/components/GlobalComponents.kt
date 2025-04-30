@@ -63,13 +63,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.navegation.Estadisticas
 import com.oscar.benchfitness.navegation.Home
+import com.oscar.benchfitness.navegation.Main
 import com.oscar.benchfitness.navegation.MainExercises
+import com.oscar.benchfitness.navegation.MainHome
 import com.oscar.benchfitness.navegation.Perfil
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
@@ -388,7 +391,9 @@ fun CabeceraBenchFitness(text: String) {
 
 @Composable
 fun GlobalBarraNavegacion(navController: NavController) {
-    var selectedItem by remember { mutableStateOf("Home") }
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
     Row(
         modifier = Modifier
@@ -400,21 +405,17 @@ fun GlobalBarraNavegacion(navController: NavController) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround
     ) {
-        NavigationIcon("Home", R.drawable.home, selectedItem) {
-            selectedItem = "Home"
-            navController.navigate(Home)
+        NavigationIcon("Home", R.drawable.home, currentRoute == MainHome.route) {
+            navController.navigate(MainHome.route)
         }
-        NavigationIcon("Ejercicios", R.drawable.iconopesas, selectedItem) {
-            selectedItem = "Ejercicios"
-            navController.navigate(MainExercises)
+        NavigationIcon("Ejercicios", R.drawable.iconopesas, currentRoute == MainExercises.route) {
+            navController.navigate(MainExercises.route)
         }
-        NavigationIcon("Estadisticas", R.drawable.bascula, selectedItem) {
-            selectedItem = "Estadisticas"
-            navController.navigate(Estadisticas)
+        NavigationIcon("Estadisticas", R.drawable.bascula, currentRoute == Estadisticas.route) {
+            navController.navigate(Estadisticas.route)
         }
-        NavigationIcon("Perfil", R.drawable.user, selectedItem) {
-            selectedItem = "Perfil"
-            navController.navigate(Perfil)
+        NavigationIcon("Perfil", R.drawable.user, currentRoute == Perfil.route) {
+            navController.navigate(Perfil.route)
         }
     }
 }
@@ -423,11 +424,11 @@ fun GlobalBarraNavegacion(navController: NavController) {
 fun NavigationIcon(
     label: String,
     iconRes: Int,
-    selectedItem: String,
+    isSelected: Boolean,
     onClick: () -> Unit,
 ) {
     val color by animateColorAsState(
-        targetValue = if (selectedItem == label) rojoBench else negroOscuroBench,
+        targetValue = if (isSelected) rojoBench else negroOscuroBench,
         label = ""
     )
 
@@ -446,6 +447,7 @@ fun NavigationIcon(
         )
     }
 }
+
 
 @Composable
 fun AdaptiveGifRow(

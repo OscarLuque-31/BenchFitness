@@ -64,14 +64,14 @@ class LoginViewModel(
                         onSuccess = { datosCompletos ->
                             loading = false
                             if (datosCompletos) {
-                                navController.navigate(Main) {
-                                    popUpTo(Inicio) {
+                                navController.navigate(Main.route) {
+                                    popUpTo(Inicio.route) {
                                         inclusive = true
                                     }
                                 }
                             } else {
-                                navController.navigate(Datos) {
-                                    popUpTo(Inicio) {
+                                navController.navigate(Datos.route) {
+                                    popUpTo(Inicio.route) {
                                         inclusive = true
                                     }
                                 }
@@ -197,10 +197,10 @@ class LoginViewModel(
 
                                                     if (datosCompletados) {
                                                         // Si los datos están completos, navega a la pantalla principal
-                                                        navController.navigate(Main)
+                                                        navController.navigate(Main.route)
                                                     } else {
                                                         // Si los datos no están completos, navega a la pantalla para completar los datos
-                                                        navController.navigate(Datos)
+                                                        navController.navigate(Datos.route)
                                                     }
 
                                                 }
@@ -220,7 +220,7 @@ class LoginViewModel(
                                         db.collection("users").document(uid)
                                             .set(userData)
                                             .addOnSuccessListener {
-                                                navController.navigate(Datos)
+                                                navController.navigate(Datos.route)
                                             }
                                             .addOnFailureListener { e ->
                                                 onFailure("Error al guardar datos del usuario: ${e.message}")

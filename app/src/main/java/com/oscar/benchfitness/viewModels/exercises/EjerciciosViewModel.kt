@@ -22,7 +22,6 @@ class EjerciciosViewModel(
 ) : ViewModel() {
     private val repository = ExercisesRepository()
 
-
     private val _ejercicios = MutableStateFlow<List<ExerciseData>>(emptyList())
     val ejercicios: StateFlow<List<ExerciseData>> = _ejercicios
 

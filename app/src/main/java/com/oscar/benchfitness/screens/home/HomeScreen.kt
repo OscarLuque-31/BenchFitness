@@ -211,7 +211,7 @@ fun RecomendacionObjetivo(
                 .background(negroOscuroBench)
                 .clickable {
                     navController.currentBackStackEntry?.savedStateHandle?.set("userData", userData)
-                    navController.navigate(Goal) {
+                    navController.navigate(Goal.route) {
                         launchSingleTop = true
                     }
                 },

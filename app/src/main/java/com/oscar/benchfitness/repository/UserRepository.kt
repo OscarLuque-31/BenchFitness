@@ -97,7 +97,6 @@ class UserRepository(
         val user = auth.currentUser
         if (user != null) {
             val email = user.email ?: return
-            val uid = user.uid
 
             // Buscar documentos en Firestore con el mismo email
             db.collection("users").whereEqualTo("email", email).get()

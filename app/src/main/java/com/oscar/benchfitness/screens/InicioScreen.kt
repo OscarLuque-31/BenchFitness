@@ -113,7 +113,7 @@ fun BotonesBienvenida(navController: NavController) {
         horizontalArrangement = Arrangement.spacedBy(45.dp)
     ) {
         Button(onClick = {
-            navController.navigate(route = Login)
+            navController.navigate(route = Login.route)
         },
             shape = MaterialTheme.shapes.medium,
             colors = ButtonDefaults.buttonColors(
@@ -130,7 +130,7 @@ fun BotonesBienvenida(navController: NavController) {
             )
         }
         Button(onClick = {
-            navController.navigate(route = Registro)
+            navController.navigate(route = Registro.route)
         },
             shape = MaterialTheme.shapes.medium,
             colors = ButtonDefaults.buttonColors(

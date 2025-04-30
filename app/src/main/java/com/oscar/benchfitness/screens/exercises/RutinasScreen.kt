@@ -15,15 +15,22 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -36,12 +43,6 @@ import com.oscar.benchfitness.viewModels.exercises.RutinasViewModel
 
 @Composable
 fun RutinasScreen(navController: NavController, viewModel: RutinasViewModel) {
-
-    // Obtener rutinas al cargar la pantalla
-    LaunchedEffect(Unit) {
-        viewModel.obtenerRutinas()
-    }
-
     // Usamos verticalScroll para hacer que la columna sea desplazable
     Column(
         modifier = Modifier
@@ -65,7 +66,7 @@ fun BoxNuevaRutina(navController: NavController) {
             .height(130.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(negroOscuroBench)
-            .clickable { navController.navigate(CrearRutina) },
+            .clickable { navController.navigate(CrearRutina.route) },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround
     ) {
@@ -80,6 +81,7 @@ fun BoxNuevaRutina(navController: NavController) {
 
 @Composable
 fun ListaRutinas(viewModel: RutinasViewModel, navController: NavController) {
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -93,7 +95,7 @@ fun ListaRutinas(viewModel: RutinasViewModel, navController: NavController) {
                     .background(negroOscuroBench)
                     .clickable {
                         navController.currentBackStackEntry?.savedStateHandle?.set("rutina", rutina)
-                        navController.navigate(Rutina)
+                        navController.navigate(Rutina.route)
                     },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceAround

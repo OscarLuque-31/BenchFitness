@@ -11,7 +11,7 @@ data class Routine(
     val nombre: String = "",
     val objetivo: String = "",
     val dias: List<DayRoutine> = emptyList(),
-    val fechaCreacion: String = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+    val fechaCreacion: String = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
 ) : Parcelable {
     fun toMap(): Map<String, Any> {
         return mapOf(

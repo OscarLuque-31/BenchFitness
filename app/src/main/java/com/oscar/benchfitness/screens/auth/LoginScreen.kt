@@ -133,8 +133,8 @@ fun LoginTopBar(navController: NavController) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(onClick = {
-            navController.navigate(route = Inicio) {
-                popUpTo<Inicio> {
+            navController.navigate(route = Inicio.route) {
+                popUpTo(Inicio.route) {
                     inclusive = true
                 }
             }
@@ -147,8 +147,8 @@ fun LoginTopBar(navController: NavController) {
         }
 
         TextButton(onClick = {
-            navController.navigate(route = Registro) {
-                popUpTo<Registro> { inclusive = true }
+            navController.navigate(route = Registro.route) {
+                popUpTo(Registro.route) { inclusive = true }
             }
         }) {
             Text(

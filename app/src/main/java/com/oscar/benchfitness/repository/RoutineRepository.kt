@@ -23,7 +23,9 @@ class RoutineRepository(auth: FirebaseAuth, db: FirebaseFirestore) {
         }
     }
 
-
+    /**
+     * Método que obtiene todas las rutinas desde base de datos
+     */
     suspend fun getAllRoutines(): List<Routine> {
         return try {
             val rutinas = routinesCollection.get().await()
@@ -38,6 +40,29 @@ class RoutineRepository(auth: FirebaseAuth, db: FirebaseFirestore) {
         } catch (e: Exception) {
             e.printStackTrace()
             emptyList()
+        }
+    }
+
+    /**
+     * Método que elimina la rutina por nombre elegida por el usuario
+     */
+    suspend fun eliminarRutina(nombre: String): Boolean {
+        return try {
+            val rutinas = routinesCollection.whereEqualTo("nombre", nombre).get().await()
+
+            // Si no hay ninguna rutina con ese nombre se devuelve false
+            if (rutinas.isEmpty) {
+                return false
+            }
+
+            for (rutina in rutinas) {
+                rutina.reference.delete().await()
+            }
+
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
     }
 }

@@ -60,7 +60,7 @@ fun EjercicioScreen(
 ) {
 
     LaunchedEffect(viewModel) {
-        viewModel.checkIfFavorite(ejercicio.id_ejercicio)
+        viewModel.checkIfFavoriteUI(ejercicio.id_ejercicio)
     }
 
     Column(
@@ -108,7 +108,7 @@ fun EjercicioBodyContent(
                 IconToggleButton(
                     checked = viewModel.isFavorite,
                     onCheckedChange = {
-                        viewModel.toogleFavorite(exerciseData = ejercicio)
+                        viewModel.toogleFavoriteUI(exerciseData = ejercicio)
                     }
                 ) {
                     AnimatedFavoriteStar(isFavorite = viewModel.isFavorite)

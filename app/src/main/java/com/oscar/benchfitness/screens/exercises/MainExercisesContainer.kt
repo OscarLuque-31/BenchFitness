@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -48,6 +49,7 @@ import com.oscar.benchfitness.ui.theme.rojoBench
 import com.oscar.benchfitness.viewModels.exercises.CrearRutinaViewModel
 import com.oscar.benchfitness.viewModels.exercises.EjercicioViewModel
 import com.oscar.benchfitness.viewModels.exercises.EjerciciosViewModel
+import com.oscar.benchfitness.viewModels.exercises.FavsViewModel
 import com.oscar.benchfitness.viewModels.exercises.RutinaViewModel
 import com.oscar.benchfitness.viewModels.exercises.RutinasViewModel
 
@@ -63,13 +65,13 @@ fun MainExercisesContainer(
     }) { paddingValues ->
         NavHost(
             navController = innerNavController,
-            startDestination = Ejercicios,
+            startDestination = Ejercicios.route,
             modifier = Modifier.padding(
                 top = paddingValues.calculateTopPadding(),
                 bottom = 0.dp
             )
         ) {
-            composable<Ejercicios> {
+            composable(Ejercicios.route) {
                 val ejerciciosViewModel = remember { EjerciciosViewModel(auth, db) }
 
                 LaunchedEffect(Unit) {
@@ -81,7 +83,7 @@ fun MainExercisesContainer(
                     viewModel = ejerciciosViewModel,
                 )
             }
-            composable<Ejercicio> {
+            composable(Ejercicio.route) {
                 val ejercicioViewModel = remember { EjercicioViewModel(auth, db) }
 
                 val ejercicio = innerNavController.previousBackStackEntry
@@ -114,24 +116,24 @@ fun MainExercisesContainer(
                     )
                 }
             }
-            composable<Rutinas> {
+            composable(Rutinas.route) {
                 val rutinaViewModel = remember { RutinasViewModel(auth, db) }
 
-
+                LaunchedEffect(Unit) {
+                    rutinaViewModel.obtenerRutinas()
+                }
 
                 RutinasScreen(innerNavController, rutinaViewModel)
-
-
             }
-            composable<CrearRutina> {
+            composable(CrearRutina.route) {
 
                 val crearRutinaViewModel = remember { CrearRutinaViewModel(auth, db) }
                 CrearRutinaScreen(innerNavController, crearRutinaViewModel)
 
             }
-            composable<Rutina> {
+            composable(Rutina.route) {
 
-                val rutinaViewModel = remember { RutinaViewModel() }
+                val rutinaViewModel = remember { RutinaViewModel(auth, db) }
 
                 val rutina = innerNavController.previousBackStackEntry
                     ?.savedStateHandle
@@ -142,11 +144,16 @@ fun MainExercisesContainer(
                     RutinaScreen(innerNavController, rutinaViewModel, rutina)
                 }
 
-
             }
-            composable<Favs> {
+            composable(Favs.route) {
 
-                FavsScreen()
+                val favsViewModel = remember { FavsViewModel(auth, db) }
+
+                LaunchedEffect(Unit) {
+                    favsViewModel.cargarEjerciciosFavs()
+                }
+
+                FavsScreen(navController = innerNavController, favsViewModel)
 
             }
         }
@@ -156,7 +163,8 @@ fun MainExercisesContainer(
 @Composable
 fun CabeceraOpcionesEjerciciosScreen(navController: NavController) {
 
-    var selectedOption by remember { mutableStateOf("Ejercicios") }
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
     Column(
         modifier = Modifier
@@ -178,28 +186,31 @@ fun CabeceraOpcionesEjerciciosScreen(navController: NavController) {
         ) {
             ExerciseHeaderOption(
                 text = "Ejercicios",
-                selected = selectedOption == "Ejercicios",
+                selected = currentRoute == Ejercicios.route,
                 onClick = {
-                    selectedOption = "Ejercicios"
-                    navController.navigate(Ejercicios)
+                    navController.navigate(Ejercicios.route) {
+                        launchSingleTop = true
+                    }
                 }
             )
 
             ExerciseHeaderOption(
-                text = "Rutina",
-                selected = selectedOption == "Rutina",
+                text = "Rutinas",
+                selected = currentRoute == Rutinas.route,
                 onClick = {
-                    selectedOption = "Rutina"
-                    navController.navigate(Rutinas)
+                    navController.navigate(Rutinas.route) {
+                        launchSingleTop = true
+                    }
                 }
             )
 
             ExerciseHeaderOption(
                 text = "Favs",
-                selected = selectedOption == "Favs",
+                selected = currentRoute == "Favs",
                 onClick = {
-                    selectedOption = "Favs"
-                    navController.navigate(Favs)
+                    navController.navigate(Favs.route) {
+                        launchSingleTop = true
+                    }
                 }
             )
         }

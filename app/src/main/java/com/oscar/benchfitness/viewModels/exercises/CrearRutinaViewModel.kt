@@ -1,7 +1,6 @@
 package com.oscar.benchfitness.viewModels.exercises
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -15,9 +14,8 @@ import com.oscar.benchfitness.models.Routine
 import com.oscar.benchfitness.repository.ExercisesRepository
 import com.oscar.benchfitness.repository.RoutineRepository
 import kotlinx.coroutines.launch
-import java.util.UUID
 
-class CrearRutinaViewModel (auth: FirebaseAuth, db: FirebaseFirestore): ViewModel() {
+class CrearRutinaViewModel(auth: FirebaseAuth, db: FirebaseFirestore) : ViewModel() {
 
     var nombreRutina by mutableStateOf("")
     var objetivo by mutableStateOf("Objetivo")
@@ -32,7 +30,6 @@ class CrearRutinaViewModel (auth: FirebaseAuth, db: FirebaseFirestore): ViewMode
     var errorRutina by mutableStateOf<String?>(null)
 
 
-
     // Variables para los datos del ejercicio
     var ejercicio by mutableStateOf(ExerciseRoutineEntry())
 
@@ -40,7 +37,7 @@ class CrearRutinaViewModel (auth: FirebaseAuth, db: FirebaseFirestore): ViewMode
     var repeticionesText by mutableStateOf("")
 
     private val repository = ExercisesRepository()
-    private val routineRepository = RoutineRepository(auth,db)
+    private val routineRepository = RoutineRepository(auth, db)
 
 
     /**
@@ -54,12 +51,14 @@ class CrearRutinaViewModel (auth: FirebaseAuth, db: FirebaseFirestore): ViewMode
                         "- Repeticiones: 6-12 repeticiones\n" +
                         "- Ejercicios compuestos y de aislamiento"
             }
+
             "Fuerza" -> {
                 "Para fuerza:\n" +
                         "- Series: 4-6 series por ejercicio\n" +
                         "- Repeticiones: 1-5 repeticiones\n" +
                         "- Ejercicios compuestos (sentadillas, press de banca, etc.)"
             }
+
             else -> "Selecciona un objetivo para recibir recomendaciones."
         }
     }
@@ -85,6 +84,12 @@ class CrearRutinaViewModel (auth: FirebaseAuth, db: FirebaseFirestore): ViewMode
     ) {
         viewModelScope.launch {
             try {
+
+                if (nombreRutinaYaExiste(nombreRutina)) {
+                    errorRutina = "Ya existe una rutina con este nombre."
+                    return@launch
+                }
+
                 val routine = crearRutinaCompleta()
                 val id = routineRepository.saveRoutine(routine)
                 onSuccess(id)
@@ -98,10 +103,15 @@ class CrearRutinaViewModel (auth: FirebaseAuth, db: FirebaseFirestore): ViewMode
     /**
      * Método que agrega ejercicios a un día específico
      */
-    fun agregarEjercicioAlDia(dia: String, entry: ExerciseRoutineEntry) {
-        val listaActual = ejerciciosPorDia[dia]?.toMutableList() ?: mutableListOf()
-        listaActual.add(entry)
-        ejerciciosPorDia[dia] = listaActual
+    fun agregarEjercicioAlDia(dia: String, entry: ExerciseRoutineEntry): Boolean {
+        return if (ejercicioYaExisteEnDia(dia, entry.nombre)) {
+            false
+        } else {
+            val listaActual = ejerciciosPorDia[dia]?.toMutableList() ?: mutableListOf()
+            listaActual.add(entry)
+            ejerciciosPorDia[dia] = listaActual
+            true
+        }
     }
 
     fun eliminarEjercicioDelDia(dia: String, entry: ExerciseRoutineEntry) {
@@ -128,7 +138,7 @@ class CrearRutinaViewModel (auth: FirebaseAuth, db: FirebaseFirestore): ViewMode
 
 
     // Método para validar los ejercicios según el objetivo
-    fun validarEjercicio(): String? {
+    fun validarEjercicio(dia: String): String? {
         if (nombreEjercicioSeleccionado.isBlank()) {
             return "Selecciona un ejercicio."
         }
@@ -144,29 +154,42 @@ class CrearRutinaViewModel (auth: FirebaseAuth, db: FirebaseFirestore): ViewMode
             return "Series y repeticiones deben ser mayores que cero."
         }
 
-        // Validación para hipertrofia
-        if (objetivo == "Hipertrofia") {
-            if (seriesValid < 3 || seriesValid > 5) {
-                return "Para hipertrofia, se recomienda entre 3 y 5 series."
-            }
-            if (repeticionesValid < 6 || repeticionesValid > 12) {
-                return "Para hipertrofia, se recomienda entre 6 y 12 repeticiones."
-            }
-        }
-
-        // Validación para fuerza
-        if (objetivo == "Fuerza") {
-            if (seriesValid < 4 || seriesValid > 6) {
-                return "Para fuerza, se recomienda entre 4 y 6 series."
-            }
-            if (repeticionesValid < 1 || repeticionesValid > 5) {
-                return "Para fuerza, se recomienda entre 1 y 5 repeticiones."
-            }
+        // Validación de ejercicio duplicado
+        if (ejercicioYaExisteEnDia(dia, nombreEjercicioSeleccionado)) {
+            return "Este ejercicio ya está agregado para este día."
         }
 
         return null
     }
 
+    fun obtenerRecomendacionActual(): String? {
+        val series = seriesText.toIntOrNull() ?: return null
+        val repes = repeticionesText.toIntOrNull() ?: return null
+
+        return when (objetivo) {
+            "Hipertrofia" -> {
+                val recSeries = if (series < 3 || series > 5) "3-5 series" else null
+                val recRepes = if (repes < 6 || repes > 12) "6-12 repeticiones" else null
+                listOfNotNull(recSeries, recRepes).takeIf { it.isNotEmpty() }
+                    ?.joinToString("\n")
+                    ?.let { "Recomendación para hipertrofia:\n$it" }
+            }
+
+            "Fuerza" -> {
+                val recSeries = if (series < 4 || series > 6) "4-6 series" else null
+                val recRepes = if (repes < 1 || repes > 5) "1-5 repeticiones" else null
+                listOfNotNull(recSeries, recRepes).takeIf { it.isNotEmpty() }
+                    ?.joinToString("\n")
+                    ?.let { "Recomendación para fuerza:\n$it" }
+            }
+
+            else -> null
+        }
+    }
+
+    private fun ejercicioYaExisteEnDia(dia: String, nombreEjercicio: String): Boolean {
+        return ejerciciosPorDia[dia]?.any { it.nombre == nombreEjercicio } ?: false
+    }
 
     fun seleccionarEjercicio(nombre: String) {
         nombreEjercicioSeleccionado = nombre
@@ -195,11 +218,21 @@ class CrearRutinaViewModel (auth: FirebaseAuth, db: FirebaseFirestore): ViewMode
             nombreRutina.isBlank() -> "El nombre de la rutina no puede estar vacío."
             objetivo == "Objetivo" -> "Debes seleccionar un objetivo válido."
             diasSeleccionados.isEmpty() -> "Debes seleccionar al menos un día."
-            diasSeleccionados.any { ejerciciosPorDia[it].isNullOrEmpty() } ->
-                "Todos los días seleccionados deben tener al menos un ejercicio."
+            diasSeleccionados.any { (ejerciciosPorDia[it]?.size ?: 0) < 3 } ->
+                "Todos los días seleccionados deben tener al menos 3 ejercicios."
+
             else -> null
         }
 
         return errorRutina == null
     }
+
+    private suspend fun nombreRutinaYaExiste(nombre: String): Boolean {
+        return try {
+            routineRepository.getAllRoutines().any { it.nombre.equals(nombre, ignoreCase = true) }
+        } catch (e: Exception) {
+            false // Por defecto no bloquear si falla la verificación, o ajusta según tu lógica
+        }
+    }
+
 }
