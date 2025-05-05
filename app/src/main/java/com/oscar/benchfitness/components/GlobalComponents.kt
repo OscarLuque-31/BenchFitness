@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -52,11 +54,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -68,16 +73,15 @@ import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import com.oscar.benchfitness.R
-import com.oscar.benchfitness.navegation.Estadisticas
-import com.oscar.benchfitness.navegation.Home
-import com.oscar.benchfitness.navegation.Main
 import com.oscar.benchfitness.navegation.MainExercises
 import com.oscar.benchfitness.navegation.MainHome
+import com.oscar.benchfitness.navegation.MainStatistics
 import com.oscar.benchfitness.navegation.Perfil
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
 import com.oscar.benchfitness.utils.convertMillisToDate
+import com.oscar.benchfitness.viewModels.statistics.CalculosViewModel
 import java.util.Calendar
 
 @Composable
@@ -137,7 +141,7 @@ fun GlobalTextField(
         ),
         keyboardOptions = keyboardOptions,
 
-    )
+        )
 }
 
 
@@ -276,79 +280,77 @@ fun GlobalDropDownMenu(
     modifier: Modifier,
     onValueChange: (String) -> Unit,
     backgroundColor: Color,
-    colorText: Color = negroBench
+    colorText: Color = negroBench,
+    colorFlechita: Color = negroBench
 ) {
-    // Eliminamos remember aquí, ya que se maneja con el estado del ViewModel
     var expanded by remember { mutableStateOf(false) }
+    var textFieldWidth by remember { mutableStateOf(0) }
 
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded }
     ) {
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded },
-            modifier = Modifier.clip(shape = RoundedCornerShape(12.dp))
-        ) {
-            TextField(
-                value = nombreSeleccion, // Ahora usamos el nombre desde el ViewModel
-                onValueChange = {}, // No necesitamos cambiar el valor del TextField directamente
-                readOnly = true,
-                trailingIcon = {
-                    IconButton(onClick = {}) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "Flecha desplegar menú"
-                        )
-                    }
-                },
-                textStyle = MaterialTheme.typography.bodyLarge.copy(
-                    fontSize = 14.sp,
-                    color = colorText,
-                    textAlign = TextAlign.Center
-                ),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = backgroundColor,
-                    unfocusedContainerColor = backgroundColor,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
-                modifier = modifier
-                    .menuAnchor()
-                    .background(backgroundColor)
-            )
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier
-                    .heightIn(max = 250.dp)
-                    .background(negroOscuroBench)
-            ) {
-                // Aquí usamos directamente las opciones que vienen del ViewModel
-                opciones.forEach { opcion ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                opcion,
-                                style = MaterialTheme.typography.bodyLarge.copy(
-                                    fontSize = 14.sp,
-                                    color = Color.White
-                                )
-                            )
-                        },
-                        onClick = {
-                            // Ahora cambiamos directamente el valor en el ViewModel
-                            onValueChange(opcion) // Esto actualiza el valor en el ViewModel
-                            expanded = false
-                        },
-                        modifier = modifier.background(negroOscuroBench)
-                    )
+        TextField(
+            value = nombreSeleccion,
+            onValueChange = {},
+            readOnly = true,
+            trailingIcon = {
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "Flecha desplegar menú",
+                    tint = colorFlechita
+                )
+            },
+            textStyle = MaterialTheme.typography.bodyLarge.copy(
+                fontSize = 14.sp,
+                color = colorText,
+                textAlign = TextAlign.Center
+            ),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = backgroundColor,
+                unfocusedContainerColor = backgroundColor,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
+            ),
+            modifier = modifier
+                .clip(RoundedCornerShape(12.dp))
+                .fillMaxWidth()
+                .menuAnchor()
+                .onGloballyPositioned { coordinates ->
+                    textFieldWidth = coordinates.size.width
                 }
+        )
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .width(with(LocalDensity.current) { textFieldWidth.toDp() })
+                .heightIn(max = 250.dp)
+                .background(negroOscuroBench)
+        ) {
+            opciones.forEach { opcion ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            opcion,
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                    },
+                    onClick = {
+                        onValueChange(opcion)
+                        expanded = false
+                    },
+                    modifier = Modifier.background(negroOscuroBench)
+                )
             }
         }
     }
 }
+
+
+
 
 
 @Composable
@@ -408,11 +410,19 @@ fun GlobalBarraNavegacion(navController: NavController) {
         NavigationIcon("Home", R.drawable.home, currentRoute == MainHome.route) {
             navController.navigate(MainHome.route)
         }
-        NavigationIcon("Ejercicios", R.drawable.iconopesas, currentRoute == MainExercises.route) {
+        NavigationIcon(
+            "Ejercicios",
+            R.drawable.iconopesas,
+            currentRoute == MainExercises.route
+        ) {
             navController.navigate(MainExercises.route)
         }
-        NavigationIcon("Estadisticas", R.drawable.bascula, currentRoute == Estadisticas.route) {
-            navController.navigate(Estadisticas.route)
+        NavigationIcon(
+            "Estadisticas",
+            R.drawable.bascula,
+            currentRoute == MainStatistics.route
+        ) {
+            navController.navigate(MainStatistics.route)
         }
         NavigationIcon("Perfil", R.drawable.user, currentRoute == Perfil.route) {
             navController.navigate(Perfil.route)
@@ -551,8 +561,215 @@ fun FlechitaAtras(navController: NavController) {
             modifier = Modifier
                 .size(20.dp)
                 .clickable {
-                    navController.popBackStack()
+                    if (navController.previousBackStackEntry != null) {
+                        navController.popBackStack()
+                    }
                 }
+        )
+    }
+}
+
+@Composable
+fun FormularioCalorias(
+    viewModel: CalculosViewModel,
+    onClick: () -> Unit
+) {
+    var showDialog by remember { mutableStateOf(false) }
+    var mensajeError by remember { mutableStateOf("") }
+
+    val opcionesNivelActividad = listOf(
+        "Sedentario (poco o ningún ejercicio)",
+        "Ligera actividad (1-3 días/semana)",
+        "Actividad moderada (3-5 días/semana)",
+        "Alta actividad (6-7 días/semana)",
+        "Actividad muy intensa (entrenamientos extremos)"
+    )
+    val opcionesGenero = listOf("Hombre", "Mujer")
+
+    val edadInt = viewModel.edad.toIntOrNull() ?: -1
+    val pesoFloat = viewModel.peso.toFloatOrNull() ?: -1f
+    val alturaFloat = viewModel.altura.toFloatOrNull() ?: -1f
+
+    val edadValida = edadInt in 5..120
+    val pesoValido = pesoFloat in 20f..300f
+    val alturaValida = alturaFloat in 80f..250f
+
+    val esFormularioValido = edadValida && pesoValido && alturaValida &&
+            viewModel.genero in opcionesGenero &&
+            viewModel.nivelActividad in opcionesNivelActividad &&
+            viewModel.edad.isNotBlank() &&
+            viewModel.peso.isNotBlank() &&
+            viewModel.altura.isNotBlank()
+
+    val esFormularioCompletado =
+        viewModel.genero in opcionesGenero &&
+                viewModel.nivelActividad in opcionesNivelActividad &&
+                viewModel.edad.isNotBlank() &&
+                viewModel.peso.isNotBlank() &&
+                viewModel.altura.isNotBlank()
+
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        PesoAlturaInputs(viewModel)
+        GlobalDropDownMenu(
+            viewModel.nivelActividad,
+            opcionesNivelActividad,
+            onValueChange = { viewModel.nivelActividad = it },
+            modifier = Modifier.fillMaxWidth(),
+            backgroundColor = negroBench,
+            colorText = rojoBench,
+            colorFlechita = rojoBench
+        )
+        EdadGeneroInputs(viewModel, opcionesGenero)
+
+        GlobalButton(
+            text = "Calcular",
+            colorText = if (esFormularioCompletado) Color.White else Color.Gray,
+            backgroundColor = if (esFormularioCompletado) negroBench else Color.DarkGray,
+            onClick = {
+                when {
+                    !edadValida -> {
+                        mensajeError = "Edad inválida. Ingresa una edad entre 5 y 120 años."
+                        showDialog = true
+                    }
+
+                    !pesoValido -> {
+                        mensajeError = "Peso inválido. Ingresa un peso entre 20 y 300 kg."
+                        showDialog = true
+                    }
+
+                    !alturaValida -> {
+                        mensajeError = "Altura inválida. Ingresa una altura entre 80 y 250 cm."
+                        showDialog = true
+                    }
+
+                    esFormularioValido -> {
+                        onClick()
+                    }
+
+                    else -> {
+                        mensajeError = "Completa todos los campos correctamente."
+                        showDialog = true
+                    }
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+        )
+
+        ResultadoCaloriasYLegal(viewModel.calorias)
+
+        InfoDialog(
+            title = "Datos no válidos",
+            showDialog = showDialog,
+            onDismiss = { showDialog = false }
+        ) {
+            Text(mensajeError, color = rojoBench)
+        }
+    }
+}
+
+
+@Composable
+fun PesoAlturaInputs(viewModel: CalculosViewModel) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        listOf(
+            Triple("Peso", viewModel.peso, "kg"),
+            Triple("Altura", viewModel.altura, "cm")
+        ).forEach { (label, value, unit) ->
+            GlobalTextField(
+                nombre = "",
+                text = value,
+                onValueChange = {
+                    when (label) {
+                        "Peso" -> viewModel.peso = it
+                        "Altura" -> viewModel.altura = it
+                    }
+                },
+                trailingIcon = { Text(unit, fontSize = 14.sp, color = rojoBench) },
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .weight(0.5f)
+                    .height(55.dp),
+                backgroundColor = negroBench,
+                colorText = rojoBench,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+        }
+    }
+}
+
+@Composable
+fun EdadGeneroInputs(viewModel: CalculosViewModel, opcionesGenero: List<String>) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        GlobalTextField(
+            nombre = "",
+            text = viewModel.edad,
+            onValueChange = { viewModel.edad = it },
+            trailingIcon = { Text("años", fontSize = 14.sp, color = rojoBench) },
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .width(120.dp)
+                .height(55.dp),
+            backgroundColor = negroBench,
+            colorText = rojoBench,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
+        GlobalDropDownMenu(
+            viewModel.genero,
+            opcionesGenero,
+            onValueChange = { viewModel.genero = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(55.dp),
+            backgroundColor = negroBench,
+            colorText = rojoBench,
+            colorFlechita = rojoBench
+        )
+    }
+}
+
+
+@Composable
+fun ResultadoCaloriasYLegal(calorias: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 20.dp),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.weight(1f))
+
+        if (calorias.isNotBlank()) {
+            Text(
+                "$calorias kcal",
+                color = rojoBench,
+                fontSize = 40.sp,
+                textAlign = TextAlign.Center
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Text(
+            "Este cálculo es solo una aproximación. Consulta a un profesional de la salud para un cálculo más específico.",
+            fontSize = 12.sp,
+            color = Color.Gray,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(10.dp)
         )
     }
 }

@@ -18,7 +18,7 @@ class DatosViewModel(
 ) : ViewModel() {
 
     var altura by mutableStateOf("")
-    var genero by mutableStateOf("Género")
+    var genero by mutableStateOf("Sexo")
     var peso by mutableStateOf("")
     var experiencia by mutableStateOf("Experiencia")
     var nivelActividad by mutableStateOf("Nivel de actividad física")

@@ -357,6 +357,8 @@ fun BoxAnadirEjerciciosPorDia(viewModel: CrearRutinaViewModel, navController: Na
 
 @Composable
 fun ListaEjerciciosPorDia(viewModel: CrearRutinaViewModel, dia: String) {
+
+
     val ejerciciosList = viewModel.ejerciciosPorDia[dia] ?: emptyList()
 
     Column(
@@ -371,22 +373,20 @@ fun ListaEjerciciosPorDia(viewModel: CrearRutinaViewModel, dia: String) {
         // Lista de ejercicios
         LazyColumn(modifier = Modifier.heightIn(max = 400.dp)) {
             items(ejerciciosList) { ejercicio ->
+
+                val isSelected = viewModel.ejercicioSeleccionado == ejercicio
+                val backgroundColor = if (isSelected) rojoBench.copy(alpha = 0.2f) else negroOscuroBench
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(10.dp))
-                        .background(
-                            if (viewModel.ejercicioSeleccionado == ejercicio)
-                                rojoBench.copy(alpha = 0.2f)
-                            else negroOscuroBench
-                        )
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
                         ) {
                             viewModel.ejercicioSeleccionado =
-                                if (viewModel.ejercicioSeleccionado == ejercicio) null
-                                else ejercicio
+                                if (isSelected) null else ejercicio
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -394,7 +394,7 @@ fun ListaEjerciciosPorDia(viewModel: CrearRutinaViewModel, dia: String) {
                         nombre = ejercicio.nombre,
                         series = ejercicio.series.toString(),
                         repeticiones = ejercicio.repeticiones.toString(),
-                        negroOscuroBench,
+                        backgroundColor = backgroundColor,
                         modifier = Modifier
                     )
                 }
@@ -428,8 +428,8 @@ fun DialogAddExercise(
 
     val dynamicHeight =
         when (viewModel.nombreEjercicioSeleccionado.isNotEmpty() || filteredExercises.isEmpty()) {
-            true -> 0.6f
-            false -> 0.9f
+            true -> 0.55f
+            false -> 0.8f
         }
 
     Dialog(onDismissRequest = onDismiss) {
@@ -606,7 +606,7 @@ fun SeriesRepsFields(viewModel: CrearRutinaViewModel) {
         Spacer(Modifier.width(20.dp))
         Column(Modifier.weight(0.4f)) {
             GlobalTextField(
-                nombre = "Repeticiones",
+                nombre = "Reps",
                 text = viewModel.repeticionesText,
                 colorText = rojoBench,
                 onValueChange = { viewModel.repeticionesText = it },
@@ -657,8 +657,8 @@ fun ActionButtons(
 
         GlobalButton(
             text = "Añadir",
-            colorText = rojoBench,
-            backgroundColor = negroBench,
+            colorText = negroOscuroBench,
+            backgroundColor = rojoBench,
             modifier = Modifier
                 .weight(1f)
                 .padding(start = 8.dp),

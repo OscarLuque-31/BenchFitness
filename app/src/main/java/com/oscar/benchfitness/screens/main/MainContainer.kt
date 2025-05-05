@@ -17,11 +17,12 @@ import com.oscar.benchfitness.navegation.Estadisticas
 import com.oscar.benchfitness.navegation.Home
 import com.oscar.benchfitness.navegation.MainExercises
 import com.oscar.benchfitness.navegation.MainHome
+import com.oscar.benchfitness.navegation.MainStatistics
 import com.oscar.benchfitness.navegation.Perfil
 import com.oscar.benchfitness.screens.exercises.MainExercisesContainer
 import com.oscar.benchfitness.screens.home.MainHomeContainer
+import com.oscar.benchfitness.screens.statistics.MainStatisticsContainer
 import com.oscar.benchfitness.ui.theme.negroBench
-import com.oscar.benchfitness.viewModels.statistics.StatisticsScreen
 
 @Composable
 fun MainContainer(auth: FirebaseAuth, db: FirebaseFirestore) {
@@ -47,8 +48,8 @@ fun MainContainer(auth: FirebaseAuth, db: FirebaseFirestore) {
             composable(MainExercises.route) {
                 MainExercisesContainer(auth, db)
             }
-            composable(Estadisticas.route) {
-                StatisticsScreen()
+            composable(MainStatistics.route) {
+                MainStatisticsContainer(auth, db)
             }
             composable(Perfil.route) {
 

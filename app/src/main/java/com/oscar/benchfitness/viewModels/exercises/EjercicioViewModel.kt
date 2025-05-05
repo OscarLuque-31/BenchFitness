@@ -12,8 +12,8 @@ import com.oscar.benchfitness.repository.FavsRepository
 import kotlinx.coroutines.launch
 
 class EjercicioViewModel(
-    private val auth: FirebaseAuth,
-    private val db: FirebaseFirestore
+    auth: FirebaseAuth,
+    db: FirebaseFirestore
 ) : ViewModel() {
 
     var isFavorite by mutableStateOf(false)

@@ -21,7 +21,6 @@ import com.oscar.benchfitness.screens.main.MainContainer
 import com.oscar.benchfitness.viewModels.auth.LoginViewModel
 import com.oscar.benchfitness.viewModels.auth.RegistroViewModel
 import com.oscar.benchfitness.viewModels.datos.DatosViewModel
-import com.oscar.benchfitness.viewModels.statistics.StatisticsScreen
 
 @Composable
 fun AppNavegation(auth: FirebaseAuth, db: FirebaseFirestore) {

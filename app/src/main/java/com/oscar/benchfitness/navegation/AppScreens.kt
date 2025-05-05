@@ -18,6 +18,11 @@ object MainHome {
 }
 
 @Serializable
+object MainStatistics {
+    const val route = "MainStatistics"
+}
+
+@Serializable
 object Logo {
     const val route = "Logo"
 }
@@ -85,6 +90,36 @@ object Favs {
 @Serializable
 object Estadisticas {
     const val route = "Estadisticas"
+}
+
+@Serializable
+object Peso {
+    const val route = "Peso"
+}
+
+@Serializable
+object Progreso {
+    const val route = "Progreso"
+}
+
+@Serializable
+object Metabolismo {
+    const val route = "Metabolismo"
+}
+
+@Serializable
+object Deficit {
+    const val route = "Deficit"
+}
+
+@Serializable
+object RepeMaxima {
+    const val route = "RepeMaxima"
+}
+
+@Serializable
+object Superavit {
+    const val route = "Superavit"
 }
 
 @Serializable
