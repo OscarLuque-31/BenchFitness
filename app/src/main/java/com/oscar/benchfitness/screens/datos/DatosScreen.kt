@@ -33,7 +33,7 @@ import com.oscar.benchfitness.components.GlobalDropDownMenu
 import com.oscar.benchfitness.components.GlobalTextField
 import com.oscar.benchfitness.navegation.Inicio
 import com.oscar.benchfitness.navegation.Main
-import com.oscar.benchfitness.screens.ColumnaPrincipal
+import com.oscar.benchfitness.screens.start.ColumnaPrincipal
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench

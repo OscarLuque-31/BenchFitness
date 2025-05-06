@@ -12,8 +12,8 @@ import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.animations.SplashScreen
-import com.oscar.benchfitness.screens.InicioScreen
-import com.oscar.benchfitness.screens.LogoScreen
+import com.oscar.benchfitness.screens.start.InicioScreen
+import com.oscar.benchfitness.screens.start.LogoScreen
 import com.oscar.benchfitness.screens.auth.LoginScreen
 import com.oscar.benchfitness.screens.auth.RegistroScreen
 import com.oscar.benchfitness.screens.datos.DatosScreen

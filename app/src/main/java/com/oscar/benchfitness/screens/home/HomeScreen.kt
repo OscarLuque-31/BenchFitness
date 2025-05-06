@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -51,17 +52,14 @@ import com.oscar.benchfitness.viewModels.home.HomeViewModel
 
 
 @Composable
-fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
+fun HomeScreen(navController: NavController, viewModel: HomeViewModel, user: userData) {
 
-    val user by viewModel.userData.collectAsState()
     val calorias by viewModel.calorias.collectAsState()
-
 
     HomeBodyContent(
         navController = navController,
         userData = user,
-        viewModel = viewModel,
-        calorias = calorias
+        calorias = calorias,
     )
 
 }
@@ -69,9 +67,8 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
 @Composable
 fun HomeBodyContent(
     navController: NavController,
-    viewModel: HomeViewModel,
     userData: userData,
-    calorias: String
+    calorias: String,
 ) {
     Column(
         modifier = Modifier
@@ -82,8 +79,7 @@ fun HomeBodyContent(
             modifier = Modifier
                 .weight(1f)
         ) {
-            GlobalHeader("Bienvenido ${userData.username}")
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(Modifier.height(20.dp))
             ObjetivoUsuario(userData.objetivo)
             Spacer(modifier = Modifier.height(15.dp))
             RecomendacionObjetivo(
@@ -210,7 +206,6 @@ fun RecomendacionObjetivo(
                 )
                 .background(negroOscuroBench)
                 .clickable {
-                    navController.currentBackStackEntry?.savedStateHandle?.set("userData", userData)
                     navController.navigate(Goal.route) {
                         launchSingleTop = true
                     }

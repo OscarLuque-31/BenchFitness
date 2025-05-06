@@ -98,6 +98,7 @@ fun MainColumn(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(top = 20.dp)
             .background(color = negroBench)
     ) {
         Column(
@@ -105,7 +106,6 @@ fun MainColumn(
                 .weight(1f)
                 .verticalScroll(scrollState)
         ) {
-            GlobalHeader("Bienvenido ${userData.username}")
             ColumnaDatosYCalculos(
                 objetivo,
                 userData,
@@ -140,7 +140,7 @@ fun ColumnaDatosYCalculos(
 
     Column(
         modifier = Modifier
-            .padding(horizontal = 20.dp, vertical = 20.dp)
+            .padding(start = 20.dp, end = 20.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
             .background(negroOscuroBench)

@@ -281,7 +281,7 @@ fun GlobalDropDownMenu(
     onValueChange: (String) -> Unit,
     backgroundColor: Color,
     colorText: Color = negroBench,
-    colorFlechita: Color = negroBench
+    colorFlechita: Color = rojoBench
 ) {
     var expanded by remember { mutableStateOf(false) }
     var textFieldWidth by remember { mutableStateOf(0) }

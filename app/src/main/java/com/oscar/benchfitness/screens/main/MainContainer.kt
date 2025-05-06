@@ -21,6 +21,7 @@ import com.oscar.benchfitness.navegation.MainStatistics
 import com.oscar.benchfitness.navegation.Perfil
 import com.oscar.benchfitness.screens.exercises.MainExercisesContainer
 import com.oscar.benchfitness.screens.home.MainHomeContainer
+import com.oscar.benchfitness.screens.profile.MainPerfilContainer
 import com.oscar.benchfitness.screens.statistics.MainStatisticsContainer
 import com.oscar.benchfitness.ui.theme.negroBench
 
@@ -52,7 +53,7 @@ fun MainContainer(auth: FirebaseAuth, db: FirebaseFirestore) {
                 MainStatisticsContainer(auth, db)
             }
             composable(Perfil.route) {
-
+                MainPerfilContainer(auth, db)
             }
 
         }

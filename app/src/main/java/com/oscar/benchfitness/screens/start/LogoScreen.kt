@@ -1,4 +1,4 @@
-package com.oscar.benchfitness.screens
+package com.oscar.benchfitness.screens.start
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
