@@ -21,6 +21,8 @@ class RegistroViewModel(
     var password by mutableStateOf("")
     var confirmPassword by mutableStateOf("")
     var acceptTerms by mutableStateOf(false)
+    var errorMessage by mutableStateOf<String?>(null)
+
 
     private val userRepository = UserRepository(auth, db)
 
@@ -56,5 +58,9 @@ class RegistroViewModel(
                 onFailure = { onFailure(it.message ?: "Error en el registro")}
             )
         }
+    }
+
+    fun clearError() {
+        errorMessage = null
     }
 }

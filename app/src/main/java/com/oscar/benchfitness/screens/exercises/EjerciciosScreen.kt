@@ -36,6 +36,7 @@ import com.oscar.benchfitness.animations.LoadingScreen
 import com.oscar.benchfitness.components.GlobalButton
 import com.oscar.benchfitness.components.GlobalDropDownMenu
 import com.oscar.benchfitness.components.GlobalTextField
+import com.oscar.benchfitness.components.InfoDialog
 import com.oscar.benchfitness.models.ExerciseData
 import com.oscar.benchfitness.navegation.Ejercicio
 import com.oscar.benchfitness.ui.theme.amarilloAvanzado
@@ -83,7 +84,7 @@ fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             GlobalButton(
-                text = if (viewModel.filtrosVisibles) "Filtros ↑" else "Filtros ↓",
+                text = "Filtros",
                 backgroundColor = negroOscuroBench,
                 colorText = Color.White,
                 onClick = { viewModel.filtrosVisibles = !viewModel.filtrosVisibles },
@@ -109,25 +110,27 @@ fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
             )
         }
 
-        if (viewModel.filtrosVisibles) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(negroOscuroBench, shape = RoundedCornerShape(20.dp))
-                    .clip(RoundedCornerShape(20.dp))
-                    .padding(20.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                Column {
+        // Diálogo con filtros si está activo
+        InfoDialog(
+            title = "Filtros de ejercicio",
+            showDialog = viewModel.filtrosVisibles,
+            onDismiss = { viewModel.filtrosVisibles = false },
+            cuerpo = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     GlobalDropDownMenu(
                         nombreSeleccion = viewModel.musculo,
                         opciones = musculos.map { it.nombre },
                         onValueChange = { viewModel.musculo = it },
                         modifier = Modifier
-                            .width(250.dp)
+                            .fillMaxWidth()
                             .height(50.dp),
-                        backgroundColor = rojoBench
+                        backgroundColor = negroOscuroBench,
+                        colorText = rojoBench
                     )
                     Spacer(Modifier.height(20.dp))
                     GlobalDropDownMenu(
@@ -135,9 +138,11 @@ fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
                         opciones = categorias.map { it.nombre },
                         onValueChange = { viewModel.categoria = it },
                         modifier = Modifier
-                            .width(250.dp)
+                            .fillMaxWidth()
                             .height(50.dp),
-                        backgroundColor = rojoBench
+                        backgroundColor = negroOscuroBench,
+                        colorText = rojoBench
+
                     )
                     Spacer(Modifier.height(20.dp))
                     GlobalDropDownMenu(
@@ -145,37 +150,37 @@ fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
                         opciones = niveles.map { it.nombre },
                         onValueChange = { viewModel.nivel = it },
                         modifier = Modifier
-                            .width(250.dp)
+                            .fillMaxWidth()
                             .height(50.dp),
-                        backgroundColor = rojoBench
+                        backgroundColor = negroOscuroBench,
+                        colorText = rojoBench
+
                     )
                     Spacer(Modifier.height(20.dp))
                     GlobalButton(
-                        text = "Resetear filtros", onClick = { viewModel.cargarEjercicios() },
+                        text = "Aplicar búsqueda",
+                        onClick = {
+                            viewModel.onClickBuscar()
+                            viewModel.filtrosVisibles = false
+                        },
+                        backgroundColor = rojoBench,
+                        colorText = negroOscuroBench,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(Modifier.height(10.dp))
+                    GlobalButton(
+                        text = "Resetear filtros",
+                        onClick = {
+                            viewModel.cargarEjercicios()
+                            viewModel.filtrosVisibles = false
+                        },
                         backgroundColor = negroClaroBench,
                         colorText = rojoBench,
-                        modifier = Modifier
+                        modifier = Modifier.fillMaxWidth()
                     )
-
                 }
-
-
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    IconButton(onClick = { viewModel.onClickBuscar() }) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "buscar",
-                            tint = rojoBench,
-                            modifier = Modifier.size(60.dp)
-                        )
-                    }
-                }
-
             }
-        }
+        )
     }
 }
 

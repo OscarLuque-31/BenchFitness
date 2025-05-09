@@ -6,14 +6,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -82,8 +86,7 @@ fun DatosBodyContent(
 
         ContenedorDatos(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.75f),
+                .fillMaxWidth(),
             viewModel,
             onStartClick
         )
@@ -126,7 +129,7 @@ fun ContenedorDatos(
             "Empezar", negroBench,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp),
+                .height(60.dp),
             colorText = Color.White,
         ) {
             onStartClick()
@@ -160,18 +163,20 @@ fun FilaAlturayGenero(viewModel: DatosViewModel) {
             },
             textAlign = TextAlign.Center,
             modifier = Modifier
-                .width(140.dp)
+                .widthIn(min = 100.dp, max = 140.dp)
                 .height(50.dp),
             backgroundColor = Color.White,
-            colorText = negroOscuroBench
+            colorText = negroOscuroBench,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
+            )
         )
-
+        Spacer(Modifier.width(30.dp))
         GlobalDropDownMenu(
             nombreSeleccion = viewModel.genero,
             opciones = opciones,
             onValueChange = { viewModel.genero = it },
-            modifier = Modifier
-                .width(140.dp)
+            modifier = Modifier.weight(0.3f)
                 .height(50.dp),
             backgroundColor = Color.White
         )
@@ -206,11 +211,15 @@ fun FilaPesoYExperiencia(viewModel: DatosViewModel) {
             },
             textAlign = TextAlign.Center,
             modifier = Modifier
-                .width(140.dp)
+                .widthIn(min = 100.dp, max = 140.dp)
                 .height(50.dp),
             backgroundColor = Color.White,
-            colorText = negroOscuroBench
+            colorText = negroOscuroBench,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
+            )
         )
+        Spacer(Modifier.width(30.dp))
 
         // GlobalDropDownMenu para la experiencia
         GlobalDropDownMenu(
@@ -218,7 +227,6 @@ fun FilaPesoYExperiencia(viewModel: DatosViewModel) {
             onValueChange = { viewModel.experiencia = it },
             opciones = opcionesExperiencia, // Lista de opciones de experiencia
             modifier = Modifier
-                .width(160.dp)
                 .height(50.dp),
             backgroundColor = Color.White
         )

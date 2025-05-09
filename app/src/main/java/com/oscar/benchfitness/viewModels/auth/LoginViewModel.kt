@@ -34,8 +34,15 @@ class LoginViewModel(
     var email by mutableStateOf("")
     var password by mutableStateOf("")
     var loading by mutableStateOf(false)
+    var errorMessage by mutableStateOf<String?>(null)
 
     private val userRepository = UserRepository(auth, db)
+
+
+
+    fun clearError() {
+        errorMessage = null
+    }
 
     /**
      * Método que loguea al usuario con email y contraseña

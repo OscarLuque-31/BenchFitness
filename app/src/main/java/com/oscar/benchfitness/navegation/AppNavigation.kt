@@ -18,6 +18,7 @@ import com.oscar.benchfitness.screens.auth.LoginScreen
 import com.oscar.benchfitness.screens.auth.RegistroScreen
 import com.oscar.benchfitness.screens.datos.DatosScreen
 import com.oscar.benchfitness.screens.main.MainContainer
+import com.oscar.benchfitness.viewModels.auth.AuthViewModel
 import com.oscar.benchfitness.viewModels.auth.LoginViewModel
 import com.oscar.benchfitness.viewModels.auth.RegistroViewModel
 import com.oscar.benchfitness.viewModels.datos.DatosViewModel
@@ -26,34 +27,13 @@ import com.oscar.benchfitness.viewModels.datos.DatosViewModel
 fun AppNavegation(auth: FirebaseAuth, db: FirebaseFirestore) {
     val navController = rememberNavController()
 
-    val currentUser = auth.currentUser
-    var datosCompletados by remember { mutableStateOf(false) }
-    var isChecking by remember { mutableStateOf(true) }
+    val authViewModel = remember {  AuthViewModel(auth, db) }
+
     var showSplash by remember { mutableStateOf(true) }
 
     // Navega automáticamente a la pantalla principal si hay un usuario autenticado
-    LaunchedEffect(currentUser) {
-
-        // Si el usuario no existe se cierra la sesión
-        currentUser?.reload()?.addOnCompleteListener { task ->
-            if (task.isCanceled) {
-                auth.signOut()
-            }
-        }
-
-        // Si el usuario no es nulo comprueba que existan sus datos
-        if (currentUser != null) {
-            db.collection("users").document(currentUser.uid).get()
-                .addOnSuccessListener { document ->
-                    datosCompletados = document.getBoolean("datosCompletados") == true
-                    isChecking = false
-                }
-                .addOnFailureListener {
-                    isChecking = false
-                }
-        } else {
-            isChecking = false
-        }
+    LaunchedEffect(true) {
+        authViewModel.verificarEstado()
     }
 
     // Si es true se muestra la pantalla de carga
@@ -64,8 +44,8 @@ fun AppNavegation(auth: FirebaseAuth, db: FirebaseFirestore) {
 
     // Decide la pantalla inicial según si los datos están completos
     val startDestination = when {
-        currentUser == null -> Inicio.route
-        datosCompletados -> Main.route
+        !authViewModel.isAuthenticated -> Inicio.route
+        authViewModel.datosCompletados -> Main.route
         else -> Datos.route
     }
 
@@ -82,7 +62,7 @@ fun AppNavegation(auth: FirebaseAuth, db: FirebaseFirestore) {
         }
         composable(Datos.route) { DatosScreen(navController, viewModel = DatosViewModel(auth, db)) }
         composable(Main.route) {
-            MainContainer(auth, db)
+            MainContainer(auth, db, navController , authViewModel)
         }
     }
 }

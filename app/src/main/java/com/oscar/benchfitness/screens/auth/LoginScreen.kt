@@ -1,21 +1,18 @@
 package com.oscar.benchfitness.screens.auth
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -26,11 +23,13 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,45 +51,47 @@ import com.oscar.benchfitness.ui.theme.negroClaroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
 import com.oscar.benchfitness.viewModels.auth.LoginViewModel
-import kotlinx.coroutines.launch
 
 
 @Composable
 fun LoginScreen(navController: NavController, viewModel: LoginViewModel) {
+    val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        contentWindowInsets = WindowInsets(0)
-    ) { paddingValues ->
-        LoginBodyContent(
-            navController = navController,
-            email = viewModel.email,
-            password = viewModel.password,
-            onEmailChange = { viewModel.email = it },
-            onPasswordChange = { viewModel.password = it },
-            onLoginClick = {
-                viewModel.loginUser(navController) { errorMessage ->
-                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-                }
-            },
-            onGoogleLoginClick = {
-                scope.launch {
-                    viewModel.loginWithGoogle(context, navController, onFailure = { errorMessage ->
-                        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT)
-                            .show()
-                    })
-                }
-            },
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-                .background(color = rojoBench)
-                .imePadding()
-                .verticalScroll(rememberScrollState())
-        )
+    // Mostrar snackbar si hay error
+    LaunchedEffect(viewModel.errorMessage) {
+        viewModel.errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearError()
+        }
     }
+
+    LoginBodyContent(
+        navController = navController,
+        email = viewModel.email,
+        password = viewModel.password,
+        onEmailChange = { viewModel.email = it },
+        onPasswordChange = { viewModel.password = it },
+        onLoginClick = {
+            viewModel.loginUser(navController) { errorMessage ->
+                viewModel.errorMessage = errorMessage
+            }
+        },
+        onGoogleLoginClick = {
+            viewModel.loginWithGoogle(
+                context,
+                navController = navController,
+                onFailure = { error ->
+                    viewModel.errorMessage = error
+                })
+        },
+        modifier = Modifier
+            .fillMaxSize()
+            .background(rojoBench)
+            .verticalScroll(rememberScrollState())
+            .imePadding(),
+        snackbarHostState = snackbarHostState
+    )
 }
 
 
@@ -103,31 +104,55 @@ fun LoginBodyContent(
     onPasswordChange: (String) -> Unit,
     onLoginClick: () -> Unit,
     onGoogleLoginClick: () -> Unit,
+    snackbarHostState: SnackbarHostState, // 👈 nuevo parámetro
     modifier: Modifier
 ) {
     Column(
         modifier = modifier
     ) {
-        // Barra de arriba
         LoginTopBar(navController)
-        Spacer(modifier = Modifier.weight(1f))
-        // Datos a recoger en el login
+
+        // Snackbar entre topbar y contenido
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            snackbar = { snackbarData ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(color = negroOscuroBench)
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                ) {
+                    Text(
+                        text = snackbarData.visuals.message,
+                        color = rojoBench,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+        )
+
         LoginDatos(
             email,
             password,
             onEmailChange,
             onPasswordChange,
             onLoginClick,
-            onGoogleLoginClick
+            onGoogleLoginClick,
+            modifier = Modifier.weight(0.7f)
         )
     }
 }
+
 
 @Composable
 fun LoginTopBar(navController: NavController) {
     Row(
         modifier = Modifier
-            .padding(top = 25.dp)
+            .padding(top = 50.dp)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -170,10 +195,11 @@ fun LoginDatos(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onLoginClick: () -> Unit,
-    onGoogleLoginClick: () -> Unit
+    onGoogleLoginClick: () -> Unit,
+    modifier: Modifier
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Bottom
     ) {
         Text(
@@ -184,7 +210,6 @@ fun LoginDatos(
         )
         Column(
             modifier = Modifier
-                .height(550.dp)
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp))
                 .background(color = negroBench)
@@ -209,11 +234,10 @@ fun LoginTextFields(
     onPasswordChange: (String) -> Unit,
     onLoginClick: () -> Unit
 ) {
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(380.dp),
+            .padding(horizontal = 30.dp, vertical = 30.dp), // 👈 Aquí agregas el padding lateral
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -222,7 +246,7 @@ fun LoginTextFields(
             text = email,
             onValueChange = onEmailChange,
             modifier = Modifier
-                .width(310.dp)
+                .fillMaxWidth()
                 .height(55.dp),
             backgroundColor = Color.White,
             colorText = negroOscuroBench,
@@ -235,7 +259,7 @@ fun LoginTextFields(
             onValueChange = onPasswordChange,
             isPassword = true,
             modifier = Modifier
-                .width(310.dp)
+                .fillMaxWidth()
                 .height(55.dp),
             backgroundColor = Color.White,
             colorText = negroOscuroBench
@@ -244,17 +268,17 @@ fun LoginTextFields(
         Text(
             "¿Contraseña olvidada?",
             style = MaterialTheme.typography.bodyLarge,
-            fontSize = 10.sp,
+            fontSize = 13.sp,
             color = Color.White,
-            modifier = Modifier.width(310.dp),
+            modifier = Modifier.fillMaxWidth(), // alineado por padding del padre
             textAlign = TextAlign.End
         )
         Spacer(modifier = Modifier.height(36.dp))
         GlobalButton(
             "Iniciar sesión", rojoBench,
             modifier = Modifier
-                .width(310.dp)
-                .height(50.dp),
+                .fillMaxWidth()
+                .height(55.dp),
             colorText = Color.White,
         ) { onLoginClick() }
     }
@@ -268,7 +292,7 @@ fun LoginButtonGoogle(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(),
+            .padding(horizontal = 30.dp, vertical = 30.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -280,8 +304,8 @@ fun LoginButtonGoogle(
                 contentColor = negroBench
             ),
             modifier = Modifier
-                .width(310.dp)
-                .height(50.dp)
+                .fillMaxWidth()
+                .height(55.dp)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.logo_google),

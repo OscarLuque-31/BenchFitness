@@ -75,6 +75,7 @@ import coil.request.ImageRequest
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.navegation.MainExercises
 import com.oscar.benchfitness.navegation.MainHome
+import com.oscar.benchfitness.navegation.MainPerfil
 import com.oscar.benchfitness.navegation.MainStatistics
 import com.oscar.benchfitness.navegation.Perfil
 import com.oscar.benchfitness.ui.theme.negroBench
@@ -120,7 +121,7 @@ fun GlobalTextField(
             color = colorText
         ),
         shape = MaterialTheme.shapes.medium,
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         singleLine = true,
         visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
         colors = TextFieldDefaults.colors(
@@ -314,7 +315,6 @@ fun GlobalDropDownMenu(
             ),
             modifier = modifier
                 .clip(RoundedCornerShape(12.dp))
-                .fillMaxWidth()
                 .menuAnchor()
                 .onGloballyPositioned { coordinates ->
                     textFieldWidth = coordinates.size.width
@@ -373,7 +373,7 @@ fun CabeceraBenchFitness(text: String) {
             Text(
                 text,
                 style = MaterialTheme.typography.bodySmall, fontSize = 20.sp,
-                color = Color.White
+                color = Color.White, fontWeight = FontWeight.Medium
             )
             Image(
                 painter = painterResource(id = R.drawable.logo_bench),
@@ -424,8 +424,8 @@ fun GlobalBarraNavegacion(navController: NavController) {
         ) {
             navController.navigate(MainStatistics.route)
         }
-        NavigationIcon("Perfil", R.drawable.user, currentRoute == Perfil.route) {
-            navController.navigate(Perfil.route)
+        NavigationIcon("Perfil", R.drawable.user, currentRoute == MainPerfil.route) {
+            navController.navigate(MainPerfil.route)
         }
     }
 }

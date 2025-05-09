@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,10 +23,13 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,23 +53,27 @@ import com.oscar.benchfitness.viewModels.auth.RegistroViewModel
 
 @Composable
 fun RegistroScreen(navController: NavController, viewModel: RegistroViewModel) {
-    Scaffold(
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+
+    // Mostrar snackbar si hay error
+    LaunchedEffect(viewModel.errorMessage) {
+        viewModel.errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearError() // Este método debes agregarlo en tu viewmodel
+        }
+    }
+    RegisterBodyContent(
+        navController = navController,
+        viewModel = viewModel,
         modifier = Modifier
             .fillMaxSize()
-            .background(color = rojoBench),
-        contentWindowInsets = WindowInsets(0)
-    ) { paddingValues ->
-        RegisterBodyContent(
-            navController = navController,
-            viewModel = viewModel,
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-                .background(color = rojoBench)
-                .verticalScroll(rememberScrollState())
-                .imePadding()
-        )
-    }
+            .background(color = rojoBench)
+            .verticalScroll(rememberScrollState())
+            .imePadding(),
+        snackbarHostState
+    )
+
 }
 
 
@@ -75,14 +81,37 @@ fun RegistroScreen(navController: NavController, viewModel: RegistroViewModel) {
 fun RegisterBodyContent(
     navController: NavController,
     viewModel: RegistroViewModel,
-    modifier: Modifier
+    modifier: Modifier,
+    snackbarHostState: SnackbarHostState
 ) {
     Column(
         modifier = modifier
     ) {
         // Barra de arriba
         RegisterTopBar(navController)
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.weight(0.3f))
+        // Snackbar
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            snackbar = { snackbarData ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(negroOscuroBench)
+                        .padding(12.dp)
+                ) {
+                    Text(
+                        text = snackbarData.visuals.message,
+                        color = rojoBench,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+        )
         // Datos a recoger en el login
         RegisterDatos(navController, viewModel)
     }
@@ -93,7 +122,7 @@ fun RegisterTopBar(navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 20.dp),
+            .padding(top = 50.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -140,7 +169,6 @@ fun RegisterDatos(navController: NavController, viewModel: RegistroViewModel) {
         )
         Column(
             modifier = Modifier
-                .height(550.dp)
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp))
                 .background(color = negroBench),
@@ -158,7 +186,7 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .width(310.dp),
+            .fillMaxWidth().padding(horizontal = 30.dp, vertical = 30.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -167,7 +195,7 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
             text = viewModel.username,
             onValueChange = { viewModel.username = it },
             modifier = Modifier
-                .width(310.dp)
+                .fillMaxWidth()
                 .height(55.dp),
             backgroundColor = Color.White,
             colorText = negroOscuroBench
@@ -179,7 +207,7 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
             text = viewModel.email,
             onValueChange = { viewModel.email = it },
             modifier = Modifier
-                .width(310.dp)
+                .fillMaxWidth()
                 .height(55.dp),
             backgroundColor = Color.White,
             colorText = negroOscuroBench
@@ -193,7 +221,7 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
             onValueChange = { viewModel.password = it },
             isPassword = true,
             modifier = Modifier
-                .width(310.dp)
+                .fillMaxWidth()
                 .height(55.dp),
             backgroundColor = Color.White,
             colorText = negroOscuroBench
@@ -206,7 +234,7 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
             onValueChange = { viewModel.confirmPassword = it },
             isPassword = true,
             modifier = Modifier
-                .width(310.dp)
+                .fillMaxWidth()
                 .height(55.dp),
             backgroundColor = Color.White,
             colorText = negroOscuroBench
@@ -218,13 +246,12 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
             onCheckedChange = { viewModel.acceptTerms = it })
         Spacer(modifier = Modifier.height(25.dp))
 
-        Spacer(modifier = Modifier.height(25.dp))
         GlobalButton(
             "Registrar",
             rojoBench,
             modifier = Modifier
-                .width(310.dp)
-                .height(50.dp),
+                .fillMaxWidth()
+                .height(55.dp),
             colorText = Color.White
         ) {
             viewModel.registerUser(
@@ -235,7 +262,7 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
                         }
                     }
                 },
-                onFailure = { error -> Toast.makeText(context, error, Toast.LENGTH_SHORT).show() }
+                onFailure = { error -> viewModel.errorMessage = error }
             )
         }
     }
@@ -262,7 +289,7 @@ fun ConfirmarTerminosYCondiciones(checked: Boolean, onCheckedChange: (Boolean) -
         )
         Text(
             "Confirmo que he leído y acepto los términos y condiciones de la aplicación, incluyendo las políticas de privacidad y el uso de datos.",
-            fontSize = 10.sp,
+            fontSize = 12.sp,
             color = Color.White,
             textAlign = TextAlign.Justify
         )

@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.oscar.benchfitness.animations.LoadingScreen
 import com.oscar.benchfitness.components.GlobalHeader
 import com.oscar.benchfitness.models.userData
 import com.oscar.benchfitness.navegation.Goal
@@ -32,6 +33,7 @@ fun MainHomeContainer(
     val innerNavController = rememberNavController()
     val homeViewModel = remember { HomeViewModel(auth, db) }
     val user by homeViewModel.userData.collectAsState()
+    val isLoading by homeViewModel.isLoading.collectAsState()
 
     LaunchedEffect(Unit) {
         homeViewModel.cargarDatosUsuario()
@@ -49,11 +51,15 @@ fun MainHomeContainer(
 
         ) {
             composable(Home.route) {
-                HomeScreen(
-                    navController = innerNavController,
-                    viewModel = homeViewModel,
-                    user = user
-                )
+                if (isLoading) {
+                    LoadingScreen()
+                } else {
+                    HomeScreen(
+                        navController = innerNavController,
+                        viewModel = homeViewModel,
+                        user = user
+                    )
+                }
             }
             composable(Goal.route) {
 

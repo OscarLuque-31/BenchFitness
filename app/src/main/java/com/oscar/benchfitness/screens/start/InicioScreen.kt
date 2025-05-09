@@ -45,7 +45,7 @@ fun InicioBodyContent(navController: NavController, modifier: Modifier) {
         ColumnaPrincipal(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.67f) // Ocupa el espacio disponible
+                .weight(1f) // Ocupa el espacio disponible
             ,
             modifierImagen = Modifier.size(150.dp)
         )
@@ -53,8 +53,7 @@ fun InicioBodyContent(navController: NavController, modifier: Modifier) {
         // Contenedor de bienvenida en la parte inferior
         ContenedorBienvenida(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.33f),
+                .fillMaxWidth(),
             navController
         )
     }
@@ -110,7 +109,7 @@ fun BotonesBienvenida(navController: NavController) {
             .fillMaxWidth()
             .padding(top = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(45.dp)
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Button(onClick = {
             navController.navigate(route = Login.route)
@@ -122,13 +121,14 @@ fun BotonesBienvenida(navController: NavController) {
             ),
             modifier = Modifier
                 .weight(1f)
-                .height(50.dp)) {
+                .height(60.dp)) {
             Text(
                 "Iniciar sesión",
                 style = MaterialTheme.typography.bodyLarge,
-                fontSize = 14.sp
+                fontSize = 16.sp
             )
         }
+        Spacer(Modifier.width(20.dp))
         Button(onClick = {
             navController.navigate(route = Registro.route)
         },
@@ -139,11 +139,11 @@ fun BotonesBienvenida(navController: NavController) {
             ),
             modifier = Modifier
                 .weight(1f)
-                .height(50.dp)) {
+                .height(60.dp)) {
             Text(
                 "Registrarse",
                 style = MaterialTheme.typography.bodyLarge,
-                fontSize = 14.sp
+                fontSize = 16.sp
             )
         }
     }

@@ -32,7 +32,7 @@ fun validateLoginFields(email: String, password: String): Pair<Boolean, String> 
             "Ingresa un email válido"
         )
 
-        password.length < 6 -> Pair(false, "Se debe completar el campo")
+        password.length < 6 -> Pair(false, "Completa los campos restantes")
         else -> Pair(true, "")
     }
 }

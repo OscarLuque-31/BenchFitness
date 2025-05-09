@@ -56,7 +56,7 @@ class DatosViewModel(
                 userData(
                     altura = altura,
                     genero = genero,
-                    peso = peso,
+                    peso = peso.replace(",","."),
                     experiencia = experiencia,
                     nivelActividad = nivelActividad,
                     objetivo = objetivo,

@@ -23,6 +23,11 @@ object MainStatistics {
 }
 
 @Serializable
+object MainPerfil {
+    const val route = "MainPerfil"
+}
+
+@Serializable
 object Logo {
     const val route = "Logo"
 }

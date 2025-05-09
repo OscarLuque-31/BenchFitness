@@ -44,6 +44,19 @@ class RoutineRepository(auth: FirebaseAuth, db: FirebaseFirestore) {
     }
 
     /**
+     * Método que obtiene el número de rutinas creadas
+     */
+    suspend fun getNumberOfRoutines(): String {
+        return try {
+            val rutinas = routinesCollection.get().await()
+            rutinas.documents.size.toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            "0"
+        }
+    }
+
+    /**
      * Método que elimina la rutina por nombre elegida por el usuario
      */
     suspend fun eliminarRutina(nombre: String): Boolean {
