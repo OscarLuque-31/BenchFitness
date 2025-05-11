@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -174,7 +175,7 @@ fun FilaObjetivoRutina(viewModel: CrearRutinaViewModel) {
             },
             opciones = objetivos,
             modifier = Modifier
-                .width(150.dp)
+                .widthIn(min = 150.dp)
                 .height(50.dp),
             backgroundColor = negroBench,
             colorText = rojoBench

@@ -212,7 +212,7 @@ class LoginViewModel(
 
                                                 }
                                                 .addOnFailureListener { e ->
-                                                    onFailure("Error al actualizar UID: ${e.message}")
+                                                    onFailure("Hubo un problema al actualizar tu información. Intenta de nuevo.")
                                                 }
                                         }
                                     } else {
@@ -230,24 +230,24 @@ class LoginViewModel(
                                                 navController.navigate(Datos.route)
                                             }
                                             .addOnFailureListener { e ->
-                                                onFailure("Error al guardar datos del usuario: ${e.message}")
+                                                onFailure("No pudimos guardar tus datos. Intenta nuevamente.")
                                             }
                                     }
                                 }
                                 .addOnFailureListener { e ->
-                                    onFailure("Error al verificar usuario en Firestore: ${e.message}")
+                                    onFailure("No se pudo verificar tu cuenta. Revisa tu conexión e intenta de nuevo.")
                                 }
                         } else {
-                            onFailure("No se pudo obtener el correo electrónico del usuario.")
+                            onFailure("No pudimos obtener tu correo de Google. Intenta con otra cuenta.")
                         }
                     }
                 } else {
-                    onFailure("Credencial no válida")
+                    onFailure("Hubo un problema al iniciar sesión con Google. Intenta de nuevo.")
                 }
             } catch (e: GetCredentialException) {
-                onFailure("Error al obtener credenciales: ${e.message}")
+                onFailure("No pudimos obtener tus credenciales de Google. Revisa tu conexión o intenta más tarde.")
             } catch (e: Exception) {
-                onFailure("Error inesperado: ${e.message}")
+                onFailure("Ocurrió un error inesperado al iniciar sesión. Intenta nuevamente.")
             } finally {
                 loading = false
             }

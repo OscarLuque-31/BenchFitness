@@ -1,9 +1,7 @@
 package com.oscar.benchfitness.repository
 
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.oscar.benchfitness.models.Routine
 import com.oscar.benchfitness.models.userData
 import kotlinx.coroutines.tasks.await
 
@@ -90,39 +88,18 @@ class UserRepository(
         }
     }
 
-    /**
-     * Método para eliminar al usuario
-     */
-    fun eliminarUsuario() {
-        val user = auth.currentUser
-        if (user != null) {
-            val email = user.email ?: return
 
-            // Buscar documentos en Firestore con el mismo email
-            db.collection("users").whereEqualTo("email", email).get()
-                .addOnSuccessListener { documents ->
-                    for (document in documents) {
-                        db.collection("users").document(document.id).delete()
-                    }
+    fun updateProfileUser(objetivo: String, altura: String) {
+        val user = auth.currentUser ?: return
 
-                    // Después de eliminar en Firestore, eliminar en FirebaseAuth
-                    user.delete().addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Log.d("EliminarUsuario", "Cuenta eliminada completamente")
-                        } else {
-                            Log.e(
-                                "EliminarUsuario",
-                                "Error al eliminar la cuenta de Auth",
-                                task.exception
-                            )
-                        }
-                    }
-                }
-                .addOnFailureListener { e ->
-                    Log.e("EliminarUsuario", "Error al eliminar el usuario de Firestore", e)
-                }
-        } else {
-            Log.e("EliminarUsuario", "No hay usuario autenticado")
+        val updates = mutableMapOf<String, Any>()
+
+        if (objetivo.isNotBlank()) updates["objetivo"] = objetivo
+        if (altura.isNotBlank()) updates["altura"] = altura
+
+        if (updates.isNotEmpty()) {
+            db.collection("users").document(user.uid).update(updates)
+                .addOnFailureListener { it.printStackTrace() }
         }
     }
 

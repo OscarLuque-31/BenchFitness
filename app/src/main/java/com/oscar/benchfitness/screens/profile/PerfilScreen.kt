@@ -14,11 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,16 +33,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.components.GlobalButton
-import com.oscar.benchfitness.components.InfoDialog
+import com.oscar.benchfitness.components.GlobalDropDownMenu
+import com.oscar.benchfitness.components.GlobalTextField
 import com.oscar.benchfitness.navegation.Inicio
-import com.oscar.benchfitness.navegation.Login
-import com.oscar.benchfitness.navegation.Perfil
-import com.oscar.benchfitness.screens.start.InicioScreen
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
@@ -109,7 +111,6 @@ fun PerfilScreen(navController: NavController, viewModel: PerfilViewModel) {
 }
 
 
-
 @Composable
 fun ColumnaNombreRutinas(viewModel: PerfilViewModel) {
     Column(
@@ -152,6 +153,7 @@ fun ColumnaNombreRutinas(viewModel: PerfilViewModel) {
 
 @Composable
 fun ColumnaDatos(modifier: Modifier, viewModel: PerfilViewModel) {
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -174,19 +176,8 @@ fun ColumnaDatos(modifier: Modifier, viewModel: PerfilViewModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("Datos", color = rojoBench, fontSize = 24.sp, fontWeight = FontWeight.Medium)
-                IconButton(
-                    onClick = {
-
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Edit,
-                        contentDescription = "Edit",
-                        tint = Color.White,
-                        modifier = Modifier.size(26.dp)
-                    )
-                }
             }
+            DialogEditarDato(viewModel)
             DatosPerfil(viewModel)
             if (!viewModel.isGoogleUser) {
                 GlobalButton(
@@ -238,12 +229,20 @@ fun DatosPerfil(viewModel: PerfilViewModel) {
             fontSize = 17.sp,
             fontWeight = FontWeight.Medium
         )
-        Text(
-            viewModel.usuario.objetivo,
-            color = Color.White,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Normal
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                viewModel.usuario.objetivo,
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Normal
+            )
+            IconButton(onClick = { viewModel.editObjetivo = true }) {
+                Icon(Icons.Default.Edit, contentDescription = "Editar objetivo", tint = rojoBench)
+            }
+        }
     }
     Column {
         Text(
@@ -252,11 +251,134 @@ fun DatosPerfil(viewModel: PerfilViewModel) {
             fontSize = 17.sp,
             fontWeight = FontWeight.Medium
         )
-        Text(
-            "${viewModel.usuario.altura} cm",
-            color = Color.White,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Normal
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                "${viewModel.usuario.altura} cm",
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Normal
+            )
+            IconButton(onClick = { viewModel.editAltura = true }) {
+                Icon(Icons.Default.Edit, contentDescription = "Editar altura", tint = rojoBench)
+            }
+        }
+    }
+}
+
+
+@Composable
+fun DialogEditarDato(viewModel: PerfilViewModel) {
+    var showError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    val opcionesObjetivoFit: List<String> = listOf(
+        "Perder peso",
+        "Mantener peso",
+        "Masa muscular"
+    )
+
+    if (viewModel.editObjetivo || viewModel.editAltura) {
+        AlertDialog(
+            onDismissRequest = {
+                viewModel.editObjetivo = false
+                viewModel.editAltura = false
+            },
+            title = {
+                Text("Editar información", color = Color.White, fontSize = 20.sp)
+            },
+            text = {
+                Column {
+                    if (viewModel.editObjetivo) {
+                        Text("Objetivo", color = rojoBench)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        GlobalDropDownMenu(
+                            viewModel.newObjetivo,
+                            opcionesObjetivoFit,
+                            onValueChange = { viewModel.newObjetivo = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            backgroundColor = negroOscuroBench,
+                            colorText = rojoBench
+                        )
+                    }
+
+                    if (viewModel.editAltura) {
+                        Text("Altura", color = rojoBench)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        GlobalTextField(
+                            nombre = "",
+                            text = viewModel.newAltura,
+                            onValueChange = { viewModel.newAltura = it },
+                            trailingIcon = {
+                                Text(
+                                    "cm",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontSize = 14.sp,
+                                    color = rojoBench
+                                )
+                            },
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.height(50.dp),
+                            backgroundColor = negroOscuroBench,
+                            colorText = rojoBench,
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Number
+                            )
+                        )
+                    }
+
+                    if (showError) {
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            errorMessage,
+                            color = Color.Red,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                Text(
+                    "Guardar",
+                    color = rojoBench,
+                    modifier = Modifier
+                        .clickable {
+                            val error = when {
+                                viewModel.editObjetivo -> viewModel.validarObjetivo()
+                                viewModel.editAltura -> viewModel.validarAltura()
+                                else -> null
+                            }
+
+                            if (error != null) {
+                                errorMessage = error
+                                showError = true
+                            } else {
+                                showError = false
+                                viewModel.guardarCambios()
+                            }
+                        }
+                        .padding(10.dp),
+                    fontSize = 15.sp
+                )
+            },
+            dismissButton = {
+                Text(
+                    "Cancelar",
+                    color = Color.White,
+                    modifier = Modifier
+                        .clickable {
+                            viewModel.editObjetivo = false
+                            viewModel.editAltura = false
+                        }
+                        .padding(10.dp),
+                    fontSize = 15.sp
+                )
+            },
+            containerColor = negroBench
         )
     }
 }
