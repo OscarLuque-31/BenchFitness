@@ -27,8 +27,16 @@ class DatosViewModel(
 
     var isLoading by mutableStateOf(false)
 
+    // Agregar un estado para el mensaje del Snackbar
+    var snackbarMessage by mutableStateOf<String?>(null)
+
+
 
     private val userRepository = UserRepository(auth, db)
+
+    fun dismissSnackbar() {
+        snackbarMessage = null
+    }
 
     /**
      * Método que guarda los datos del usuario en base de datos
@@ -49,7 +57,7 @@ class DatosViewModel(
 
         // Si no son válidos lanza un mensaje de error, sino guarda los datos
         if (!isValid) {
-            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+            snackbarMessage = errorMessage
             onFailure(errorMessage)
         } else {
             userRepository.guardarDatosUsuario(

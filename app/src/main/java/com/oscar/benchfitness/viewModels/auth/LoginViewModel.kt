@@ -1,6 +1,7 @@
 package com.oscar.benchfitness.viewModels.auth
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -15,7 +16,9 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.navegation.Datos
 import com.oscar.benchfitness.navegation.Inicio
@@ -24,6 +27,8 @@ import com.oscar.benchfitness.repository.UserRepository
 import com.oscar.benchfitness.utils.validateLoginFields
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import org.json.JSONObject
+import java.util.concurrent.CancellationException
 
 
 class LoginViewModel(
@@ -37,7 +42,6 @@ class LoginViewModel(
     var errorMessage by mutableStateOf<String?>(null)
 
     private val userRepository = UserRepository(auth, db)
-
 
 
     fun clearError() {
@@ -148,109 +152,128 @@ class LoginViewModel(
         onFailure: (String) -> Unit
     ) {
         viewModelScope.launch {
-            // Crea el manejador de credenciales
-            val credentialManager: CredentialManager = CredentialManager.create(context)
-
             try {
                 loading = true
 
-                // Crea el dialogo para seleccionar las cuentas
+                // 1. Configurar CredentialManager
+                val credentialManager = CredentialManager.create(context)
                 val googleIdOption = GetGoogleIdOption.Builder()
                     .setServerClientId(context.getString(R.string.default_web_client_id))
                     .setFilterByAuthorizedAccounts(false)
                     .build()
 
-                // Crea la request con la opción seleccionada
                 val request = GetCredentialRequest.Builder()
                     .addCredentialOption(googleIdOption)
                     .build()
 
-                // Obtiene la credencial de la request anterior
+                // 2. Obtener credenciales
                 val credentialResponse = credentialManager.getCredential(
                     request = request,
                     context = context
                 )
 
                 val credential = credentialResponse.credential
-                if (credential is CustomCredential &&
-                    credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
-                ) {
-                    val googleIdToken = GoogleIdTokenCredential.createFrom(credential.data)
-                    val firebaseCredential = GoogleAuthProvider.getCredential(
-                        googleIdToken.idToken,
-                        null
-                    )
-
-                    // Inicia sesión con la credencial
-                    val authResult = auth.signInWithCredential(firebaseCredential).await()
-                    authResult.user?.let { firebaseUser ->
-                        val email = firebaseUser.email ?: ""
-                        val uid = firebaseUser.uid
-
-                        if (email.isNotEmpty()) {
-                            // Verifica si el usuario ya existe en Firestore
-                            db.collection("users").whereEqualTo("email", email).get()
-                                .addOnSuccessListener { documents ->
-                                    if (!documents.isEmpty) {
-                                        // Si el usuario ya existe se actualiza el UID en Firestore
-                                        for (document in documents) {
-                                            db.collection("users").document(document.id)
-                                                .update("uid", uid)
-                                                .addOnSuccessListener {
-
-                                                    val datosCompletados =
-                                                        document.getBoolean("datosCompletados")
-                                                            ?: false
-
-                                                    if (datosCompletados) {
-                                                        // Si los datos están completos, navega a la pantalla principal
-                                                        navController.navigate(Main.route)
-                                                    } else {
-                                                        // Si los datos no están completos, navega a la pantalla para completar los datos
-                                                        navController.navigate(Datos.route)
-                                                    }
-
-                                                }
-                                                .addOnFailureListener { e ->
-                                                    onFailure("Hubo un problema al actualizar tu información. Intenta de nuevo.")
-                                                }
-                                        }
-                                    } else {
-                                        // Si no existe se guarda el usuario en Firestore
-                                        val userData = hashMapOf(
-                                            "uid" to uid,
-                                            "username" to (firebaseUser.displayName?.split(" ")
-                                                ?.firstOrNull() ?: ""),
-                                            "email" to email
-                                        )
-
-                                        db.collection("users").document(uid)
-                                            .set(userData)
-                                            .addOnSuccessListener {
-                                                navController.navigate(Datos.route)
-                                            }
-                                            .addOnFailureListener { e ->
-                                                onFailure("No pudimos guardar tus datos. Intenta nuevamente.")
-                                            }
-                                    }
-                                }
-                                .addOnFailureListener { e ->
-                                    onFailure("No se pudo verificar tu cuenta. Revisa tu conexión e intenta de nuevo.")
-                                }
-                        } else {
-                            onFailure("No pudimos obtener tu correo de Google. Intenta con otra cuenta.")
-                        }
-                    }
-                } else {
-                    onFailure("Hubo un problema al iniciar sesión con Google. Intenta de nuevo.")
+                if (credential !is CustomCredential ||
+                    credential.type != GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                    onFailure("Credenciales inválidas")
+                    loading = false
+                    return@launch
                 }
-            } catch (e: GetCredentialException) {
-                onFailure("No pudimos obtener tus credenciales de Google. Revisa tu conexión o intenta más tarde.")
+
+                // 3. Extraer token de Google CORRECTAMENTE
+                val googleIdToken = GoogleIdTokenCredential.createFrom(credential.data)
+                val idToken = googleIdToken.idToken ?: run {
+                    onFailure("No se pudo obtener el token de Google")
+                    loading = false
+                    return@launch
+                }
+
+                // 4. Decodificar el token JWT manualmente para obtener el email
+                val payload = try {
+                    val parts = idToken.split(".")
+                    val payloadPart = parts[1]
+                    val decodedBytes = android.util.Base64.decode(
+                        payloadPart,
+                        android.util.Base64.URL_SAFE or android.util.Base64.NO_PADDING or android.util.Base64.NO_WRAP
+                    )
+                    String(decodedBytes, Charsets.UTF_8)
+                } catch (e: Exception) {
+                    onFailure("Error al decodificar el token")
+                    loading = false
+                    return@launch
+                }
+
+                val jsonObject = try {
+                    JSONObject(payload)
+                } catch (e: Exception) {
+                    onFailure("Error al parsear el token")
+                    loading = false
+                    return@launch
+                }
+
+                val email = jsonObject.optString("email").takeIf { it.isNotEmpty() } ?: run {
+                    onFailure("No se encontró email en el token")
+                    loading = false
+                    return@launch
+                }
+
+                // 5. Verificar métodos de autenticación
+                val signInMethods = auth.fetchSignInMethodsForEmail(email).await().signInMethods ?: emptyList()
+
+                if (signInMethods.contains("password") && !signInMethods.contains("google.com")) {
+                    onFailure("Este email ya está registrado con contraseña")
+                    loading = false
+                    return@launch
+                }
+
+                // 6. Autenticar con Firebase
+                val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
+                val authResult = auth.signInWithCredential(firebaseCredential).await()
+
+                // 7. Manejar usuario en Firestore
+                authResult.user?.let { user ->
+                    val uid = user.uid
+                    db.collection("users").whereEqualTo("email", email).get()
+                        .addOnSuccessListener { documents ->
+                            if (documents.isEmpty) {
+                                // Nuevo usuario
+                                val userData = hashMapOf(
+                                    "uid" to uid,
+                                    "email" to email,
+                                    "username" to (user.displayName?.split(" ")?.firstOrNull() ?: ""),
+                                    "datosCompletados" to false
+                                )
+                                db.collection("users").document(uid).set(userData)
+                                    .addOnSuccessListener { navController.navigate(Datos.route) }
+                            } else {
+                                // Usuario existente
+                                val doc = documents.documents[0]
+                                val needsUpdate = doc.get("uid") != uid
+
+                                if (needsUpdate) {
+                                    doc.reference.update("uid", uid)
+                                        .addOnSuccessListener { navigateBasedOnCompletion(doc, navController) }
+                                } else {
+                                    navigateBasedOnCompletion(doc, navController)
+                                }
+                            }
+                        }
+                }
+
             } catch (e: Exception) {
-                onFailure("Ocurrió un error inesperado al iniciar sesión. Intenta nuevamente.")
+                onFailure(when (e) {
+                    is GetCredentialException -> "Error al obtener credenciales"
+                    is CancellationException -> "Operación cancelada"
+                    else -> "Error inesperado: ${e.localizedMessage}"
+                })
             } finally {
                 loading = false
             }
         }
+    }
+
+    private fun navigateBasedOnCompletion(document: DocumentSnapshot, navController: NavController) {
+        val completed = document.getBoolean("datosCompletados") ?: false
+        navController.navigate(if (completed) Main.route else Datos.route)
     }
 }

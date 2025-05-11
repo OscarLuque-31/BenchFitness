@@ -1,12 +1,11 @@
 package com.oscar.benchfitness.screens.datos
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,8 +18,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +49,16 @@ import com.oscar.benchfitness.viewModels.datos.DatosViewModel
 @Composable
 fun DatosScreen(navController: NavController, viewModel: DatosViewModel) {
     val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+
+
+    // Mostrar el snackbar si el mensaje cambia
+    LaunchedEffect(viewModel.snackbarMessage) {
+        viewModel.snackbarMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.dismissSnackbar() // Limpiar mensaje después de mostrarlo
+        }
+    }
 
     DatosBodyContent(
         viewModel = viewModel,
@@ -58,10 +71,10 @@ fun DatosScreen(navController: NavController, viewModel: DatosViewModel) {
                     }
                 },
                 onFailure = { errorMessage ->
-                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT)
-                        .show()
+                    viewModel.snackbarMessage = errorMessage
                 })
-        }
+        },
+        snackbarHostState = snackbarHostState
     )
 
 }
@@ -69,7 +82,8 @@ fun DatosScreen(navController: NavController, viewModel: DatosViewModel) {
 @Composable
 fun DatosBodyContent(
     viewModel: DatosViewModel,
-    onStartClick: () -> Unit
+    onStartClick: () -> Unit,
+    snackbarHostState: SnackbarHostState
 ) {
     Column(
         modifier = Modifier
@@ -82,6 +96,29 @@ fun DatosBodyContent(
                 .fillMaxWidth()
                 .weight(0.25f),
             modifierImagen = Modifier.size(120.dp)
+        )
+
+        // Mostrar el Snackbar con el mensaje
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            snackbar = { snackbarData ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(color = negroOscuroBench)
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                ) {
+                    Text(
+                        text = snackbarData.visuals.message,
+                        color = rojoBench,
+                        fontSize = 16.sp
+                    )
+                }
+            }
         )
 
         ContenedorDatos(
@@ -140,7 +177,7 @@ fun ContenedorDatos(
 @Composable
 fun FilaAlturayGenero(viewModel: DatosViewModel) {
 
-    val opciones: List<String> = listOf("Hombre", "Mujer")
+    val opcionesSexo: List<String> = listOf("Hombre", "Mujer")
 
     Row(
         modifier = Modifier
@@ -174,9 +211,10 @@ fun FilaAlturayGenero(viewModel: DatosViewModel) {
         Spacer(Modifier.width(30.dp))
         GlobalDropDownMenu(
             nombreSeleccion = viewModel.genero,
-            opciones = opciones,
+            opciones = opcionesSexo,
             onValueChange = { viewModel.genero = it },
-            modifier = Modifier.weight(0.3f)
+            modifier = Modifier
+                .weight(0.3f)
                 .height(50.dp),
             backgroundColor = Color.White
         )
