@@ -1,5 +1,6 @@
 package com.oscar.benchfitness.screens.profile
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.components.GlobalButton
@@ -50,11 +52,10 @@ import com.oscar.benchfitness.viewModels.profile.PerfilViewModel
 
 @Composable
 fun PerfilScreen(navController: NavController, viewModel: PerfilViewModel) {
-    var showDialog by remember { mutableStateOf(false) }
 
-    if (showDialog) {
+    if (viewModel.showLogoutDialog) {
         AlertDialog(
-            onDismissRequest = { showDialog = false },
+            onDismissRequest = { viewModel.showLogoutDialog = !viewModel.showLogoutDialog },
             text = {
                 Text(
                     text = "¿Estás seguro de que deseas cerrar sesión?",
@@ -68,7 +69,7 @@ fun PerfilScreen(navController: NavController, viewModel: PerfilViewModel) {
                     color = rojoBench,
                     modifier = Modifier
                         .clickable {
-                            showDialog = false
+                            viewModel.showLogoutDialog = !viewModel.showLogoutDialog
                             viewModel.cerrarSesion()
                             navController.navigate(Inicio.route) {
                                 popUpTo(0) { inclusive = true }
@@ -83,7 +84,7 @@ fun PerfilScreen(navController: NavController, viewModel: PerfilViewModel) {
                     text = "Cancelar",
                     color = Color.White,
                     modifier = Modifier
-                        .clickable { showDialog = false }
+                        .clickable { viewModel.showLogoutDialog = !viewModel.showLogoutDialog }
                         .padding(10.dp),
                     fontSize = 16.sp
                 )
@@ -105,7 +106,7 @@ fun PerfilScreen(navController: NavController, viewModel: PerfilViewModel) {
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
-            showDialog = true
+            viewModel.showLogoutDialog = !viewModel.showLogoutDialog
         }
     }
 }
@@ -185,8 +186,42 @@ fun ColumnaDatos(modifier: Modifier, viewModel: PerfilViewModel) {
                     colorText = Color.White,
                     backgroundColor = negroBench,
                     modifier = Modifier.fillMaxWidth()
-                ) { }
+                ) { viewModel.showPasswordDialog = !viewModel.showPasswordDialog }
             }
+
+            if (viewModel.showPasswordDialog) {
+                CambiarPasswordDialog(
+                    onDismiss = { viewModel.showPasswordDialog = !viewModel.showPasswordDialog },
+                    perfilViewModel = viewModel
+                )
+            }
+            if (viewModel.showSuccessDialog) {
+                AlertDialog(
+                    onDismissRequest = {
+                        viewModel.showSuccessDialog = !viewModel.showSuccessDialog
+                    },
+                    title = { Text("Contraseña cambiada", color = Color.White) },
+                    text = {
+                        Text(
+                            "Tu contraseña ha sido cambiada exitosamente.",
+                            color = rojoBench
+                        )
+                    },
+                    confirmButton = {
+                        Text(
+                            "Aceptar",
+                            color = rojoBench,
+                            modifier = Modifier
+                                .clickable {
+                                    viewModel.showSuccessDialog = !viewModel.showSuccessDialog
+                                }
+                                .padding(10.dp)
+                        )
+                    },
+                    containerColor = negroBench
+                )
+            }
+
         }
     }
 }
@@ -381,4 +416,74 @@ fun DialogEditarDato(viewModel: PerfilViewModel) {
             containerColor = negroBench
         )
     }
+}
+
+@Composable
+fun CambiarPasswordDialog(
+    onDismiss: () -> Unit,
+    perfilViewModel: PerfilViewModel
+) {
+    var currentPassword by remember { mutableStateOf("") }
+    var newPassword by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+
+    val passwordError = perfilViewModel.passwordError
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Cambiar contraseña", color = Color.White) },
+        text = {
+            Column {
+                GlobalTextField(
+                    nombre = "Contraseña actual",
+                    text = currentPassword,
+                    onValueChange = { currentPassword = it },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    colorText = rojoBench,
+                    backgroundColor = negroOscuroBench,
+                    modifier = Modifier.fillMaxWidth(),
+                    isPassword = true
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                GlobalTextField(
+                    nombre = "Nueva contraseña",
+                    text = newPassword,
+                    onValueChange = { newPassword = it },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    colorText = rojoBench,
+                    backgroundColor = negroOscuroBench,
+                    modifier = Modifier.fillMaxWidth(),
+                    isPassword = true
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                GlobalTextField(
+                    nombre = "Confirmar nueva contraseña",
+                    text = confirmPassword,
+                    onValueChange = { confirmPassword = it },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    colorText = rojoBench,
+                    backgroundColor = negroOscuroBench,
+                    modifier = Modifier.fillMaxWidth(),
+                    isPassword = true
+                )
+                if (passwordError != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(passwordError, color = Color.Red)
+                }
+            }
+        },
+        confirmButton = {
+            Text("Cambiar", color = rojoBench, modifier = Modifier
+                .clickable {
+                    perfilViewModel.intentarCambiarPassword(currentPassword, newPassword, confirmPassword)
+                }
+                .padding(10.dp))
+        },
+        dismissButton = {
+            Text("Cancelar", color = Color.White, modifier = Modifier
+                .clickable { onDismiss() }
+                .padding(10.dp))
+        },
+        containerColor = negroBench
+    )
 }

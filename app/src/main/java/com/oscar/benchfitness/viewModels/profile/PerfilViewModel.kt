@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.models.userData
@@ -30,6 +31,12 @@ class PerfilViewModel(
     var editObjetivo by mutableStateOf(false)
     var newObjetivo by mutableStateOf(usuario.objetivo)
     var newAltura by mutableStateOf(usuario.altura)
+
+    var showLogoutDialog by mutableStateOf(false)
+    var showPasswordDialog by mutableStateOf(false)
+    var showSuccessDialog by mutableStateOf(false)
+
+    var passwordError by mutableStateOf<String?>(null) // Variable para el error de password
 
     var isLoading by mutableStateOf(true)
 
@@ -67,6 +74,49 @@ class PerfilViewModel(
         }
     }
 
+    // Lógica para cambiar la contraseña
+    fun intentarCambiarPassword(
+        currentPassword: String,
+        newPassword: String,
+        confirmPassword: String
+    ) {
+        passwordError = null // Resetear error
+
+        when {
+            newPassword != confirmPassword -> passwordError = "Las contraseñas no coinciden"
+            newPassword.length < 6 -> passwordError = "La nueva contraseña debe tener al menos 6 caracteres"
+            else -> {
+                cambiarPassword(currentPassword, newPassword)
+            }
+        }
+    }
+
+    // Función para cambiar la contraseña en Firebase
+    private fun cambiarPassword(
+        currentPassword: String,
+        newPassword: String
+    ) {
+        val user = auth.currentUser
+        if (user != null && user.email != null) {
+            val credential = EmailAuthProvider.getCredential(user.email!!, currentPassword)
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    user.reauthenticate(credential).await()
+                    user.updatePassword(newPassword).await()
+                    withContext(Dispatchers.Main) {
+                        showPasswordDialog = false // Cierra el diálogo
+                        showSuccessDialog = true
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        passwordError = "Error al cambiar la contraseña: ${e.localizedMessage}"
+                    }
+                }
+            }
+        } else {
+            passwordError = "No se pudo obtener el usuario actual"
+        }
+    }
 
     fun cerrarSesion() {
         authViewModel.cerrarSesion()
@@ -93,6 +143,4 @@ class PerfilViewModel(
             }
         }
     }
-
-
 }
