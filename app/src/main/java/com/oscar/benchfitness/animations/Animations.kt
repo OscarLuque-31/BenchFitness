@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -65,8 +66,9 @@ fun SplashScreen(onFinish: () -> Unit) {
         )
     }
 }
+
 @Composable
-fun LoadingScreen() {
+fun LoadingScreenCircularProgress() {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -80,6 +82,22 @@ fun LoadingScreen() {
         }
     }
 }
+
+@Composable
+fun LoadingScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(negroBench),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            LinearProgressIndicator(color = rojoBench)
+        }
+    }
+}
+
+
 
 @Composable
 fun AnimatedFavoriteStar(isFavorite: Boolean) {

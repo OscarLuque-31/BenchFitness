@@ -34,6 +34,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.oscar.benchfitness.animations.LoadingScreen
+import com.oscar.benchfitness.animations.LoadingScreenCircularProgress
 import com.oscar.benchfitness.components.DatePickerField
 import com.oscar.benchfitness.components.GlobalButton
 import com.oscar.benchfitness.components.GlobalDropDownMenu
@@ -60,23 +62,26 @@ fun DatosScreen(navController: NavController, viewModel: DatosViewModel) {
         }
     }
 
-    DatosBodyContent(
-        viewModel = viewModel,
-        onStartClick = {
-            viewModel.guardarDatosUsuario(
-                context,
-                onSuccess = {
-                    navController.navigate(Main.route) {
-                        popUpTo(Inicio.route) { inclusive = true }
-                    }
-                },
-                onFailure = { errorMessage ->
-                    viewModel.snackbarMessage = errorMessage
-                })
-        },
-        snackbarHostState = snackbarHostState
-    )
-
+    if (viewModel.isLoading) {
+        LoadingScreenCircularProgress()
+    } else {
+        DatosBodyContent(
+            viewModel = viewModel,
+            onStartClick = {
+                viewModel.guardarDatosUsuario(
+                    context,
+                    onSuccess = {
+                        navController.navigate(Main.route) {
+                            popUpTo(Inicio.route) { inclusive = true }
+                        }
+                    },
+                    onFailure = { errorMessage ->
+                        viewModel.snackbarMessage = errorMessage
+                    })
+            },
+            snackbarHostState = snackbarHostState
+        )
+    }
 }
 
 @Composable
@@ -216,7 +221,9 @@ fun FilaAlturayGenero(viewModel: DatosViewModel) {
             modifier = Modifier
                 .weight(0.3f)
                 .height(50.dp),
-            backgroundColor = Color.White
+            backgroundColor = Color.White,
+            colorText = negroOscuroBench,
+            colorItemPulsado = rojoBench.copy(alpha = 0.7f)
         )
     }
 }
@@ -266,7 +273,8 @@ fun FilaPesoYExperiencia(viewModel: DatosViewModel) {
             opciones = opcionesExperiencia, // Lista de opciones de experiencia
             modifier = Modifier
                 .height(50.dp),
-            backgroundColor = Color.White
+            backgroundColor = Color.White, colorText = negroOscuroBench,
+            colorItemPulsado = rojoBench.copy(alpha = 0.7f)
         )
     }
 }
@@ -302,7 +310,8 @@ fun ColumnaNivelYObjetivo(viewModel: DatosViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
-            backgroundColor = Color.White
+            backgroundColor = Color.White, colorText = negroOscuroBench,
+            colorItemPulsado = rojoBench.copy(alpha = 0.7f)
         )
         GlobalDropDownMenu(
             viewModel.objetivo,
@@ -311,7 +320,8 @@ fun ColumnaNivelYObjetivo(viewModel: DatosViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
-            backgroundColor = Color.White
+            backgroundColor = Color.White, colorText = negroOscuroBench,
+            colorItemPulsado = rojoBench.copy(alpha = 0.7f)
         )
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -45,13 +46,17 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.FocusState
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -65,6 +70,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -152,7 +158,8 @@ fun GlobalButton(
     backgroundColor: Color,
     colorText: Color,
     modifier: Modifier,
-    onClick: () -> Unit
+    tamanyoLetra: TextUnit = 14.sp,
+    onClick: () -> Unit,
 ) {
     Button(
         onClick = { onClick() },
@@ -166,7 +173,7 @@ fun GlobalButton(
         Text(
             text,
             style = MaterialTheme.typography.bodyLarge,
-            fontSize = 14.sp
+            fontSize = tamanyoLetra
         )
     }
 }
@@ -275,24 +282,26 @@ fun DatePickerField(onDateSelected: (String) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GlobalDropDownMenu(
-    nombreSeleccion: String,
-    opciones: List<String>,
-    modifier: Modifier,
-    onValueChange: (String) -> Unit,
-    backgroundColor: Color,
-    colorText: Color = negroBench,
-    colorFlechita: Color = rojoBench
+fun <T> GlobalDropDownMenu(
+    selectedItem: T,
+    opciones: List<T>,
+    onValueChange: (T) -> Unit,
+    itemText: (T) -> String,
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = negroOscuroBench,
+    colorText: Color = Color.White,
+    colorFlechita: Color = rojoBench,
+    colorItemPulsado: Color = negroBench.copy(alpha = 0.7f)
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var textFieldWidth by remember { mutableStateOf(0) }
+    var textFieldWidth by remember { mutableIntStateOf(0) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
         TextField(
-            value = nombreSeleccion,
+            value = itemText(selectedItem),
             onValueChange = {},
             readOnly = true,
             trailingIcon = {
@@ -327,27 +336,69 @@ fun GlobalDropDownMenu(
             modifier = Modifier
                 .width(with(LocalDensity.current) { textFieldWidth.toDp() })
                 .heightIn(max = 250.dp)
-                .background(negroOscuroBench)
+                .background(backgroundColor)
         ) {
             opciones.forEach { opcion ->
+                val isSelected = opcion == selectedItem
+                val itemBackground = if (isSelected) colorItemPulsado else backgroundColor
+
                 DropdownMenuItem(
                     text = {
-                        Text(
-                            opcion,
-                            fontSize = 16.sp,
-                            color = Color.White
-                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = itemText(opcion),
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    color = colorText,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 14.sp
+                                )
+                            )
+                        }
                     },
                     onClick = {
                         onValueChange(opcion)
                         expanded = false
                     },
-                    modifier = Modifier.background(negroOscuroBench)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(itemBackground),
+                    contentPadding = PaddingValues(0.dp)
                 )
             }
         }
     }
 }
+
+// Version para strings
+@Composable
+fun GlobalDropDownMenu(
+    nombreSeleccion: String,
+    opciones: List<String>,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = negroOscuroBench,
+    colorText: Color = Color.White,
+    colorFlechita: Color = rojoBench,
+    colorItemPulsado: Color = negroBench.copy(alpha = 0.7f)
+) {
+    GlobalDropDownMenu(
+        selectedItem = nombreSeleccion,
+        opciones = opciones,
+        onValueChange = onValueChange,
+        itemText = { it },
+        modifier = modifier,
+        backgroundColor = backgroundColor,
+        colorText = colorText,
+        colorFlechita = colorFlechita,
+        colorItemPulsado = colorItemPulsado
+    )
+}
+
 
 
 
@@ -574,41 +625,6 @@ fun FormularioCalorias(
     viewModel: CalculosViewModel,
     onClick: () -> Unit
 ) {
-    var showDialog by remember { mutableStateOf(false) }
-    var mensajeError by remember { mutableStateOf("") }
-
-    val opcionesNivelActividad = listOf(
-        "Sedentario (poco o ningún ejercicio)",
-        "Ligera actividad (1-3 días/semana)",
-        "Actividad moderada (3-5 días/semana)",
-        "Alta actividad (6-7 días/semana)",
-        "Actividad muy intensa (entrenamientos extremos)"
-    )
-    val opcionesGenero = listOf("Hombre", "Mujer")
-
-    val edadInt = viewModel.edad.toIntOrNull() ?: -1
-    val pesoFloat = viewModel.peso.toFloatOrNull() ?: -1f
-    val alturaFloat = viewModel.altura.toFloatOrNull() ?: -1f
-
-    val edadValida = edadInt in 5..120
-    val pesoValido = pesoFloat in 20f..300f
-    val alturaValida = alturaFloat in 80f..250f
-
-    val esFormularioValido = edadValida && pesoValido && alturaValida &&
-            viewModel.genero in opcionesGenero &&
-            viewModel.nivelActividad in opcionesNivelActividad &&
-            viewModel.edad.isNotBlank() &&
-            viewModel.peso.isNotBlank() &&
-            viewModel.altura.isNotBlank()
-
-    val esFormularioCompletado =
-        viewModel.genero in opcionesGenero &&
-                viewModel.nivelActividad in opcionesNivelActividad &&
-                viewModel.edad.isNotBlank() &&
-                viewModel.peso.isNotBlank() &&
-                viewModel.altura.isNotBlank()
-
-
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -617,43 +633,43 @@ fun FormularioCalorias(
         PesoAlturaInputs(viewModel)
         GlobalDropDownMenu(
             viewModel.nivelActividad,
-            opcionesNivelActividad,
+            viewModel.opcionesNivelActividad,
             onValueChange = { viewModel.nivelActividad = it },
             modifier = Modifier.fillMaxWidth(),
             backgroundColor = negroBench,
             colorText = rojoBench,
             colorFlechita = rojoBench
         )
-        EdadGeneroInputs(viewModel, opcionesGenero)
+        EdadGeneroInputs(viewModel, viewModel.opcionesGenero)
 
         GlobalButton(
             text = "Calcular",
-            colorText = if (esFormularioCompletado) Color.White else Color.Gray,
-            backgroundColor = if (esFormularioCompletado) negroBench else Color.DarkGray,
+            colorText = if (viewModel.esFormularioCompletado()) Color.White else Color.Gray,
+            backgroundColor = if (viewModel.esFormularioCompletado()) negroBench else Color.DarkGray,
             onClick = {
                 when {
-                    !edadValida -> {
-                        mensajeError = "Edad inválida. Ingresa una edad entre 5 y 120 años."
-                        showDialog = true
+                    !viewModel.esEdadValida() -> {
+                        viewModel.mensajeError = "Edad inválida. Ingresa una edad entre 5 y 120 años."
+                        viewModel.showDialog = true
                     }
 
-                    !pesoValido -> {
-                        mensajeError = "Peso inválido. Ingresa un peso entre 20 y 300 kg."
-                        showDialog = true
+                    !viewModel.esPesoValido() -> {
+                        viewModel.mensajeError = "Peso inválido. Ingresa un peso entre 20 y 300 kg."
+                        viewModel.showDialog = true
                     }
 
-                    !alturaValida -> {
-                        mensajeError = "Altura inválida. Ingresa una altura entre 80 y 250 cm."
-                        showDialog = true
+                    !viewModel.esAlturaValida() -> {
+                        viewModel.mensajeError = "Altura inválida. Ingresa una altura entre 80 y 250 cm."
+                        viewModel.showDialog = true
                     }
 
-                    esFormularioValido -> {
+                    viewModel.esFormularioValido() -> {
                         onClick()
                     }
 
                     else -> {
-                        mensajeError = "Completa todos los campos correctamente."
-                        showDialog = true
+                        viewModel.mensajeError = "Completa todos los campos correctamente."
+                        viewModel.showDialog = true
                     }
                 }
             },
@@ -666,10 +682,10 @@ fun FormularioCalorias(
 
         InfoDialog(
             title = "Datos no válidos",
-            showDialog = showDialog,
-            onDismiss = { showDialog = false }
+            showDialog = viewModel.showDialog,
+            onDismiss = { viewModel.showDialog = false }
         ) {
-            Text(mensajeError, color = rojoBench)
+            Text(viewModel.mensajeError, color = rojoBench)
         }
     }
 }

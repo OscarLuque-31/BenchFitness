@@ -12,7 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.oscar.benchfitness.animations.LoadingScreen
+import com.oscar.benchfitness.animations.LoadingScreenCircularProgress
 import com.oscar.benchfitness.components.GlobalHeader
 import com.oscar.benchfitness.navegation.Perfil
 import com.oscar.benchfitness.ui.theme.negroBench
@@ -49,7 +49,7 @@ fun MainPerfilContainer(
                 }
 
                 if (perfilViewModel.isLoading) {
-                    LoadingScreen()
+                    LoadingScreenCircularProgress()
                 } else {
                     PerfilScreen(navController = navController, viewModel = perfilViewModel)
                 }

@@ -16,5 +16,6 @@ data class userData(
     val peso: String = "",
     val experiencia: String = "",
     val nivelActividad: String = "",
-    val objetivo: String = ""
+    val objetivo: String = "",
+    val rutinaAsignada: Routine = Routine()
 ) : Parcelable

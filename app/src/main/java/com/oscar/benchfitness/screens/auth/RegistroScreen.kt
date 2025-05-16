@@ -1,6 +1,5 @@
 package com.oscar.benchfitness.screens.auth
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -39,6 +37,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.oscar.benchfitness.animations.LoadingScreen
+import com.oscar.benchfitness.animations.LoadingScreenCircularProgress
 import com.oscar.benchfitness.components.GlobalButton
 import com.oscar.benchfitness.components.GlobalTextField
 import com.oscar.benchfitness.navegation.Datos
@@ -63,17 +63,21 @@ fun RegistroScreen(navController: NavController, viewModel: RegistroViewModel) {
             viewModel.clearError() // Este método debes agregarlo en tu viewmodel
         }
     }
-    RegisterBodyContent(
-        navController = navController,
-        viewModel = viewModel,
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = rojoBench)
-            .verticalScroll(rememberScrollState())
-            .imePadding(),
-        snackbarHostState
-    )
 
+    if (viewModel.isLoading) {
+        LoadingScreenCircularProgress()
+    } else {
+        RegisterBodyContent(
+            navController = navController,
+            viewModel = viewModel,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = rojoBench)
+                .verticalScroll(rememberScrollState())
+                .imePadding(),
+            snackbarHostState
+        )
+    }
 }
 
 
@@ -186,7 +190,8 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .fillMaxWidth().padding(horizontal = 30.dp, vertical = 30.dp),
+            .fillMaxWidth()
+            .padding(horizontal = 30.dp, vertical = 30.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

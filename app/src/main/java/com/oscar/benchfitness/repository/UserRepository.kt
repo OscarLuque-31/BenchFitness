@@ -2,6 +2,7 @@ package com.oscar.benchfitness.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.oscar.benchfitness.models.Routine
 import com.oscar.benchfitness.models.userData
 import kotlinx.coroutines.tasks.await
 
@@ -9,6 +10,7 @@ class UserRepository(
     private val auth: FirebaseAuth,
     private val db: FirebaseFirestore
 ) {
+    private val userCollection = db.collection("users")
 
     /**
      * Método para registrar al usuario en Firebase
@@ -32,7 +34,7 @@ class UserRepository(
             )
 
             // Registra al usuario en firebase
-            db.collection("users").document(user.uid).set(userData).await()
+            userCollection.document(user.uid).set(userData).await()
 
             Result.success(Unit)
         } catch (e: Exception) {
@@ -52,7 +54,7 @@ class UserRepository(
         // Si el usuario no es nulo se actualizan todos sus datos a los
         // introducidos en la pantalla de datos
         return if (user != null) {
-            db.collection("users").document(user.uid)
+            userCollection.document(user.uid)
                 .update(
                     "altura", userData.altura,
                     "datosCompletados", true,
@@ -98,12 +100,50 @@ class UserRepository(
         if (altura.isNotBlank()) updates["altura"] = altura
 
         if (updates.isNotEmpty()) {
-            db.collection("users").document(user.uid).update(updates)
+            userCollection.document(user.uid).update(updates)
                 .addOnFailureListener { it.printStackTrace() }
         }
     }
 
 
+    suspend fun asignarRutina(rutina: Routine) {
+        val user = auth.currentUser ?: return
+
+        userCollection.document(user.uid).update("rutinaAsignada", rutina).await()
+        userCollection.document(user.uid).update("isRutinaAsignada", true).await()
+    }
+
+    suspend fun isRutinaAsignada(): Boolean{
+        val user = auth.currentUser ?: return false
+
+        val document = userCollection.document(user.uid).get().await()
+
+        val rutinaAsignada = document.getBoolean("isRutinaAsignada") ?: false
+
+        return rutinaAsignada
+    }
+
+    suspend fun getUserInformation(): userData {
+        val user = auth.currentUser ?: return userData()
+        return try {
+            val userInfo = userCollection.document(user.uid).get().await()
+            return userInfo.toObject(userData::class.java) ?: return userData()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            userData()
+        }
+    }
+
+    suspend fun desasignarRutina() {
+        val user = auth.currentUser ?: return
+        userCollection.document(user.uid)
+            .update(
+                mapOf(
+                    "rutinaAsignada" to null,
+                    "isRutinaAsignada" to false
+                )
+            ).await()
+    }
 
 }
 

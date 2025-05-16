@@ -10,8 +10,6 @@ import kotlinx.coroutines.launch
 
 class RutinaViewModel(auth: FirebaseAuth, db: FirebaseFirestore) : ViewModel() {
 
-    val ordenDiasSemana =
-        listOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
 
     private val routineRepository = RoutineRepository(auth,db)
 

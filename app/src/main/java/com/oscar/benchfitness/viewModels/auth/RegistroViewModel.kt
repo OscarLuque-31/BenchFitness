@@ -1,3 +1,4 @@
+
 package com.oscar.benchfitness.viewModels.auth
 
 import androidx.compose.runtime.getValue
@@ -22,6 +23,7 @@ class RegistroViewModel(
     var confirmPassword by mutableStateOf("")
     var acceptTerms by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
+    var isLoading by mutableStateOf(false)
 
 
     private val userRepository = UserRepository(auth, db)
@@ -30,6 +32,7 @@ class RegistroViewModel(
      * Método que registra al usuario en base de datos
      */
     fun registerUser(onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        isLoading = true
 
         // Valida los datos
         val (isValid, errorMessage) = validateRegisterFields(
@@ -57,6 +60,8 @@ class RegistroViewModel(
                 onSuccess = { onSuccess() },
                 onFailure = { onFailure(it.message ?: "Error en el registro")}
             )
+
+            isLoading = false
         }
     }
 

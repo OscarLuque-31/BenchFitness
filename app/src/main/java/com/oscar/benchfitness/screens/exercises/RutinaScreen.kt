@@ -109,47 +109,7 @@ fun ColumnaDatosRutina(rutina: Routine, navController: NavController, viewModel:
             )
         }
         Spacer(Modifier.height(20.dp))
-        rutina.dias
-            .sortedBy { dia -> viewModel.ordenDiasSemana.indexOf(dia.dia) }
-            .forEach { dia ->
-                Row(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(15.dp))
-                        .background(negroBench)
-                ) {
-                    Text(
-                        dia.dia,
-                        color = rojoBench,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 10.dp)
-                    )
-
-                }
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp, bottom = 15.dp)
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(negroBench)
-                ) {
-                    Column(modifier = Modifier.padding(vertical = 10.dp, horizontal = 15.dp)) {
-
-                        Spacer(Modifier.height(10.dp))
-                        EncabezadoNombreSerieReps(negroOscuroBench)
-                        dia.ejercicios.forEach { ejercicio ->
-                            BoxExerciseEntry(
-                                nombre = ejercicio.nombre,
-                                series = ejercicio.series.toString(),
-                                repeticiones = ejercicio.repeticiones.toString(),
-                                negroOscuroBench,
-                                modifier = Modifier.padding(vertical = 8.dp)
-                            )
-                        }
-                    }
-                }
-            }
-
+        DatosRutina(rutina)
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             GlobalButton("Borrar rutina",
                 backgroundColor = rojoBench,
@@ -213,4 +173,52 @@ fun ColumnaDatosRutina(rutina: Routine, navController: NavController, viewModel:
 
 
     }
+}
+
+@Composable
+fun DatosRutina(rutina: Routine) {
+
+    val ordenDiasSemana =
+        listOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
+
+    rutina.dias
+        .sortedBy { dia -> ordenDiasSemana.indexOf(dia.dia) }
+        .forEach { dia ->
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(15.dp))
+                    .background(negroBench)
+            ) {
+                Text(
+                    dia.dia,
+                    color = rojoBench,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 10.dp)
+                )
+
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp, bottom = 15.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(negroBench)
+            ) {
+                Column(modifier = Modifier.padding(vertical = 10.dp, horizontal = 15.dp)) {
+
+                    Spacer(Modifier.height(10.dp))
+                    EncabezadoNombreSerieReps(negroOscuroBench)
+                    dia.ejercicios.forEach { ejercicio ->
+                        BoxExerciseEntry(
+                            nombre = ejercicio.nombre,
+                            series = ejercicio.series.toString(),
+                            repeticiones = ejercicio.repeticiones.toString(),
+                            negroOscuroBench,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    }
+                }
+            }
+        }
 }

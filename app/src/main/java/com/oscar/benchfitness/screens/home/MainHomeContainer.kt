@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -14,9 +12,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.oscar.benchfitness.animations.LoadingScreen
+import com.oscar.benchfitness.animations.LoadingScreenCircularProgress
 import com.oscar.benchfitness.components.GlobalHeader
-import com.oscar.benchfitness.models.userData
 import com.oscar.benchfitness.navegation.Goal
 import com.oscar.benchfitness.navegation.Home
 import com.oscar.benchfitness.ui.theme.negroBench
@@ -32,8 +29,8 @@ fun MainHomeContainer(
 ) {
     val innerNavController = rememberNavController()
     val homeViewModel = remember { HomeViewModel(auth, db) }
-    val user by homeViewModel.userData.collectAsState()
-    val isLoading by homeViewModel.isLoading.collectAsState()
+    val user = homeViewModel.userData
+    val isLoading = homeViewModel.isLoading
 
     LaunchedEffect(Unit) {
         homeViewModel.cargarDatosUsuario()
@@ -52,7 +49,7 @@ fun MainHomeContainer(
         ) {
             composable(Home.route) {
                 if (isLoading) {
-                    LoadingScreen()
+                    LoadingScreenCircularProgress()
                 } else {
                     HomeScreen(
                         navController = innerNavController,
