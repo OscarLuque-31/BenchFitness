@@ -34,7 +34,7 @@ import androidx.navigation.NavController
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.components.FlechitaAtras
 import com.oscar.benchfitness.components.GlobalButton
-import com.oscar.benchfitness.models.Routine
+import com.oscar.benchfitness.models.routines.Routine
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroClaroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench

@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
@@ -45,7 +44,7 @@ import com.oscar.benchfitness.R
 import com.oscar.benchfitness.animations.AnimatedFavoriteStar
 import com.oscar.benchfitness.components.AdaptiveGifRow
 import com.oscar.benchfitness.components.InfoDialog
-import com.oscar.benchfitness.models.ExerciseData
+import com.oscar.benchfitness.models.exercises.ExerciseData
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench

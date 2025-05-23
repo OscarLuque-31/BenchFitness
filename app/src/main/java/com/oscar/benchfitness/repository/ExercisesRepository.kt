@@ -1,9 +1,9 @@
 package com.oscar.benchfitness.repository
 
-import com.oscar.benchfitness.models.Categories
-import com.oscar.benchfitness.models.ExerciseData
-import com.oscar.benchfitness.models.Levels
-import com.oscar.benchfitness.models.Muscles
+import com.oscar.benchfitness.models.exercises.Categories
+import com.oscar.benchfitness.models.exercises.ExerciseData
+import com.oscar.benchfitness.models.exercises.Levels
+import com.oscar.benchfitness.models.exercises.Muscles
 import com.oscar.benchfitness.services.RetrofitClient
 
 class ExercisesRepository {

@@ -1,16 +1,19 @@
 package com.oscar.benchfitness.viewModels.datos
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.oscar.benchfitness.models.userData
+import com.oscar.benchfitness.models.statistics.StatisticsWeight
+import com.oscar.benchfitness.models.user.userData
+import com.oscar.benchfitness.repository.StatisticsWeightRepository
 import com.oscar.benchfitness.repository.UserRepository
 import com.oscar.benchfitness.utils.validateFieldsDatos
+import kotlinx.coroutines.launch
 
 class DatosViewModel(
     private val auth: FirebaseAuth,
@@ -30,9 +33,8 @@ class DatosViewModel(
     // Agregar un estado para el mensaje del Snackbar
     var snackbarMessage by mutableStateOf<String?>(null)
 
-
-
     private val userRepository = UserRepository(auth, db)
+    private val statisticsWeightRepository = StatisticsWeightRepository(auth, db)
 
     fun dismissSnackbar() {
         snackbarMessage = null
@@ -64,7 +66,7 @@ class DatosViewModel(
                 userData(
                     altura = altura,
                     genero = genero,
-                    peso = peso.replace(",","."),
+                    peso = peso,
                     experiencia = experiencia,
                     nivelActividad = nivelActividad,
                     objetivo = objetivo,
@@ -78,6 +80,9 @@ class DatosViewModel(
                     onFailure(error)
                 }
             )
+            viewModelScope.launch {
+                statisticsWeightRepository.saveWeightExecution(newProgress = StatisticsWeight(peso = peso.toDouble()))
+            }
         }
     }
 }

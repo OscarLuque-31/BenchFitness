@@ -35,8 +35,8 @@ import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.R
-import com.oscar.benchfitness.models.ExerciseData
-import com.oscar.benchfitness.models.Routine
+import com.oscar.benchfitness.models.exercises.ExerciseData
+import com.oscar.benchfitness.models.routines.Routine
 import com.oscar.benchfitness.navegation.CrearRutina
 import com.oscar.benchfitness.navegation.Ejercicio
 import com.oscar.benchfitness.navegation.Ejercicios

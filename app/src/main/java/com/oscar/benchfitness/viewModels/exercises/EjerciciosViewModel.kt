@@ -7,10 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.oscar.benchfitness.models.Categories
-import com.oscar.benchfitness.models.ExerciseData
-import com.oscar.benchfitness.models.Levels
-import com.oscar.benchfitness.models.Muscles
+import com.oscar.benchfitness.models.exercises.Categories
+import com.oscar.benchfitness.models.exercises.ExerciseData
+import com.oscar.benchfitness.models.exercises.Levels
+import com.oscar.benchfitness.models.exercises.Muscles
 import com.oscar.benchfitness.repository.ExercisesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

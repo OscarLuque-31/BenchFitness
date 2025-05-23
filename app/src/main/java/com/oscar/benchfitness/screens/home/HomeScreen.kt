@@ -1,10 +1,11 @@
 package com.oscar.benchfitness.screens.home
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,13 +16,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,34 +48,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.animations.LoadingScreen
 import com.oscar.benchfitness.components.GlobalButton
 import com.oscar.benchfitness.components.GlobalDropDownMenu
+import com.oscar.benchfitness.components.GlobalTextField
 import com.oscar.benchfitness.components.InfoDialog
-import com.oscar.benchfitness.models.Routine
-import com.oscar.benchfitness.models.userData
 import com.oscar.benchfitness.navegation.Goal
 import com.oscar.benchfitness.screens.exercises.BoxExerciseEntry
 import com.oscar.benchfitness.screens.exercises.EncabezadoNombreSerieReps
+import com.oscar.benchfitness.ui.theme.amarilloAvanzado
+import com.oscar.benchfitness.ui.theme.azulIntermedio
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroClaroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
+import com.oscar.benchfitness.ui.theme.verdePrincipiante
 import com.oscar.benchfitness.utils.interpretarObjetivo
 import com.oscar.benchfitness.viewModels.home.HomeViewModel
-import java.time.LocalDate
-import java.time.format.TextStyle
-import java.util.Locale
-
+import kotlinx.coroutines.delay
 
 @Composable
-fun HomeScreen(navController: NavController, viewModel: HomeViewModel, user: userData) {
-
+fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
     HomeBodyContent(
         navController = navController,
-        userData = user,
         viewModel = viewModel
     )
 
@@ -78,9 +82,14 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel, user: use
 @Composable
 fun HomeBodyContent(
     navController: NavController,
-    userData: userData,
     viewModel: HomeViewModel
 ) {
+
+    LaunchedEffect(Unit) {
+        viewModel.comprobarRutinaAsignada()
+    }
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -91,10 +100,10 @@ fun HomeBodyContent(
                 .weight(1f)
         ) {
             Spacer(Modifier.height(20.dp))
-            ObjetivoUsuario(userData.objetivo)
+            ObjetivoUsuario(viewModel.userData.objetivo)
             Spacer(modifier = Modifier.height(15.dp))
             RecomendacionObjetivo(
-                interpretarObjetivo(objetivo = userData.objetivo),
+                interpretarObjetivo(objetivo = viewModel.userData.objetivo),
                 viewModel.calorias,
                 navController,
             )
@@ -235,10 +244,6 @@ fun RecomendacionObjetivo(
 @Composable
 fun BloqueApuntarRutina(modifier: Modifier = Modifier, viewModel: HomeViewModel) {
 
-    LaunchedEffect(Unit) {
-        viewModel.comprobarRutinaAsignada()
-    }
-
 
     Column(
         modifier = modifier
@@ -261,23 +266,40 @@ fun BloqueApuntarRutina(modifier: Modifier = Modifier, viewModel: HomeViewModel)
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    "Rutina de hoy",
+                    "Rutina ${viewModel.userData.rutinaAsignada?.nombre ?: ""}",
                     style = MaterialTheme.typography.bodySmall,
                     fontSize = 20.sp,
                     color = Color.White
                 )
                 if (viewModel.isRutinaAsignada) {
-                    IconButton(
-                        onClick = {
-                            viewModel.cambiarRutina = !viewModel.cambiarRutina
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (viewModel.entrenamientoDelDia != null) {
+                            IconButton(
+                                onClick = {
+                                    viewModel.apuntarRutina = !viewModel.apuntarRutina
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.anadir),
+                                    contentDescription = "Apuntar rutina",
+                                    tint = rojoBench,
+                                    modifier = Modifier.size(25.dp)
+                                )
+                            }
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Edit,
-                            contentDescription = "Editar rutina",
-                            tint = rojoBench,
-                            modifier = Modifier.size(25.dp)
-                        )
+                        Spacer(Modifier.width(20.dp))
+                        IconButton(
+                            onClick = {
+                                viewModel.cambiarRutina = !viewModel.cambiarRutina
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Edit,
+                                contentDescription = "Editar rutina",
+                                tint = rojoBench,
+                                modifier = Modifier.size(25.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -287,13 +309,18 @@ fun BloqueApuntarRutina(modifier: Modifier = Modifier, viewModel: HomeViewModel)
                 DialogoCambiarRutina(viewModel)
             }
 
+            // Dialog cambiar rutina
+            if (viewModel.apuntarRutina) {
+                DialogoApuntarRutina(viewModel)
+            }
+
             Spacer(modifier = Modifier.height(15.dp))
 
             // Contenedor de "Sin asignar"
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.6f)
+                    .weight(1f)
                     .clip(RoundedCornerShape(20.dp))
                     .background(negroBench)
                     .padding(16.dp),
@@ -316,15 +343,17 @@ fun BloqueApuntarRutina(modifier: Modifier = Modifier, viewModel: HomeViewModel)
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .verticalScroll(rememberScrollState())
                         ) {
-                            DatosRutinaXDia(viewModel.userData.rutinaAsignada)
+                            DatosRutinaXDia(viewModel)
                         }
 
                     } else {
                         Column(
-                            modifier = Modifier.padding(10.dp).fillMaxSize(),
-                            verticalArrangement = Arrangement.SpaceBetween
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.SpaceEvenly,
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
 
                             Text(
@@ -359,48 +388,23 @@ fun BloqueApuntarRutina(modifier: Modifier = Modifier, viewModel: HomeViewModel)
                     }
                 }
             }
-
-            // Sección de "Apunta tu entrenamiento"
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.4f),
-                verticalArrangement = Arrangement.SpaceAround,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    "Apunta tu entrenamiento de hoy",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontSize = 17.sp,
-                    color = Color.White
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.anadir),
-                    contentDescription = "añadir",
-                    modifier = Modifier.size(50.dp)
-                )
-            }
         }
     }
 }
 
 @Composable
-fun DatosRutinaXDia(rutina: Routine) {
+fun DatosRutinaXDia(viewModel: HomeViewModel) {
 
-    // Dia actual
-    val hoy = LocalDate.now()
-    val diaActual = hoy.dayOfWeek.getDisplayName(TextStyle.FULL, Locale("es", "ES"))
-        .replaceFirstChar { it.uppercase() }
+    LaunchedEffect(viewModel.userData.rutinaAsignada) {
+        viewModel.cargarDiaEntrenamiento()
+    }
 
-    val entrenamientoHoy = rutina.dias.firstOrNull { it.dia == diaActual }
-
-
-    entrenamientoHoy?.let { dia ->
-        // Si existe rutina para hoy, mostrarla
+    viewModel.entrenamientoDelDia?.let { dia ->
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .background(negroBench)
+                .verticalScroll(rememberScrollState())
         ) {
             Text(
                 text = dia.dia,
@@ -424,11 +428,22 @@ fun DatosRutinaXDia(rutina: Routine) {
             }
         }
     } ?: run {
-        // Si no hay rutina hoy, puedes dejar esto vacío o mostrar un mensaje opcional
-        Log.d("Rutina", "No hay rutina asignada para hoy ($diaActual)")
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(negroBench),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                "No hay entrenamiento hoy",
+                color = rojoBench,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
     }
-
 }
+
 
 @Composable
 fun InfoObjetivo(objetivo: String) {
@@ -467,7 +482,6 @@ fun DialogoCambiarRutina(viewModel: HomeViewModel) {
     AlertDialog(
         onDismissRequest = { viewModel.cambiarRutina = !viewModel.cambiarRutina },
         confirmButton = {
-            // Usamos tus propios botones aquí
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -512,3 +526,246 @@ fun DialogoCambiarRutina(viewModel: HomeViewModel) {
         shape = RoundedCornerShape(20.dp)
     )
 }
+
+@Composable
+fun DialogoApuntarRutina(viewModel: HomeViewModel) {
+    val dia = viewModel.entrenamientoDelDia
+    val progresoDiario = viewModel.dailyExerciseProgress
+    val expandedItems = remember { mutableStateMapOf<String, Boolean>() }
+
+    val showError = remember { mutableStateOf(false) }
+    val errorMessage = remember { mutableStateOf("") }
+
+    // Auto cerrar el snackbar después de 3 segundos
+    LaunchedEffect(showError.value) {
+        if (showError.value) {
+            delay(4000)
+            showError.value = false
+        }
+    }
+
+    LaunchedEffect(dia) {
+        dia?.let { viewModel.initDailyExerciseProgress(it) }
+    }
+
+    if (dia != null && progresoDiario.isNotEmpty()) {
+        Dialog(onDismissRequest = { viewModel.apuntarRutina = false }) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(15.dp))
+                    .background(negroBench)
+                    .padding(20.dp)
+            ) {
+                Text(
+                    text = dia.dia.uppercase(),
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = rojoBench,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
+
+                LazyColumn {
+                    itemsIndexed(dia.ejercicios) { ejercicioIndex, ejercicio ->
+                        val progresoEjercicio = progresoDiario[ejercicioIndex]
+                        val ejecucionHoy =
+                            progresoEjercicio.historial.first { it.fecha == viewModel.currentDate }
+                        val completado = ejecucionHoy.completado
+                        val isExpanded = expandedItems[ejercicio.nombre] ?: false
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(negroOscuroBench)
+                                .clickable {
+                                    expandedItems[ejercicio.nombre] = !isExpanded
+                                }
+                                .padding(12.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = ejercicio.nombre,
+                                    color = rojoBench,
+                                    fontSize = 18.sp,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                if (completado) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Check,
+                                        contentDescription = "Completado",
+                                        tint = verdePrincipiante,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+                            }
+
+                            if (isExpanded) {
+                                Spacer(Modifier.height(8.dp))
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier.weight(1f),
+                                        contentAlignment = Alignment.CenterStart
+                                    ) {
+                                        Text(
+                                            "Series",
+                                            color = Color.White,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 15.sp
+                                        )
+                                    }
+                                }
+
+                                ejecucionHoy.series.forEachIndexed { setIndex, set ->
+                                    var repsInput by remember(progresoEjercicio) {
+                                        mutableStateOf(if (set.reps > 0) set.reps.toString() else "")
+                                    }
+                                    var pesoInput by remember(progresoEjercicio) {
+                                        mutableStateOf(if (set.peso > 0.0) set.peso.toString() else "")
+                                    }
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 6.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "${setIndex + 1}",
+                                            color = Color.White,
+                                            fontSize = 14.sp,
+                                            modifier = Modifier.weight(1f).padding(start = 20.dp)
+                                        )
+
+                                        Box(
+                                            modifier = Modifier.weight(1.5f),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            GlobalTextField(
+                                                nombre = "Reps",
+                                                text = repsInput,
+                                                onValueChange = { input ->
+                                                    repsInput = input
+                                                    viewModel.onRepsInput(
+                                                        ejercicioNombre = ejercicio.nombre,
+                                                        setIndex = setIndex,
+                                                        input = input
+                                                    )
+                                                },
+                                                modifier = Modifier.fillMaxWidth(),
+                                                backgroundColor = negroBench,
+                                                colorText = azulIntermedio
+                                            )
+                                        }
+                                        Spacer(Modifier.width(20.dp))
+                                        Box(
+                                            modifier = Modifier.weight(1.5f),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            GlobalTextField(
+                                                nombre = "Peso",
+                                                text = pesoInput,
+                                                onValueChange = { input ->
+                                                    pesoInput = input
+                                                    viewModel.onPesoInput(
+                                                        ejercicioNombre = ejercicio.nombre,
+                                                        setIndex = setIndex,
+                                                        input = input
+                                                    )
+                                                },
+                                                modifier = Modifier.fillMaxWidth(),
+                                                backgroundColor = negroBench,
+                                                colorText = amarilloAvanzado
+                                            )
+                                        }
+                                    }
+                                }
+
+                                GlobalButton(
+                                    text = "Completar",
+                                    backgroundColor = verdePrincipiante,
+                                    colorText = negroBench,
+                                    tamanyoLetra = 15.sp,
+                                    onClick = {
+                                        val allSetsValid = ejecucionHoy.series.all { set ->
+                                            val repsValid = viewModel.isValidReps(set.reps.toString())
+                                            val pesoValid = viewModel.isValidPeso(set.peso.toString())
+                                            repsValid && pesoValid
+                                        }
+
+                                        if (allSetsValid) {
+                                            viewModel.marcarEjercicioCompletado(ejercicio.nombre)
+                                            expandedItems[ejercicio.nombre] = false
+                                        } else {
+                                            errorMessage.value = "Completa correctamente todas las series (reps > 0 y peso ≥ 0)"
+                                            showError.value = true
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 8.dp),
+                                )
+
+                                if (showError.value) {
+                                    ErrorSnackbar(
+                                        message = errorMessage.value,
+                                        modifier = Modifier.padding(top = 8.dp)
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(20.dp))
+                    }
+                }
+
+                GlobalButton(
+                    text = "Cerrar",
+                    backgroundColor = rojoBench,
+                    colorText = Color.White,
+                    onClick = { viewModel.apuntarRutina = false },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ErrorSnackbar(
+    message: String,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp, vertical = 10.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(negroBench)
+            .border(1.dp, rojoBench, RoundedCornerShape(12.dp))
+            .padding(10.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = Icons.Default.Warning,
+                contentDescription = null,
+                tint = rojoBench,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = message,
+                color = Color.White,
+                fontSize = 14.sp
+            )
+        }
+    }
+}
+

@@ -159,7 +159,8 @@ fun GlobalButton(
     colorText: Color,
     modifier: Modifier,
     tamanyoLetra: TextUnit = 14.sp,
-    onClick: () -> Unit,
+    enabled: Boolean = true,
+    onClick: () -> Unit
 ) {
     Button(
         onClick = { onClick() },
@@ -168,7 +169,8 @@ fun GlobalButton(
             containerColor = backgroundColor,
             contentColor = colorText
         ),
-        modifier = modifier
+        modifier = modifier,
+        enabled = enabled
     ) {
         Text(
             text,
@@ -398,11 +400,6 @@ fun GlobalDropDownMenu(
         colorItemPulsado = colorItemPulsado
     )
 }
-
-
-
-
-
 
 @Composable
 fun GlobalHeader(text: String) {

@@ -2,7 +2,7 @@ package com.oscar.benchfitness.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.oscar.benchfitness.models.ExerciseData
+import com.oscar.benchfitness.models.exercises.ExerciseData
 import kotlinx.coroutines.tasks.await
 
 

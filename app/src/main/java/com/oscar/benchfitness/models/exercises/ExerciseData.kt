@@ -1,4 +1,4 @@
-package com.oscar.benchfitness.models
+package com.oscar.benchfitness.models.exercises
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.oscar.benchfitness.models.userData
+import com.oscar.benchfitness.models.user.userData
 import com.oscar.benchfitness.repository.RoutineRepository
 import com.oscar.benchfitness.repository.UserRepository
 import com.oscar.benchfitness.viewModels.auth.AuthViewModel

@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.oscar.benchfitness.models.Routine
+import com.oscar.benchfitness.models.routines.Routine
 import com.oscar.benchfitness.repository.RoutineRepository
 import kotlinx.coroutines.launch
 

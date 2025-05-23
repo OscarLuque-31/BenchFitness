@@ -29,10 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.oscar.benchfitness.components.FlechitaAtras
-import com.oscar.benchfitness.components.GlobalHeader
-import com.oscar.benchfitness.models.userData
+import com.oscar.benchfitness.models.user.userData
 import com.oscar.benchfitness.ui.theme.negroBench
-import com.oscar.benchfitness.ui.theme.negroClaroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
 import com.oscar.benchfitness.utils.interpretarObjetivo

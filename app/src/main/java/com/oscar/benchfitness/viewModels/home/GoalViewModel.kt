@@ -1,7 +1,7 @@
 package com.oscar.benchfitness.viewModels.home
 
 import androidx.lifecycle.ViewModel
-import com.oscar.benchfitness.models.userData
+import com.oscar.benchfitness.models.user.userData
 import com.oscar.benchfitness.utils.CalorieCalculator
 import com.oscar.benchfitness.utils.calcularEdad
 import kotlinx.coroutines.flow.MutableStateFlow

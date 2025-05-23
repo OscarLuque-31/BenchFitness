@@ -59,7 +59,7 @@ import com.oscar.benchfitness.components.FlechitaAtras
 import com.oscar.benchfitness.components.GlobalButton
 import com.oscar.benchfitness.components.GlobalDropDownMenu
 import com.oscar.benchfitness.components.GlobalTextField
-import com.oscar.benchfitness.models.ExerciseRoutineEntry
+import com.oscar.benchfitness.models.routines.ExerciseRoutineEntry
 import com.oscar.benchfitness.navegation.Rutinas
 import com.oscar.benchfitness.ui.theme.azulIntermedio
 import com.oscar.benchfitness.ui.theme.negroBench

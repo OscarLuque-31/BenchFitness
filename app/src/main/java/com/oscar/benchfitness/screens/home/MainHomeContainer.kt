@@ -54,7 +54,6 @@ fun MainHomeContainer(
                     HomeScreen(
                         navController = innerNavController,
                         viewModel = homeViewModel,
-                        user = user
                     )
                 }
             }

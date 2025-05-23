@@ -2,8 +2,8 @@ package com.oscar.benchfitness.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.oscar.benchfitness.models.Routine
-import com.oscar.benchfitness.models.userData
+import com.oscar.benchfitness.models.routines.Routine
+import com.oscar.benchfitness.models.user.userData
 import kotlinx.coroutines.tasks.await
 
 class UserRepository(

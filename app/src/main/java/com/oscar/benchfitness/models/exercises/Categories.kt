@@ -1,4 +1,4 @@
-package com.oscar.benchfitness.models
+package com.oscar.benchfitness.models.exercises
 
 // Clase que representa una categoría de ejercicio
 data class Categories(

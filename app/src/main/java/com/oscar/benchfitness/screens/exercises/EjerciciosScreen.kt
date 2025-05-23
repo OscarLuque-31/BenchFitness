@@ -31,7 +31,7 @@ import com.oscar.benchfitness.components.GlobalButton
 import com.oscar.benchfitness.components.GlobalDropDownMenu
 import com.oscar.benchfitness.components.GlobalTextField
 import com.oscar.benchfitness.components.InfoDialog
-import com.oscar.benchfitness.models.ExerciseData
+import com.oscar.benchfitness.models.exercises.ExerciseData
 import com.oscar.benchfitness.navegation.Ejercicio
 import com.oscar.benchfitness.ui.theme.amarilloAvanzado
 import com.oscar.benchfitness.ui.theme.azulIntermedio

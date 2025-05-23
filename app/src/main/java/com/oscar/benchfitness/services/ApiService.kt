@@ -1,10 +1,9 @@
 package com.oscar.benchfitness.services
 
-import com.oscar.benchfitness.models.Categories
-import com.oscar.benchfitness.models.ExerciseData
-import com.oscar.benchfitness.models.Levels
-import com.oscar.benchfitness.models.Muscles
-import com.oscar.benchfitness.navegation.Ejercicio
+import com.oscar.benchfitness.models.exercises.Categories
+import com.oscar.benchfitness.models.exercises.ExerciseData
+import com.oscar.benchfitness.models.exercises.Levels
+import com.oscar.benchfitness.models.exercises.Muscles
 import retrofit2.http.GET
 import retrofit2.http.Query
 

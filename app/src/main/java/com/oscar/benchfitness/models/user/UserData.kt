@@ -1,6 +1,7 @@
-package com.oscar.benchfitness.models
+package com.oscar.benchfitness.models.user
 
 import android.os.Parcelable
+import com.oscar.benchfitness.models.routines.Routine
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
