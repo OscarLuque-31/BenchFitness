@@ -145,6 +145,13 @@ class UserRepository(
             ).await()
     }
 
+
+    suspend fun asignarPeso(peso: String) {
+        val user = auth.currentUser ?: return
+
+        userCollection.document(user.uid).update("peso", peso).await()
+    }
+
 }
 
 

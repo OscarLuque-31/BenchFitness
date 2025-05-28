@@ -12,9 +12,11 @@ import com.oscar.benchfitness.models.statistics.ExerciseProgress
 import com.oscar.benchfitness.models.statistics.ExerciseSet
 import com.oscar.benchfitness.models.routines.Routine
 import com.oscar.benchfitness.models.statistics.StatisticsExercise
+import com.oscar.benchfitness.models.statistics.StatisticsWeight
 import com.oscar.benchfitness.models.user.userData
 import com.oscar.benchfitness.repository.RoutineRepository
 import com.oscar.benchfitness.repository.StatisticsExercisesRepository
+import com.oscar.benchfitness.repository.StatisticsWeightRepository
 import com.oscar.benchfitness.repository.UserRepository
 import com.oscar.benchfitness.utils.CalorieCalculator
 import com.oscar.benchfitness.utils.calcularEdad
