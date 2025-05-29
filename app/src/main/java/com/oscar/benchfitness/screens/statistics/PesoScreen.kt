@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
@@ -26,7 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +42,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.oscar.benchfitness.animations.LoadingScreen
 import com.oscar.benchfitness.components.FlechitaAtras
+import com.oscar.benchfitness.components.GlobalDropDownMenu
 import com.oscar.benchfitness.components.GlobalHeader
 import com.oscar.benchfitness.components.GlobalTextField
 import com.oscar.benchfitness.ui.theme.negroBench
@@ -86,6 +85,7 @@ fun PesoScreen(navController: NavController, viewModel: PesoViewModel) {
 
 @Composable
 fun ColumnaPeso(navController: NavController, viewModel: PesoViewModel) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -102,6 +102,8 @@ fun ColumnaPeso(navController: NavController, viewModel: PesoViewModel) {
             FlechitaAtras(navController = navController)
             Spacer(Modifier.height(20.dp))
             ResumenSemanalPeso(viewModel)
+            Spacer(Modifier.height(20.dp))
+            FiltroFechasPeso(viewModel)
             Spacer(Modifier.height(20.dp))
             EstadisticaPeso(viewModel)
             Spacer(Modifier.weight(1f))
@@ -159,14 +161,9 @@ fun ColumnaPeso(navController: NavController, viewModel: PesoViewModel) {
 
 @Composable
 fun EstadisticaPeso(viewModel: PesoViewModel) {
+    val datosPeso = viewModel.datosFiltrados
 
-    val datosPeso = remember(viewModel.progreso) {
-        viewModel.progreso?.historial
-            ?.sortedBy { it.fecha }
-            ?.map { it.peso }
-    }
-
-    if (datosPeso?.size!! < 2) {
+    if (datosPeso.size < 2) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -192,20 +189,19 @@ fun EstadisticaPeso(viewModel: PesoViewModel) {
         modifier = Modifier
             .height(200.dp)
             .padding(horizontal = 10.dp),
-        data = remember {
-            listOf(
-                Line(
-                    label = "Peso (kg)",
-                    values = datosPeso,
-                    color = SolidColor(rojoBench),
-                    firstGradientFillColor = rojoBench.copy(alpha = .5f),
-                    secondGradientFillColor = Color.Transparent,
-                    strokeAnimationSpec = tween(2000, easing = EaseInOutCubic),
-                    gradientAnimationDelay = 1000,
-                    drawStyle = DrawStyle.Stroke(width = 2.dp),
-                )
+        data =
+        listOf(
+            Line(
+                label = "Peso (kg)",
+                values = datosPeso,
+                color = SolidColor(rojoBench),
+                firstGradientFillColor = rojoBench.copy(alpha = .5f),
+                secondGradientFillColor = Color.Transparent,
+                strokeAnimationSpec = tween(2000, easing = EaseInOutCubic),
+                gradientAnimationDelay = 1000,
+                drawStyle = DrawStyle.Stroke(width = 2.dp),
             )
-        },
+        ),
         animationMode = AnimationMode.Together(delayBuilder = {
             it * 300L
         }),
@@ -289,116 +285,6 @@ fun BotonAnadirPeso(
                 modifier = modifier
             )
         }
-    }
-}
-
-@Composable
-fun AgregarPeso(viewModel: PesoViewModel) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 20.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(negroBench)
-    ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(verdePrincipiante.copy(alpha = 0.1f))
-                    .padding(15.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Info,
-                    contentDescription = "Consejo",
-                    tint = verdePrincipiante,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Recuerda pesarte cada semana, el mismo día y preferiblemente en ayunas.",
-                    color = Color.LightGray,
-                    fontSize = 13.sp,
-                    fontStyle = FontStyle.Italic
-                )
-            }
-            Spacer(Modifier.height(20.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(negroOscuroBench)
-                    .padding(horizontal = 10.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                Text(
-                    "Peso",
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White
-                )
-                GlobalTextField(
-                    nombre = "",
-                    text = viewModel.peso,
-                    onValueChange = { newText ->
-                        viewModel.pesoInvalido = false // Resetear error por defecto
-
-                        // Si contiene coma, marcar como inválido
-                        if (newText.contains(",")) {
-                            viewModel.pesoInvalido = true
-                            return@GlobalTextField
-                        }
-
-                        // Si no es un número válido o tiene más de un punto decimal
-                        val isValid =
-                            newText.isEmpty() || newText.matches(Regex("^\\d*(\\.\\d*)?$"))
-
-                        if (isValid) {
-                            viewModel.peso = newText
-                        } else {
-                            viewModel.pesoInvalido = true
-                        }
-                    },
-                    trailingIcon = { Text("kg", fontSize = 14.sp, color = rojoBench) },
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .width(120.dp)
-                        .height(55.dp),
-                    backgroundColor = negroBench,
-                    colorText = if (viewModel.pesoInvalido) Color.Red else rojoBench,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                )
-
-            }
-            if (viewModel.pesoInvalido) {
-                Text(
-                    text = "Introduce un número válido",
-                    color = Color.Red,
-                    fontSize = 12.sp,
-                    modifier = Modifier.padding(top = 10.dp)
-                )
-            }
-
-            Spacer(Modifier.weight(1f))
-            BotonAnadirPeso(
-                icono = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                onClick = {
-                    if (viewModel.peso.isBlank() || viewModel.pesoInvalido) {
-                        viewModel.pesoInvalido = true
-                    } else {
-                        viewModel.mostrarDialogoConfirmacion = true
-                    }
-                },
-                backgroundColor = negroOscuroBench,
-                modifier = Modifier.size(20.dp)
-            )
-
-        }
-
-
     }
 }
 
@@ -587,3 +473,20 @@ fun AgregarPesoDialog(viewModel: PesoViewModel) {
         }
     }
 }
+
+@Composable
+fun FiltroFechasPeso(
+    viewModel: PesoViewModel
+) {
+    GlobalDropDownMenu(
+        nombreSeleccion = viewModel.filtroSeleccionado,
+        opciones = listOf("Última semana", "Último mes", "Último año", "Todo"),
+        onValueChange = { viewModel.seleccionarFiltro(it) },
+        modifier = Modifier
+            .fillMaxWidth(),
+        backgroundColor = negroBench,
+        colorItemPulsado = negroOscuroBench.copy(alpha = 0.7f),
+
+        )
+}
+

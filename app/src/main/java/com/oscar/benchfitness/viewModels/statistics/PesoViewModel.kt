@@ -18,6 +18,8 @@ import com.oscar.benchfitness.repository.UserRepository
 import com.oscar.benchfitness.ui.theme.rojoBench
 import com.oscar.benchfitness.ui.theme.verdePrincipiante
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.time.temporal.WeekFields
 import kotlin.math.abs
 
@@ -31,7 +33,11 @@ class PesoViewModel(
     var mostrarDialogoConfirmacion by mutableStateOf(false)
     var mostrarDialogoAgregarPeso by mutableStateOf(false)
     var isLoading by mutableStateOf(false)
-
+    var filtroSeleccionado by mutableStateOf("Último mes")
+        private set
+    private val dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+    var datosFiltrados by mutableStateOf<List<Double>>(emptyList())
+        private set
 
     var pesoInvalido by mutableStateOf(false)
 
@@ -46,8 +52,16 @@ class PesoViewModel(
         if (historial.size < 2) return "--"
 
         val diferencia = historial.last().peso - historial[historial.size - 2].peso
-        return "%.1f kg".format(diferencia)
+
+        val signo = when {
+            diferencia > 0 -> "+"
+            diferencia < 0 -> "-" // el número ya será negativo, pero así lo haces explícito
+            else -> ""
+        }
+
+        return "$signo%.1f kg".format(abs(diferencia))
     }
+
 
     // Función para saber si aumentó o bajó
     fun obtenerEstadoPeso(): Color {
@@ -58,9 +72,43 @@ class PesoViewModel(
         return if (diferencia > 0) rojoBench else verdePrincipiante
     }
 
-    fun cargarHistorialPesos(){
+
+
+    fun seleccionarFiltro(nuevoFiltro: String) {
+        filtroSeleccionado = nuevoFiltro
+        datosFiltrados = actualizarDatosFiltrados()
+    }
+
+
+    fun actualizarDatosFiltrados(): List<Double> {
+        val historialCompleto = progreso?.historial ?: return emptyList()
+
+        val desde = when (filtroSeleccionado) {
+            "Última semana" -> LocalDate.now().minusDays(7)
+            "Último mes" -> LocalDate.now().minusMonths(1)
+            "Último año" -> LocalDate.now().minusYears(1)
+            else -> LocalDate.MIN
+        }
+
+        return historialCompleto
+            .mapNotNull { entrada ->
+                try {
+                    val fechaLocal = LocalDate.parse(entrada.fecha, dateFormatter)
+                    if (fechaLocal.isAfter(desde)) {
+                        entrada
+                    } else null
+                } catch (e: Exception) {
+                    null // por si alguna fecha está mal formateada
+                }
+            }
+            .sortedBy { LocalDate.parse(it.fecha, dateFormatter) }
+            .map { it.peso }
+    }
+
+    suspend fun cargarHistorialPesos(){
         viewModelScope.launch {
             progreso = statisticsWeightRepository.getAllWeightProgress()
+            datosFiltrados = actualizarDatosFiltrados()
         }
     }
 
