@@ -16,11 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,35 +31,14 @@ import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.R
-import com.oscar.benchfitness.models.exercises.ExerciseData
-import com.oscar.benchfitness.models.routines.Routine
-import com.oscar.benchfitness.navegation.CrearRutina
-import com.oscar.benchfitness.navegation.Ejercicio
-import com.oscar.benchfitness.navegation.Ejercicios
-import com.oscar.benchfitness.navegation.Favs
 import com.oscar.benchfitness.navegation.MainExercises
 import com.oscar.benchfitness.navegation.MainFavs
 import com.oscar.benchfitness.navegation.MainRoutines
-import com.oscar.benchfitness.navegation.Rutina
-import com.oscar.benchfitness.navegation.Rutinas
-import com.oscar.benchfitness.repository.ExercisesRepository
-import com.oscar.benchfitness.screens.workout.exercises.EjercicioScreen
-import com.oscar.benchfitness.screens.workout.exercises.EjerciciosScreen
 import com.oscar.benchfitness.screens.workout.exercises.MainExercisesContainer
-import com.oscar.benchfitness.screens.workout.favs.FavsScreen
 import com.oscar.benchfitness.screens.workout.favs.MainFavsContainer
-import com.oscar.benchfitness.screens.workout.routines.CrearRutinaScreen
 import com.oscar.benchfitness.screens.workout.routines.MainRoutinesContainer
-import com.oscar.benchfitness.screens.workout.routines.RutinaScreen
-import com.oscar.benchfitness.screens.workout.routines.RutinasScreen
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
-import com.oscar.benchfitness.viewModels.workout.CrearRutinaViewModel
-import com.oscar.benchfitness.viewModels.workout.EjercicioViewModel
-import com.oscar.benchfitness.viewModels.workout.EjerciciosViewModel
-import com.oscar.benchfitness.viewModels.workout.FavsViewModel
-import com.oscar.benchfitness.viewModels.workout.RutinaViewModel
-import com.oscar.benchfitness.viewModels.workout.RutinasViewModel
 
 @Composable
 fun MainWorkoutContainer(

@@ -28,8 +28,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -78,7 +76,6 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
         navController = navController,
         viewModel = viewModel
     )
-
 }
 
 @Composable
@@ -473,7 +470,6 @@ fun InfoObjetivo(objetivo: String) {
 }
 
 
-
 @Composable
 fun DialogoCambiarRutina(viewModel: HomeViewModel) {
     AlertDialog(
@@ -588,9 +584,10 @@ fun DialogoApuntarRutina(viewModel: HomeViewModel) {
                                 Text(
                                     text = ejercicio.nombre,
                                     color = rojoBench,
-                                    fontSize = 18.sp,
+                                    fontSize = 16.sp,
                                     modifier = Modifier.weight(1f)
                                 )
+                                Spacer(Modifier.width(10.dp))
                                 if (completado) {
                                     Icon(
                                         imageVector = Icons.Filled.Check,
@@ -639,7 +636,9 @@ fun DialogoApuntarRutina(viewModel: HomeViewModel) {
                                             text = "${setIndex + 1}",
                                             color = Color.White,
                                             fontSize = 14.sp,
-                                            modifier = Modifier.weight(1f).padding(start = 20.dp)
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(start = 20.dp)
                                         )
 
                                         Box(
@@ -693,8 +692,10 @@ fun DialogoApuntarRutina(viewModel: HomeViewModel) {
                                     tamanyoLetra = 15.sp,
                                     onClick = {
                                         val allSetsValid = ejecucionHoy.series.all { set ->
-                                            val repsValid = viewModel.isValidReps(set.reps.toString())
-                                            val pesoValid = viewModel.isValidPeso(set.peso.toString())
+                                            val repsValid =
+                                                viewModel.isValidReps(set.reps.toString())
+                                            val pesoValid =
+                                                viewModel.isValidPeso(set.peso.toString())
                                             repsValid && pesoValid
                                         }
 
@@ -702,7 +703,8 @@ fun DialogoApuntarRutina(viewModel: HomeViewModel) {
                                             viewModel.marcarEjercicioCompletado(ejercicio.nombre)
                                             expandedItems[ejercicio.nombre] = false
                                         } else {
-                                            errorMessage.value = "Completa correctamente todas las series (reps > 0 y peso ≥ 0)"
+                                            errorMessage.value =
+                                                "Completa correctamente todas las series (reps > 0 y peso ≥ 0)"
                                             showError.value = true
                                         }
                                     },

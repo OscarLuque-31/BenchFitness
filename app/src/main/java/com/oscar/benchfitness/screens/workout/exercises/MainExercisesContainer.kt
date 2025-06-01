@@ -1,22 +1,17 @@
 package com.oscar.benchfitness.screens.workout.exercises
 
-import androidx.compose.compiler.plugins.kotlin.EmptyFunctionMetrics.composable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.navigation.NavController
-import androidx.navigation.NavHost
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.models.exercises.ExerciseData
-import com.oscar.benchfitness.models.routines.Routine
 import com.oscar.benchfitness.navegation.Ejercicio
 import com.oscar.benchfitness.navegation.Ejercicios
 import com.oscar.benchfitness.repository.ExercisesRepository
@@ -82,8 +77,6 @@ fun MainExercisesContainer(
             }
         }
     }
-
-
 
 
 }

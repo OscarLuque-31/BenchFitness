@@ -267,15 +267,6 @@ fun LoginTextFields(
             colorText = negroOscuroBench,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
-        Spacer(modifier = Modifier.height(12.dp))
-        Text(
-            "¿Contraseña olvidada?",
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 13.sp,
-            color = Color.White,
-            modifier = Modifier.fillMaxWidth(), // alineado por padding del padre
-            textAlign = TextAlign.End
-        )
         Spacer(modifier = Modifier.height(36.dp))
         GlobalButton(
             "Iniciar sesión", rojoBench,

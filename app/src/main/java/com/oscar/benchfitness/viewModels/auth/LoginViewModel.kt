@@ -96,8 +96,26 @@ class LoginViewModel(
                 },
                 onFailure = {
                     loading = false
-                    onFailure(it.message ?: "Error en el inicio de sesión")
-                }
+                    val errorMsg = when {
+                        it.message?.contains("The password is invalid") == true ||
+                                it.message?.contains("no user record") == true -> {
+                            "Correo o contraseña incorrectos. Verifica tus datos."
+                        }
+
+                        it.message?.contains("network error", ignoreCase = true) == true -> {
+                            "Error de red. Verifica tu conexión a Internet."
+                        }
+
+                        it.message?.contains("too many requests", ignoreCase = true) == true -> {
+                            "Demasiados intentos fallidos. Intenta de nuevo más tarde."
+                        }
+
+                        else -> {
+                            "Error al iniciar sesión. Intenta nuevamente."
+                        }
+                    }
+
+                    onFailure(errorMsg)                }
             )
         }
     }

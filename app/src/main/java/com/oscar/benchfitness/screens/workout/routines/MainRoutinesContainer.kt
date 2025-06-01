@@ -3,7 +3,6 @@ package com.oscar.benchfitness.screens.workout.routines
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -11,7 +10,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.models.routines.Routine
 import com.oscar.benchfitness.navegation.CrearRutina
-import com.oscar.benchfitness.navegation.Ejercicios
 import com.oscar.benchfitness.navegation.Rutina
 import com.oscar.benchfitness.navegation.Rutinas
 import com.oscar.benchfitness.viewModels.workout.CrearRutinaViewModel
