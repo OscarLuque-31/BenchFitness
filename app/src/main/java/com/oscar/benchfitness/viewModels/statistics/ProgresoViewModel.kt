@@ -32,6 +32,8 @@ class ProgresoViewModel(
     var historialFiltrado by mutableStateOf<List<StatisticsExercise>>(emptyList())
         private set
 
+    private val filtrosDisponibles = listOf("Última semana", "Último mes", "Último año", "Todo")
+
     // Ejercicio filtrado, con historial filtrado
     val ejercicioFiltrado: ExerciseProgress
         get() = ejercicioSeleccionado.copy(historial = historialFiltrado)
@@ -48,6 +50,9 @@ class ProgresoViewModel(
         actualizarDatosFiltrados()
     }
 
+    /**
+     * Método que carga el progreso de todos los ejercicios en base de datos
+     */
     fun cargarProgreso() {
         viewModelScope.launch {
             isLoading = true
@@ -64,27 +69,29 @@ class ProgresoViewModel(
     // -------------------------------------------
     // ✅ FILTRAR POR FECHAS
     // -------------------------------------------
-    private fun estaEnRango(fecha: String): Boolean {
+    private fun estaEnRangoConFiltro(fecha: String, filtro: String): Boolean {
         val formato = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
         val fechaParseada = try { formato.parse(fecha) } catch (e: Exception) { return false }
 
         val hoy = Calendar.getInstance().time
         val diferenciaDias = TimeUnit.MILLISECONDS.toDays(hoy.time - fechaParseada.time)
 
-        return when (filtroSeleccionado) {
+        return when (filtro) {
             "Última semana" -> diferenciaDias <= 7
             "Último mes" -> diferenciaDias <= 30
             "Último año" -> diferenciaDias <= 365
-            else -> true // Todo
+            else -> true
         }
     }
+
 
 
     private fun actualizarDatosFiltrados() {
         historialFiltrado = ejercicioSeleccionado.historial.filter {
-            it.completado && estaEnRango(it.fecha)
+            it.completado && estaEnRangoConFiltro(it.fecha, filtroSeleccionado)
         }
     }
+
 
     // -------------------------------------------
     // ✅ ESTADÍSTICAS

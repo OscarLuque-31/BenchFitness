@@ -105,38 +105,39 @@ fun ColumnaProgreso(navController: NavController, viewModel: ProgresoViewModel) 
             Spacer(Modifier.height(20.dp))
             FiltroFechasProgreso(viewModel)
             Spacer(Modifier.height(20.dp))
-            EstadisticaProgreso(progress = viewModel.ejercicioFiltrado)
+            EstadisticaProgreso(historial = viewModel.historialFiltrado)
         }
     }
 }
 
 
 @Composable
-fun EstadisticaProgreso(progress: ExerciseProgress) {
-    val historial = progress.historial
+fun EstadisticaProgreso(historial: List<StatisticsExercise>) {
+    when {
+        historial.isEmpty() -> {
+            MensajeSinDatos()
+            return
+        }
+        historial.size == 1 -> {
+            MensajeUnSoloDato()
+            return
+        }
+        else -> {
+            val fechasReducidas = historial.mapIndexed { index, it ->
+                if (index % maxOf(1, historial.size / 3) == 0) it.fecha else ""
+            }
 
-    if (historial.size < 2) {
-        MensajeInsuficienteDatos()
-        return
-    }
-
-    val todasFechas = historial.map { it.fecha }
-    val intervalo = maxOf(1, todasFechas.size / 3)
-    val fechasReducidas = todasFechas.mapIndexed { index, fecha ->
-        if (index % intervalo == 0) fecha else ""
-    }
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 10.dp)
-    ) {
-        PesoMaximoChart(historial, fechasReducidas)
-        Spacer(modifier = Modifier.height(40.dp))
-        RepsPorSerieChart(historial, fechasReducidas)
-        Spacer(modifier = Modifier.height(40.dp))
-        KilosPorSerieChart(historial, fechasReducidas)
+            Column(Modifier.fillMaxWidth().padding(horizontal = 10.dp)) {
+                PesoMaximoChart(historial, fechasReducidas)
+                Spacer(modifier = Modifier.height(40.dp))
+                RepsPorSerieChart(historial, fechasReducidas)
+                Spacer(modifier = Modifier.height(40.dp))
+                KilosPorSerieChart(historial, fechasReducidas)
+            }
+        }
     }
 }
+
 
 @Composable
 fun MensajeInsuficienteDatos() {
@@ -497,4 +498,35 @@ fun ElegirEjercicioProgreso(viewModel: ProgresoViewModel) {
         colorItemPulsado = Color.White.copy(alpha = 0.7f),
         colorFlechita = negroOscuroBench
     )
+}
+
+@Composable
+fun MensajeSinDatos() {
+    MensajeGenerico("No hay datos disponibles para el período seleccionado.")
+}
+
+@Composable
+fun MensajeUnSoloDato() {
+    MensajeGenerico("Se necesita más de una medición para mostrar una evolución.")
+}
+
+@Composable
+fun MensajeGenerico(texto: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp)
+            .clip(RoundedCornerShape(15.dp))
+            .background(rojoBench.copy(alpha = 0.1f)),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = texto,
+            color = rojoBench,
+            fontSize = 18.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(16.dp)
+        )
+    }
 }
