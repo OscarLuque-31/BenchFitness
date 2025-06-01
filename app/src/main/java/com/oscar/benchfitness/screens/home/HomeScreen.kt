@@ -28,6 +28,8 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -195,7 +197,7 @@ fun RecomendacionObjetivo(
                     }
                 }
                 InfoDialog(
-                    title = "Objetivo",
+                    title = "Información",
                     showDialog = showInfoDialog,
                     onDismiss = { showInfoDialog = false },
                     cuerpo = { InfoObjetivo(nombreObjetivo) })
@@ -450,32 +452,27 @@ fun InfoObjetivo(objetivo: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp),
-        verticalArrangement = Arrangement.SpaceAround,
+            .padding(horizontal = 20.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                "Estas son las calorías aproximadas que debes consumir si tu objetivo es $objetivo",
-                color = rojoBench
-            )
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                "Recuerda,estas son unas cifras aproximadas,para más información contacte con un profesional",
-                textAlign = TextAlign.Justify
-            )
-        }
+        Text(
+            text = "Estas son las calorías aproximadas que debes consumir si tu objetivo es $objetivo.",
+            color = rojoBench,
+            fontSize = 20.sp,
+            textAlign = TextAlign.Justify
+        )
 
+        Text(
+            text = "Recuerda: estas cifras son aproximadas. Para un plan adecuado, consulta con un profesional.",
+            color = Color.Gray,
+            fontSize = 15.sp,
+            textAlign = TextAlign.Justify,
+        )
     }
 }
+
+
 
 @Composable
 fun DialogoCambiarRutina(viewModel: HomeViewModel) {
