@@ -1,4 +1,4 @@
-package com.oscar.benchfitness.screens.exercises
+package com.oscar.benchfitness.screens.workout.exercises
 
 
 import androidx.compose.foundation.Image
@@ -48,7 +48,7 @@ import com.oscar.benchfitness.models.exercises.ExerciseData
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
-import com.oscar.benchfitness.viewModels.exercises.EjercicioViewModel
+import com.oscar.benchfitness.viewModels.workout.EjercicioViewModel
 
 @Composable
 fun EjercicioScreen(

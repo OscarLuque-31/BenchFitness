@@ -1,4 +1,4 @@
-package com.oscar.benchfitness.screens.exercises
+package com.oscar.benchfitness.screens.workout.routines
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -67,7 +67,7 @@ import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
 import com.oscar.benchfitness.ui.theme.verdePrincipiante
 import com.oscar.benchfitness.utils.interpretarDia
-import com.oscar.benchfitness.viewModels.exercises.CrearRutinaViewModel
+import com.oscar.benchfitness.viewModels.workout.CrearRutinaViewModel
 
 @Composable
 fun CrearRutinaScreen(navController: NavController, viewModel: CrearRutinaViewModel) {

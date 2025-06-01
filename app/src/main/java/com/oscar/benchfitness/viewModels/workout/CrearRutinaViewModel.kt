@@ -1,4 +1,4 @@
-package com.oscar.benchfitness.viewModels.exercises
+package com.oscar.benchfitness.viewModels.workout
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf

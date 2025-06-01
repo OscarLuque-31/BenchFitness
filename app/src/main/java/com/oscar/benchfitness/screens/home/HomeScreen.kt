@@ -57,8 +57,8 @@ import com.oscar.benchfitness.components.GlobalDropDownMenu
 import com.oscar.benchfitness.components.GlobalTextField
 import com.oscar.benchfitness.components.InfoDialog
 import com.oscar.benchfitness.navegation.Goal
-import com.oscar.benchfitness.screens.exercises.BoxExerciseEntry
-import com.oscar.benchfitness.screens.exercises.EncabezadoNombreSerieReps
+import com.oscar.benchfitness.screens.workout.routines.BoxExerciseEntry
+import com.oscar.benchfitness.screens.workout.routines.EncabezadoNombreSerieReps
 import com.oscar.benchfitness.ui.theme.amarilloAvanzado
 import com.oscar.benchfitness.ui.theme.azulIntermedio
 import com.oscar.benchfitness.ui.theme.negroBench

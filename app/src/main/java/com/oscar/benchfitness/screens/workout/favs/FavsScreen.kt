@@ -1,4 +1,4 @@
-package com.oscar.benchfitness.screens.exercises
+package com.oscar.benchfitness.screens.workout.favs
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,8 +10,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.oscar.benchfitness.viewModels.exercises.EjerciciosViewModel
-import com.oscar.benchfitness.viewModels.exercises.FavsViewModel
+import com.oscar.benchfitness.screens.workout.exercises.CajaEjercicio
+import com.oscar.benchfitness.viewModels.workout.FavsViewModel
 
 @Composable
 fun FavsScreen(navController: NavController, viewModel: FavsViewModel) {

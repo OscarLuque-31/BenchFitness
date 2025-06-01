@@ -1,4 +1,4 @@
-package com.oscar.benchfitness.screens.exercises
+package com.oscar.benchfitness.screens.workout
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -41,20 +41,32 @@ import com.oscar.benchfitness.navegation.CrearRutina
 import com.oscar.benchfitness.navegation.Ejercicio
 import com.oscar.benchfitness.navegation.Ejercicios
 import com.oscar.benchfitness.navegation.Favs
+import com.oscar.benchfitness.navegation.MainExercises
+import com.oscar.benchfitness.navegation.MainFavs
+import com.oscar.benchfitness.navegation.MainRoutines
 import com.oscar.benchfitness.navegation.Rutina
 import com.oscar.benchfitness.navegation.Rutinas
 import com.oscar.benchfitness.repository.ExercisesRepository
+import com.oscar.benchfitness.screens.workout.exercises.EjercicioScreen
+import com.oscar.benchfitness.screens.workout.exercises.EjerciciosScreen
+import com.oscar.benchfitness.screens.workout.exercises.MainExercisesContainer
+import com.oscar.benchfitness.screens.workout.favs.FavsScreen
+import com.oscar.benchfitness.screens.workout.favs.MainFavsContainer
+import com.oscar.benchfitness.screens.workout.routines.CrearRutinaScreen
+import com.oscar.benchfitness.screens.workout.routines.MainRoutinesContainer
+import com.oscar.benchfitness.screens.workout.routines.RutinaScreen
+import com.oscar.benchfitness.screens.workout.routines.RutinasScreen
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
-import com.oscar.benchfitness.viewModels.exercises.CrearRutinaViewModel
-import com.oscar.benchfitness.viewModels.exercises.EjercicioViewModel
-import com.oscar.benchfitness.viewModels.exercises.EjerciciosViewModel
-import com.oscar.benchfitness.viewModels.exercises.FavsViewModel
-import com.oscar.benchfitness.viewModels.exercises.RutinaViewModel
-import com.oscar.benchfitness.viewModels.exercises.RutinasViewModel
+import com.oscar.benchfitness.viewModels.workout.CrearRutinaViewModel
+import com.oscar.benchfitness.viewModels.workout.EjercicioViewModel
+import com.oscar.benchfitness.viewModels.workout.EjerciciosViewModel
+import com.oscar.benchfitness.viewModels.workout.FavsViewModel
+import com.oscar.benchfitness.viewModels.workout.RutinaViewModel
+import com.oscar.benchfitness.viewModels.workout.RutinasViewModel
 
 @Composable
-fun MainExercisesContainer(
+fun MainWorkoutContainer(
     auth: FirebaseAuth,
     db: FirebaseFirestore
 ) {
@@ -65,97 +77,24 @@ fun MainExercisesContainer(
     }) { paddingValues ->
         NavHost(
             navController = innerNavController,
-            startDestination = Ejercicios.route,
+            startDestination = MainExercises.route,
             modifier = Modifier.padding(
                 top = paddingValues.calculateTopPadding(),
                 bottom = 0.dp
             )
         ) {
-            composable(Ejercicios.route) {
-                val ejerciciosViewModel = remember { EjerciciosViewModel(auth, db) }
-
-                LaunchedEffect(Unit) {
-                    ejerciciosViewModel.cargarEjercicios()
-                }
-
-                EjerciciosScreen(
-                    navController = innerNavController,
-                    viewModel = ejerciciosViewModel,
-                )
+            composable(MainExercises.route) {
+                MainExercisesContainer(auth, db)
             }
-            composable(Ejercicio.route) {
-                val ejercicioViewModel = remember { EjercicioViewModel(auth, db) }
 
-                val ejercicio = innerNavController.previousBackStackEntry
-                    ?.savedStateHandle
-                    ?.get<ExerciseData>("ejercicio")
-
-                var exercisesRepository = ExercisesRepository()
-
-                // Estado para manejar la URL del GIF
-                var urlGIF by remember { mutableStateOf<String?>(null) }
-
-                LaunchedEffect(ejercicio) {
-                    ejercicio?.let {
-
-                        println(it.url_image.replace("+", " "))
-
-                        urlGIF =
-                            exercisesRepository.obtenerURLFirmadaGif(it.url_image.replace("+", " "))
-
-                        println(urlGIF)
-                    }
-                }
-
-                if (ejercicio != null) {
-                    EjercicioScreen(
-                        navController = innerNavController,
-                        viewModel = ejercicioViewModel,
-                        ejercicio = ejercicio,
-                        urlGIF = urlGIF ?: ""
-                    )
-                }
+            composable(MainRoutines.route) {
+                MainRoutinesContainer(auth, db)
             }
-            composable(Rutinas.route) {
-                val rutinaViewModel = remember { RutinasViewModel(auth, db) }
 
-                LaunchedEffect(Unit) {
-                    rutinaViewModel.obtenerRutinas()
-                }
-
-                RutinasScreen(innerNavController, rutinaViewModel)
+            composable(MainFavs.route) {
+                MainFavsContainer(auth, db)
             }
-            composable(CrearRutina.route) {
 
-                val crearRutinaViewModel = remember { CrearRutinaViewModel(auth, db) }
-                CrearRutinaScreen(innerNavController, crearRutinaViewModel)
-
-            }
-            composable(Rutina.route) {
-
-                val rutinaViewModel = remember { RutinaViewModel(auth, db) }
-
-                val rutina = innerNavController.previousBackStackEntry
-                    ?.savedStateHandle
-                    ?.get<Routine>("rutina")
-
-
-                if (rutina != null) {
-                    RutinaScreen(innerNavController, rutinaViewModel, rutina)
-                }
-
-            }
-            composable(Favs.route) {
-
-                val favsViewModel = remember { FavsViewModel(auth, db) }
-
-                LaunchedEffect(Unit) {
-                    favsViewModel.cargarEjerciciosFavs()
-                }
-
-                FavsScreen(navController = innerNavController, favsViewModel)
-
-            }
         }
     }
 }
@@ -186,9 +125,9 @@ fun CabeceraOpcionesEjerciciosScreen(navController: NavController) {
         ) {
             ExerciseHeaderOption(
                 text = "Ejercicios",
-                selected = currentRoute == Ejercicios.route,
+                selected = currentRoute == MainExercises.route,
                 onClick = {
-                    navController.navigate(Ejercicios.route) {
+                    navController.navigate(MainExercises.route) {
                         launchSingleTop = true
                     }
                 }
@@ -196,9 +135,9 @@ fun CabeceraOpcionesEjerciciosScreen(navController: NavController) {
 
             ExerciseHeaderOption(
                 text = "Rutinas",
-                selected = currentRoute == Rutinas.route,
+                selected = currentRoute == MainRoutines.route,
                 onClick = {
-                    navController.navigate(Rutinas.route) {
+                    navController.navigate(MainRoutines.route) {
                         launchSingleTop = true
                     }
                 }
@@ -206,9 +145,9 @@ fun CabeceraOpcionesEjerciciosScreen(navController: NavController) {
 
             ExerciseHeaderOption(
                 text = "Favs",
-                selected = currentRoute == "Favs",
+                selected = currentRoute == MainFavs.route,
                 onClick = {
-                    navController.navigate(Favs.route) {
+                    navController.navigate(MainFavs.route) {
                         launchSingleTop = true
                     }
                 }

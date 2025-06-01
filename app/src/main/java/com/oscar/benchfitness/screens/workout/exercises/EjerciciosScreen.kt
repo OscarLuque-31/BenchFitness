@@ -1,4 +1,4 @@
-package com.oscar.benchfitness.screens.exercises
+package com.oscar.benchfitness.screens.workout.exercises
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,7 +39,7 @@ import com.oscar.benchfitness.ui.theme.negroClaroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
 import com.oscar.benchfitness.ui.theme.verdePrincipiante
-import com.oscar.benchfitness.viewModels.exercises.EjerciciosViewModel
+import com.oscar.benchfitness.viewModels.workout.EjerciciosViewModel
 
 @Composable
 fun EjerciciosScreen(navController: NavController, viewModel: EjerciciosViewModel) {

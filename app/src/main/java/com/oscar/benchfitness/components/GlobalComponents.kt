@@ -83,6 +83,7 @@ import com.oscar.benchfitness.navegation.MainExercises
 import com.oscar.benchfitness.navegation.MainHome
 import com.oscar.benchfitness.navegation.MainPerfil
 import com.oscar.benchfitness.navegation.MainStatistics
+import com.oscar.benchfitness.navegation.MainWorkout
 import com.oscar.benchfitness.navegation.Perfil
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
@@ -461,9 +462,9 @@ fun GlobalBarraNavegacion(navController: NavController) {
         NavigationIcon(
             "Ejercicios",
             R.drawable.iconopesas,
-            currentRoute == MainExercises.route
+            currentRoute == MainWorkout.route
         ) {
-            navController.navigate(MainExercises.route)
+            navController.navigate(MainWorkout.route)
         }
         NavigationIcon(
             "Estadisticas",

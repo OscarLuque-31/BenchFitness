@@ -1,4 +1,4 @@
-package com.oscar.benchfitness.viewModels.exercises
+package com.oscar.benchfitness.viewModels.workout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

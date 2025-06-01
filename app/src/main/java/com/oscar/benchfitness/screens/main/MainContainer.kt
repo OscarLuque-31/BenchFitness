@@ -13,14 +13,14 @@ import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.components.GlobalBarraNavegacion
-import com.oscar.benchfitness.navegation.MainExercises
 import com.oscar.benchfitness.navegation.MainHome
 import com.oscar.benchfitness.navegation.MainPerfil
 import com.oscar.benchfitness.navegation.MainStatistics
-import com.oscar.benchfitness.screens.exercises.MainExercisesContainer
+import com.oscar.benchfitness.navegation.MainWorkout
 import com.oscar.benchfitness.screens.home.MainHomeContainer
 import com.oscar.benchfitness.screens.profile.MainPerfilContainer
 import com.oscar.benchfitness.screens.statistics.MainStatisticsContainer
+import com.oscar.benchfitness.screens.workout.MainWorkoutContainer
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.viewModels.auth.AuthViewModel
 
@@ -50,8 +50,8 @@ fun MainContainer(
             composable(MainHome.route) {
                 MainHomeContainer(auth, db)
             }
-            composable(MainExercises.route) {
-                MainExercisesContainer(auth, db)
+            composable(MainWorkout.route) {
+                MainWorkoutContainer(auth, db)
             }
             composable(MainStatistics.route) {
                 MainStatisticsContainer(auth, db)

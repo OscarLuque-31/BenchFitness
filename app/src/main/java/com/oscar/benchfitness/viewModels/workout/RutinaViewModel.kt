@@ -1,6 +1,5 @@
-package com.oscar.benchfitness.viewModels.exercises
+package com.oscar.benchfitness.viewModels.workout
 
-import androidx.compose.runtime.saveable.autoSaver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth

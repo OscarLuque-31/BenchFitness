@@ -8,8 +8,8 @@ object Main {
 }
 
 @Serializable
-object MainExercises {
-    const val route = "MainExercises"
+object MainWorkout {
+    const val route = "MainWorkout"
 }
 
 @Serializable
@@ -26,6 +26,22 @@ object MainStatistics {
 object MainPerfil {
     const val route = "MainPerfil"
 }
+
+@Serializable
+object MainExercises {
+    const val route = "MainExercises"
+}
+
+@Serializable
+object MainRoutines {
+    const val route = "MainRoutines"
+}
+
+@Serializable
+object MainFavs {
+    const val route = "MainFavs"
+}
+
 
 @Serializable
 object Logo {
