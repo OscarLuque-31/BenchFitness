@@ -80,7 +80,7 @@ class PesoViewModel(
     }
 
 
-    fun actualizarDatosFiltrados(): List<Double> {
+    private fun actualizarDatosFiltrados(): List<Double> {
         val historialCompleto = progreso?.historial ?: return emptyList()
 
         val desde = when (filtroSeleccionado) {

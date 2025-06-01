@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -101,7 +102,7 @@ fun ColumnaPeso(navController: NavController, viewModel: PesoViewModel) {
         ) {
             FlechitaAtras(navController = navController)
             Spacer(Modifier.height(20.dp))
-            ResumenSemanalPeso(viewModel)
+            ResumenDiarioPeso(viewModel)
             Spacer(Modifier.height(20.dp))
             FiltroFechasPeso(viewModel)
             Spacer(Modifier.height(20.dp))
@@ -162,7 +163,6 @@ fun ColumnaPeso(navController: NavController, viewModel: PesoViewModel) {
 @Composable
 fun EstadisticaPeso(viewModel: PesoViewModel) {
     val datosPeso = viewModel.datosFiltrados
-
     if (datosPeso.size < 2) {
         Row(
             modifier = Modifier
@@ -187,7 +187,7 @@ fun EstadisticaPeso(viewModel: PesoViewModel) {
 
     LineChart(
         modifier = Modifier
-            .height(200.dp)
+            .height(250.dp)
             .padding(horizontal = 10.dp),
         data =
         listOf(
@@ -251,6 +251,7 @@ fun EstadisticaPeso(viewModel: PesoViewModel) {
         )
     )
 
+
 }
 
 
@@ -289,7 +290,7 @@ fun BotonAnadirPeso(
 }
 
 @Composable
-fun ResumenSemanalPeso(viewModel: PesoViewModel) {
+fun ResumenDiarioPeso(viewModel: PesoViewModel) {
     val ultimoPeso = viewModel.progreso?.historial?.lastOrNull()?.peso
 
     Column(
@@ -329,30 +330,34 @@ fun ResumenSemanalPeso(viewModel: PesoViewModel) {
 }
 
 @Composable
-fun InfoResumen(titulo: String, valor: String, unidad: String, color: Color) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+fun InfoResumen(
+    titulo: String,
+    valor: String,
+    unidad: String,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             text = titulo,
+            fontSize = 14.sp,
             color = Color.LightGray,
-            fontSize = 14.sp
+            textAlign = TextAlign.Center
         )
-        Row(verticalAlignment = Alignment.Bottom) {
-            Text(
-                text = valor,
-                color = color,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = unidad,
-                color = color.copy(alpha = 0.7f),
-                fontSize = 14.sp,
-                modifier = Modifier.padding(bottom = 4.dp)
-            )
-        }
+        Text(
+            text = "$valor $unidad",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = color,
+            textAlign = TextAlign.Center,
+            lineHeight = 20.sp
+        )
     }
 }
+
 
 @Composable
 fun AgregarPesoDialog(viewModel: PesoViewModel) {
