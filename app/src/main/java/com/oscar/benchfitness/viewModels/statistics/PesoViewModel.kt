@@ -1,18 +1,15 @@
 package com.oscar.benchfitness.viewModels.statistics
 
-
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.models.statistics.StatisticsWeight
 import com.oscar.benchfitness.models.statistics.WeightProgress
-import com.oscar.benchfitness.repository.StatisticsExercisesRepository
 import com.oscar.benchfitness.repository.StatisticsWeightRepository
 import com.oscar.benchfitness.repository.UserRepository
 import com.oscar.benchfitness.ui.theme.rojoBench
@@ -20,7 +17,6 @@ import com.oscar.benchfitness.ui.theme.verdePrincipiante
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.temporal.WeekFields
 import kotlin.math.abs
 
 class PesoViewModel(
@@ -30,6 +26,7 @@ class PesoViewModel(
 
     var progreso by mutableStateOf<WeightProgress?>(WeightProgress())
     var peso by mutableStateOf("")
+    var ultimoPeso by mutableStateOf("")
     var mostrarDialogoConfirmacion by mutableStateOf(false)
     var mostrarDialogoAgregarPeso by mutableStateOf(false)
     var isLoading by mutableStateOf(false)
@@ -44,18 +41,36 @@ class PesoViewModel(
     private val statisticsWeightRepository = StatisticsWeightRepository(auth, db)
     private val userRepository = UserRepository(auth, db)
 
+    fun obtenerUltimoPeso(): String {
+        val historial = obtenerHistorialOrdenado() ?: return "--"
 
+        if (historial.isEmpty()) return "--"
 
-    // Función simplificada para obtener diferencia
+        ultimoPeso = historial.last().first.peso.toString()
+        return ultimoPeso
+    }
+
     fun obtenerDiferenciaPeso(): String {
-        val historial = progreso?.historial?.sortedBy { it.fecha } ?: return "--"
+        val historial = progreso?.historial
+            ?.mapNotNull {
+                try {
+                    it to LocalDate.parse(it.fecha, dateFormatter)
+                } catch (e: Exception) {
+                    null
+                }
+            }
+            ?.sortedBy { it.second }
+            ?: return "--"
+
         if (historial.size < 2) return "--"
 
-        val diferencia = historial.last().peso - historial[historial.size - 2].peso
+        val pesoActual = historial.last().first.peso
+        val pesoAnterior = historial[historial.size - 2].first.peso
+        val diferencia = pesoActual - pesoAnterior
 
         val signo = when {
             diferencia > 0 -> "+"
-            diferencia < 0 -> "-" // el número ya será negativo, pero así lo haces explícito
+            diferencia < 0 -> "-"
             else -> ""
         }
 
@@ -63,22 +78,37 @@ class PesoViewModel(
     }
 
 
-    // Función para saber si aumentó o bajó
     fun obtenerEstadoPeso(): Color {
-        val historial = progreso?.historial?.sortedBy { it.fecha } ?: return Color.Gray
+        val historial = obtenerHistorialOrdenado()
+            ?: return Color.Gray
+
         if (historial.size < 2) return Color.Gray
 
-        val diferencia = historial.last().peso - historial[historial.size - 2].peso
-        return if (diferencia > 0) rojoBench else verdePrincipiante
+        val pesoActual = historial.last().first.peso
+        val pesoAnterior = historial[historial.size - 2].first.peso
+
+        return if (pesoActual > pesoAnterior) rojoBench else verdePrincipiante
     }
 
+    private fun obtenerHistorialOrdenado(): List<Pair<StatisticsWeight, LocalDate>>? {
+        val historial = progreso?.historial
+            ?.mapNotNull {
+                try {
+                    it to LocalDate.parse(it.fecha, dateFormatter)
+                } catch (e: Exception) {
+                    null
+                }
+            }
+            ?.sortedBy { it.second }
+
+        return historial
+    }
 
 
     fun seleccionarFiltro(nuevoFiltro: String) {
         filtroSeleccionado = nuevoFiltro
         datosFiltrados = actualizarDatosFiltrados()
     }
-
 
     private fun actualizarDatosFiltrados(): List<Double> {
         val historialCompleto = progreso?.historial ?: return emptyList()
@@ -95,17 +125,17 @@ class PesoViewModel(
                 try {
                     val fechaLocal = LocalDate.parse(entrada.fecha, dateFormatter)
                     if (fechaLocal.isAfter(desde)) {
-                        entrada
+                        entrada to fechaLocal
                     } else null
                 } catch (e: Exception) {
-                    null // por si alguna fecha está mal formateada
+                    null
                 }
             }
-            .sortedBy { LocalDate.parse(it.fecha, dateFormatter) }
-            .map { it.peso }
+            .sortedBy { it.second }
+            .map { it.first.peso }
     }
 
-    suspend fun cargarHistorialPesos(){
+    suspend fun cargarHistorialPesos() {
         viewModelScope.launch {
             progreso = statisticsWeightRepository.getAllWeightProgress()
             datosFiltrados = actualizarDatosFiltrados()
@@ -126,11 +156,16 @@ class PesoViewModel(
         isLoading = true
         mostrarDialogoConfirmacion = false
         mostrarDialogoAgregarPeso = false
+
         viewModelScope.launch {
             try {
-                statisticsWeightRepository.saveWeightExecution(
-                    newProgress = StatisticsWeight(peso = peso.toDouble())
+                val fechaHoy = LocalDate.now().format(dateFormatter)
+                val nuevoPeso = StatisticsWeight(
+                    peso = peso.toDouble(),
+                    fecha = fechaHoy
                 )
+
+                statisticsWeightRepository.saveWeightExecution(newProgress = nuevoPeso)
                 userRepository.asignarPeso(peso = peso)
                 cargarHistorialPesos()
             } finally {
@@ -139,5 +174,4 @@ class PesoViewModel(
             }
         }
     }
-
 }

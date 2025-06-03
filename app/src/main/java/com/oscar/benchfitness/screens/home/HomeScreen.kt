@@ -264,12 +264,22 @@ fun BloqueApuntarRutina(modifier: Modifier = Modifier, viewModel: HomeViewModel)
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    "Rutina ${viewModel.userData.rutinaAsignada?.nombre ?: ""}",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontSize = 20.sp,
-                    color = Color.White
-                )
+                Row (verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.Center){
+                    Text(
+                        "Rutina",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontSize = 20.sp,
+                        color = Color.White
+                    )
+                    Spacer(Modifier.width(10.dp))
+                    Text(
+                        viewModel.userData.rutinaAsignada.nombre,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 21.sp,
+                        color = rojoBench
+                    )
+                }
                 if (viewModel.isRutinaAsignada) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (viewModel.entrenamientoDelDia != null) {

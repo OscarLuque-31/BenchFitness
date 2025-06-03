@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -182,9 +183,21 @@ fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
 fun ListaEjercicios(navController: NavController, viewModel: EjerciciosViewModel) {
     val ejercicios by viewModel.ejercicios.collectAsState()
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(ejercicios) { ejercicio ->
-            CajaEjercicio(navController, ejercicio)
+    if (ejercicios.isEmpty()) {
+        Column (modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+
+            Text("No se encontraron ejercicios",
+                fontSize = 20.sp,
+                color = rojoBench,
+                fontWeight = FontWeight.Medium)
+        }
+    } else {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(ejercicios) { ejercicio ->
+                CajaEjercicio(navController, ejercicio)
+            }
         }
     }
 }

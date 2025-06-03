@@ -291,7 +291,6 @@ fun BotonAnadirPeso(
 
 @Composable
 fun ResumenDiarioPeso(viewModel: PesoViewModel) {
-    val ultimoPeso = viewModel.progreso?.historial?.lastOrNull()?.peso
 
     Column(
         modifier = Modifier
@@ -314,7 +313,7 @@ fun ResumenDiarioPeso(viewModel: PesoViewModel) {
         ) {
             InfoResumen(
                 titulo = "Peso actual",
-                valor = ultimoPeso?.toString() ?: "--",
+                valor = viewModel.obtenerUltimoPeso(),
                 unidad = "kg",
                 color = Color.White
             )
