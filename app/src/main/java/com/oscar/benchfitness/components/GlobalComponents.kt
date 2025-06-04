@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
@@ -53,10 +54,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.FocusState
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -79,12 +77,10 @@ import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import com.oscar.benchfitness.R
-import com.oscar.benchfitness.navegation.MainExercises
 import com.oscar.benchfitness.navegation.MainHome
 import com.oscar.benchfitness.navegation.MainPerfil
 import com.oscar.benchfitness.navegation.MainStatistics
 import com.oscar.benchfitness.navegation.MainWorkout
-import com.oscar.benchfitness.navegation.Perfil
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
@@ -247,41 +243,71 @@ fun DatePickerField(onDateSelected: (String) -> Unit) {
                     )
                 }
             },
-            colors = DatePickerDefaults.colors(
-                containerColor = negroBench, // Fondo del DatePicker
-                titleContentColor = rojoBench, // Color del título (Mes y Año en encabezado)
-                headlineContentColor = rojoBench, // Color del mes/año seleccionado
-                weekdayContentColor = rojoBench, // Color de los días de la semana (Lun, Mar, etc.)
-                subheadContentColor = rojoBench, // Color de la cabecera secundaria
-                dayContentColor = rojoBench, // Color de los días
-                selectedDayContentColor = Color.White, // Día seleccionado (texto)
-                selectedDayContainerColor = rojoBench, // Día seleccionado (fondo)
-                todayDateBorderColor = rojoBench, // Borde del día actual
-                yearContentColor = rojoBench, // Año
-                currentYearContentColor = Color.White,
-                selectedYearContentColor = rojoBench,// Año seleccionado
-            )
+            colors = createDatePickerColors()
         ) {
             DatePicker(
                 state = state,
-                colors = DatePickerDefaults.colors(
-                    containerColor = negroBench, // Fondo del DatePicker
-                    titleContentColor = rojoBench, // Color del título (Mes y Año en encabezado)
-                    headlineContentColor = rojoBench, // Color del mes/año seleccionado
-                    weekdayContentColor = rojoBench, // Color de los días de la semana (Lun, Mar, etc.)
-                    subheadContentColor = rojoBench, // Color de la cabecera secundaria
-                    dayContentColor = rojoBench, // Color de los días
-                    selectedDayContentColor = Color.White, // Día seleccionado (texto)
-                    selectedDayContainerColor = rojoBench, // Día seleccionado (fondo)
-                    todayDateBorderColor = rojoBench,// Borde del día actual
-                    todayContentColor = Color.White,
-                    yearContentColor = rojoBench, // Año
-                    selectedYearContentColor = rojoBench,// Año seleccionado
-                )
+                colors = createDatePickerColors()
             )
         }
     }
 }
+
+// Función auxiliar para crear los colores del DatePicker
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun createDatePickerColors() = DatePickerDefaults.colors(
+    containerColor = negroBench,
+    titleContentColor = rojoBench,
+    headlineContentColor = rojoBench,
+    subheadContentColor = rojoBench,
+    weekdayContentColor = rojoBench,
+    dayContentColor = rojoBench,
+    disabledDayContentColor = rojoBench.copy(alpha = 0.5f),
+    selectedDayContentColor = Color.White,
+    selectedDayContainerColor = rojoBench,
+    todayContentColor = Color.White,
+    todayDateBorderColor = rojoBench,
+    navigationContentColor = rojoBench,
+    yearContentColor = rojoBench,
+    disabledYearContentColor = rojoBench.copy(alpha = 0.5f),
+    currentYearContentColor = Color.White,
+    selectedYearContentColor = rojoBench,
+    selectedYearContainerColor = negroBench,
+    dividerColor = rojoBench,
+    dateTextFieldColors = createTextFieldColors()
+)
+
+// Función auxiliar para crear los colores del TextField
+@Composable
+private fun createTextFieldColors() = TextFieldDefaults.colors(
+    focusedTextColor = Color.White,
+    unfocusedTextColor = rojoBench,
+    disabledTextColor = rojoBench.copy(alpha = 0.5f),
+    focusedContainerColor = negroBench,
+    unfocusedContainerColor = negroBench,
+    disabledContainerColor = negroBench.copy(alpha = 0.5f),
+    cursorColor = rojoBench,
+    selectionColors = TextSelectionColors(
+        handleColor = rojoBench,
+        backgroundColor = rojoBench.copy(alpha = 0.4f)
+    ),
+    focusedIndicatorColor = rojoBench,
+    unfocusedIndicatorColor = rojoBench.copy(alpha = 0.5f),
+    disabledIndicatorColor = rojoBench.copy(alpha = 0.2f),
+    focusedLabelColor = rojoBench,
+    unfocusedLabelColor = rojoBench,
+    disabledLabelColor = rojoBench.copy(alpha = 0.5f),
+    focusedPlaceholderColor = rojoBench.copy(alpha = 0.7f),
+    unfocusedPlaceholderColor = rojoBench.copy(alpha = 0.7f),
+    disabledPlaceholderColor = rojoBench.copy(alpha = 0.3f),
+    focusedLeadingIconColor = rojoBench,
+    unfocusedLeadingIconColor = rojoBench,
+    disabledLeadingIconColor = rojoBench.copy(alpha = 0.5f),
+    focusedTrailingIconColor = rojoBench,
+    unfocusedTrailingIconColor = rojoBench,
+    disabledTrailingIconColor = rojoBench.copy(alpha = 0.5f)
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -647,7 +673,8 @@ fun FormularioCalorias(
             onClick = {
                 when {
                     !viewModel.esEdadValida() -> {
-                        viewModel.mensajeError = "Edad inválida. Ingresa una edad entre 5 y 120 años."
+                        viewModel.mensajeError =
+                            "Edad inválida. Ingresa una edad entre 5 y 120 años."
                         viewModel.showDialog = true
                     }
 
@@ -657,7 +684,8 @@ fun FormularioCalorias(
                     }
 
                     !viewModel.esAlturaValida() -> {
-                        viewModel.mensajeError = "Altura inválida. Ingresa una altura entre 80 y 250 cm."
+                        viewModel.mensajeError =
+                            "Altura inválida. Ingresa una altura entre 80 y 250 cm."
                         viewModel.showDialog = true
                     }
 
