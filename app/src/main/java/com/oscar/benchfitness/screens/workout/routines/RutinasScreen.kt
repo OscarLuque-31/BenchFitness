@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -23,6 +24,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -35,7 +38,6 @@ import com.oscar.benchfitness.viewModels.workout.RutinasViewModel
 
 @Composable
 fun RutinasScreen(navController: NavController, viewModel: RutinasViewModel) {
-    // Usamos verticalScroll para hacer que la columna sea desplazable
     Column(
         modifier = Modifier
             .padding(start = 20.dp, end = 20.dp, top = 20.dp)
@@ -58,11 +60,27 @@ fun BoxNuevaRutina(navController: NavController) {
             .height(130.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(negroOscuroBench)
-            .clickable { navController.navigate(CrearRutina.route) },
+            .clickable { navController.navigate(CrearRutina.route) }
+            .padding(horizontal = 50.dp), // Padding consistente
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceAround
+        horizontalArrangement = Arrangement.SpaceBetween // Cambio clave
     ) {
-        Text("Crear rutina", color = rojoBench, fontWeight = FontWeight.Normal)
+        // Contenedor para el texto (misma estructura que las rutinas)
+        Column(
+            modifier = Modifier.weight(1f), // Ocupa el espacio disponible
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(
+                "Crear rutina",
+                color = rojoBench,
+                fontWeight = FontWeight.Medium,
+                fontSize = 25.sp
+            )
+        }
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        // Icono con tamaño fijo
         Image(
             painter = painterResource(id = R.drawable.anadir),
             contentDescription = "Añadir rutina",
@@ -73,7 +91,6 @@ fun BoxNuevaRutina(navController: NavController) {
 
 @Composable
 fun ListaRutinas(viewModel: RutinasViewModel, navController: NavController) {
-
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -88,15 +105,111 @@ fun ListaRutinas(viewModel: RutinasViewModel, navController: NavController) {
                     .clickable {
                         navController.currentBackStackEntry?.savedStateHandle?.set("rutina", rutina)
                         navController.navigate(Rutina.route)
-                    },
+                    }
+                    .padding(horizontal = 50.dp), // Padding consistente
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround
+                horizontalArrangement = Arrangement.SpaceBetween // Cambio clave
             ) {
-                Text(rutina.nombre, color = Color.White, fontWeight = FontWeight.Normal)
-                Text(
-                    rutina.objetivo, color = rojoBench, fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp
-                )
+                // Contenedor para el nombre de la rutina
+                Column(
+                    modifier = Modifier.weight(1f), // Ocupa el espacio disponible
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(
+                        text = rutina.nombre,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 25.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        lineHeight = 22.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(30.dp))
+
+                // Contenedor para el objetivo (tamaño fijo)
+                Column(
+                    horizontalAlignment = Alignment.End
+                ) {
+                    Text(
+                        text = rutina.objetivo,
+                        color = rojoBench,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+            Spacer(Modifier.height(20.dp))
+        }
+    }
+}
+
+// VERSIÓN ALTERNATIVA: Si quieres un diseño más estructurado
+@Composable
+fun ListaRutinasAlternativa(viewModel: RutinasViewModel, navController: NavController) {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        viewModel.listaRutinas.forEach { rutina ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(130.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(negroOscuroBench)
+                    .clickable {
+                        navController.currentBackStackEntry?.savedStateHandle?.set("rutina", rutina)
+                        navController.navigate(Rutina.route)
+                    }
+                    .padding(20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Información de la rutina (ocupa 80% del ancho)
+                Column(
+                    modifier = Modifier
+                        .weight(0.8f)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    // Nombre de la rutina
+                    Text(
+                        text = rutina.nombre,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        lineHeight = 20.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Objetivo de la rutina
+                    Text(
+                        text = rutina.objetivo,
+                        color = rojoBench,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                // Espacio para icono o indicador (ocupa 20% del ancho)
+                Column(
+                    modifier = Modifier.weight(0.2f),
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    // Puedes agregar un icono aquí si quieres
+                    Text(
+                        text = "→",
+                        color = rojoBench,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
             Spacer(Modifier.height(20.dp))
         }

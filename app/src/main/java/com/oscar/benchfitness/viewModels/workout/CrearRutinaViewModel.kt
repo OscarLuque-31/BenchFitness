@@ -17,6 +17,11 @@ import kotlinx.coroutines.launch
 
 class CrearRutinaViewModel(auth: FirebaseAuth, db: FirebaseFirestore) : ViewModel() {
 
+
+    val MAX_NOMBRE_RUTINA_LENGTH = 15
+
+
+
     var nombreRutina by mutableStateOf("")
     var objetivo by mutableStateOf("Objetivo")
     var diasSeleccionados by mutableStateOf<List<String>>(listOf())
@@ -216,6 +221,8 @@ class CrearRutinaViewModel(auth: FirebaseAuth, db: FirebaseFirestore) : ViewMode
     fun validarRutina(): Boolean {
         errorRutina = when {
             nombreRutina.isBlank() -> "El nombre de la rutina no puede estar vacío."
+            nombreRutina.length > MAX_NOMBRE_RUTINA_LENGTH ->
+                "El nombre no puede tener más de $MAX_NOMBRE_RUTINA_LENGTH caracteres."
             objetivo == "Objetivo" -> "Debes seleccionar un objetivo válido."
             diasSeleccionados.isEmpty() -> "Debes seleccionar al menos un día."
             diasSeleccionados.any { (ejerciciosPorDia[it]?.size ?: 0) < 3 } ->
