@@ -34,7 +34,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.oscar.benchfitness.animations.LoadingScreen
 import com.oscar.benchfitness.animations.LoadingScreenCircularProgress
 import com.oscar.benchfitness.components.DatePickerField
 import com.oscar.benchfitness.components.GlobalButton
@@ -69,7 +68,6 @@ fun DatosScreen(navController: NavController, viewModel: DatosViewModel) {
             viewModel = viewModel,
             onStartClick = {
                 viewModel.guardarDatosUsuario(
-                    context,
                     onSuccess = {
                         navController.navigate(Main.route) {
                             popUpTo(Inicio.route) { inclusive = true }

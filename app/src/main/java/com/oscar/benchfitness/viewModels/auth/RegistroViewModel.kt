@@ -13,8 +13,8 @@ import com.oscar.benchfitness.utils.validateRegisterFields
 import kotlinx.coroutines.launch
 
 class RegistroViewModel(
-    private val auth: FirebaseAuth,
-    private val db: FirebaseFirestore
+    auth: FirebaseAuth,
+    db: FirebaseFirestore
 ) : ViewModel() {
 
     var username by mutableStateOf("")
@@ -32,7 +32,6 @@ class RegistroViewModel(
      * Método que registra al usuario en base de datos
      */
     fun registerUser(onSuccess: () -> Unit, onFailure: (String) -> Unit) {
-        isLoading = true
 
         // Valida los datos
         val (isValid, errorMessage) = validateRegisterFields(
@@ -48,6 +47,8 @@ class RegistroViewModel(
             onFailure(errorMessage)
             return
         }
+
+        isLoading = true
 
         viewModelScope.launch {
             val result = userRepository.registerUser(

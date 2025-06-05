@@ -1,6 +1,5 @@
 package com.oscar.benchfitness.viewModels.datos
 
-import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,10 +7,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.oscar.benchfitness.models.routines.Routine
 import com.oscar.benchfitness.models.statistics.StatisticsWeight
 import com.oscar.benchfitness.models.user.userData
+import com.oscar.benchfitness.repository.RoutineRepository
 import com.oscar.benchfitness.repository.StatisticsWeightRepository
 import com.oscar.benchfitness.repository.UserRepository
+import com.oscar.benchfitness.utils.crearRutinaAvanzado
+import com.oscar.benchfitness.utils.crearRutinaIntermedio
+import com.oscar.benchfitness.utils.crearRutinaPrincipiante
 import com.oscar.benchfitness.utils.validateFieldsDatos
 import kotlinx.coroutines.launch
 
@@ -27,14 +31,16 @@ class DatosViewModel(
     var nivelActividad by mutableStateOf("Nivel de actividad física")
     var objetivo by mutableStateOf("Objetivo fitness")
     var birthday by mutableStateOf("")
-
     var isLoading by mutableStateOf(false)
+    var rutinaPorDefecto by mutableStateOf(Routine())
 
     // Agregar un estado para el mensaje del Snackbar
     var snackbarMessage by mutableStateOf<String?>(null)
 
     private val userRepository = UserRepository(auth, db)
     private val statisticsWeightRepository = StatisticsWeightRepository(auth, db)
+    private val routineRepository = RoutineRepository(auth, db)
+
 
     fun dismissSnackbar() {
         snackbarMessage = null
@@ -43,7 +49,7 @@ class DatosViewModel(
     /**
      * Método que guarda los datos del usuario en base de datos
      */
-    fun guardarDatosUsuario(context: Context, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+    fun guardarDatosUsuario(onSuccess: () -> Unit, onFailure: (String) -> Unit) {
         isLoading = true
 
         // Valida que sean correctos
@@ -82,7 +88,21 @@ class DatosViewModel(
             )
             viewModelScope.launch {
                 statisticsWeightRepository.saveWeightExecution(newProgress = StatisticsWeight(peso = peso.toDouble()))
+                asignarRutinaSegunExperiencia(experiencia)
             }
         }
     }
+
+
+    private suspend fun asignarRutinaSegunExperiencia(experiencia: String) {
+        when (experiencia) {
+            "Principiante" -> rutinaPorDefecto = crearRutinaPrincipiante()
+            "Intermedio" -> rutinaPorDefecto = crearRutinaIntermedio()
+            "Avanzado" -> rutinaPorDefecto = crearRutinaAvanzado()
+        }
+
+        routineRepository.saveRoutine(rutinaPorDefecto)
+    }
+
+
 }

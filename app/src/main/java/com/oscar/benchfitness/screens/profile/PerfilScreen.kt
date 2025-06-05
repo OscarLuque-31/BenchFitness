@@ -48,6 +48,8 @@ import com.oscar.benchfitness.navegation.Inicio
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
+import com.oscar.benchfitness.utils.validarAltura
+import com.oscar.benchfitness.utils.validarObjetivo
 import com.oscar.benchfitness.viewModels.profile.PerfilViewModel
 
 @Composable
@@ -383,8 +385,8 @@ fun DialogEditarDato(viewModel: PerfilViewModel) {
                     modifier = Modifier
                         .clickable {
                             val error = when {
-                                viewModel.editObjetivo -> viewModel.validarObjetivo()
-                                viewModel.editAltura -> viewModel.validarAltura()
+                                viewModel.editObjetivo -> validarObjetivo(newObjetivo = viewModel.newObjetivo)
+                                viewModel.editAltura -> validarAltura(newAltura = viewModel.newAltura)
                                 else -> null
                             }
 

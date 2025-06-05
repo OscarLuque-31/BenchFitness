@@ -11,6 +11,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.models.user.userData
 import com.oscar.benchfitness.repository.RoutineRepository
 import com.oscar.benchfitness.repository.UserRepository
+import com.oscar.benchfitness.utils.validatePassword
 import com.oscar.benchfitness.viewModels.auth.AuthViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -82,12 +83,11 @@ class PerfilViewModel(
     ) {
         passwordError = null // Resetear error
 
+        val (isValid, errorMsg) = validatePassword(newPassword)
         when {
             newPassword != confirmPassword -> passwordError = "Las contraseñas no coinciden"
-            newPassword.length < 6 -> passwordError = "La nueva contraseña debe tener al menos 6 caracteres"
-            else -> {
-                cambiarPassword(currentPassword, newPassword)
-            }
+            !isValid -> passwordError = errorMsg
+            else -> cambiarPassword(currentPassword, newPassword)
         }
     }
 
@@ -120,17 +120,6 @@ class PerfilViewModel(
 
     fun cerrarSesion() {
         authViewModel.cerrarSesion()
-    }
-
-    fun validarObjetivo(): String? {
-        return if (newObjetivo.isBlank()) "Por favor selecciona un objetivo válido." else null
-    }
-
-    fun validarAltura(): String? {
-        val alturaInt = newAltura.toIntOrNull()
-        return if (alturaInt == null || alturaInt !in 80..250)
-            "Introduce una altura válida entre 80 y 250 cm."
-        else null
     }
 
     fun guardarCambios() {

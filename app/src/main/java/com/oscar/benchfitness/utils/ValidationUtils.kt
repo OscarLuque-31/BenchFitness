@@ -1,20 +1,29 @@
 package com.oscar.benchfitness.utils
 
+
+private val MAX_USERNAME_LENGTH = 15
+private val MIN_PASSWORD_LENGTH = 6
+private val REGEX_PASSWORD = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+\$".toRegex()
+
 /**
- * Método para validar los datos del registro
+ * Método para validar los datos del registro con validación de contraseña mejorada
  */
 fun validateRegisterFields(
-    username: String, email: String, password: String, confirmPassword: String, acceptTerms: Boolean
+    username: String,
+    email: String,
+    password: String,
+    confirmPassword: String,
+    acceptTerms: Boolean
 ): Pair<Boolean, String> {
     return when {
         username.isBlank() -> Pair(false, "El nombre de usuario no puede estar vacío.")
-        email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email)
-            .matches() -> Pair(
-            false,
-            "Ingresa un email válido."
-        )
-
-        password.length < 6 -> Pair(false, "La contraseña debe tener al menos 6 caracteres.")
+        username.length > MAX_USERNAME_LENGTH -> Pair(false, "El nombre de usuario no puede tener más de $MAX_USERNAME_LENGTH caracteres.")
+        email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() ->
+            Pair(false, "Ingresa un email válido.")
+        password.length < MIN_PASSWORD_LENGTH ->
+            Pair(false, "La contraseña debe tener al menos $MIN_PASSWORD_LENGTH caracteres.")
+        !REGEX_PASSWORD.matches(password) ->
+            Pair(false, "La contraseña debe contener al menos una mayúscula, una minúscula y un número.")
         password != confirmPassword -> Pair(false, "Las contraseñas no coinciden.")
         !acceptTerms -> Pair(false, "Debes aceptar los términos y condiciones.")
         else -> Pair(true, "")
@@ -86,3 +95,23 @@ fun validateFieldsDatos(
     return Pair(true, "")
 }
 
+fun validarObjetivo(newObjetivo: String): String? {
+    return if (newObjetivo.isBlank()) "Por favor selecciona un objetivo válido." else null
+}
+
+fun validarAltura(newAltura: String): String? {
+    val alturaInt = newAltura.toIntOrNull()
+    return if (alturaInt == null || alturaInt !in 80..250)
+        "Introduce una altura válida entre 80 y 250 cm."
+    else null
+}
+
+fun validatePassword(password: String): Pair<Boolean, String> {
+    return when {
+        password.length < MIN_PASSWORD_LENGTH ->
+            Pair(false, "La contraseña debe tener al menos $MIN_PASSWORD_LENGTH caracteres.")
+        !REGEX_PASSWORD.matches(password) ->
+            Pair(false, "La contraseña debe contener al menos una mayúscula, una minúscula y un número.")
+        else -> Pair(true, "")
+    }
+}
