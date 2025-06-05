@@ -45,6 +45,7 @@ import com.oscar.benchfitness.screens.start.ColumnaPrincipal
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
+import com.oscar.benchfitness.utils.calcularEdad
 import com.oscar.benchfitness.viewModels.datos.DatosViewModel
 
 @Composable
@@ -164,12 +165,26 @@ fun ContenedorDatos(
         ColumnaNivelYObjetivo(viewModel)
         FilaPesoYExperiencia(viewModel)
         FilaEdad(viewModel)
-        Spacer(Modifier.height(25.dp))
+        Spacer(Modifier.height(12.5.dp))
+        if (viewModel.birthday.isNotEmpty()) {
+            val edadUsuario = calcularEdad(viewModel.birthday)
+
+            if (edadUsuario.toInt() in 0..11) {
+                Text(
+                    "Advertencia: Esta app no está recomendada para menores de 12 años.",
+                    color = Color.Yellow,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth().padding(vertical = 10.dp)
+                )
+            }
+        }
         GlobalButton(
             "Empezar", negroBench,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(60.dp),
+                .height(65.dp).padding(top = 12.5.dp),
             colorText = Color.White,
         ) {
             onStartClick()

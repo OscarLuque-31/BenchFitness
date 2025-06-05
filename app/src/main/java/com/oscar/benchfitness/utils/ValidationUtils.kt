@@ -4,6 +4,7 @@ package com.oscar.benchfitness.utils
 private val MAX_USERNAME_LENGTH = 15
 private val MIN_PASSWORD_LENGTH = 6
 private val REGEX_PASSWORD = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+\$".toRegex()
+private val EMAIL_REGEX = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")
 
 /**
  * Método para validar los datos del registro con validación de contraseña mejorada
@@ -18,7 +19,7 @@ fun validateRegisterFields(
     return when {
         username.isBlank() -> Pair(false, "El nombre de usuario no puede estar vacío.")
         username.length > MAX_USERNAME_LENGTH -> Pair(false, "El nombre de usuario no puede tener más de $MAX_USERNAME_LENGTH caracteres.")
-        email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() ->
+        email.isBlank() || !EMAIL_REGEX.matches(email) ->
             Pair(false, "Ingresa un email válido.")
         password.length < MIN_PASSWORD_LENGTH ->
             Pair(false, "La contraseña debe tener al menos $MIN_PASSWORD_LENGTH caracteres.")
@@ -36,12 +37,12 @@ fun validateRegisterFields(
  */
 fun validateLoginFields(email: String, password: String): Pair<Boolean, String> {
     return when {
-        email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> Pair(
+        email.isBlank() || !EMAIL_REGEX.matches(email) -> Pair(
             false,
             "Ingresa un email válido"
         )
 
-        password.length < 6 -> Pair(false, "Completa los campos restantes")
+        password.length < 6 -> Pair(false, "Completa correctamente los campos restantes")
         else -> Pair(true, "")
     }
 }

@@ -50,7 +50,6 @@ class DatosViewModel(
      * Método que guarda los datos del usuario en base de datos
      */
     fun guardarDatosUsuario(onSuccess: () -> Unit, onFailure: (String) -> Unit) {
-        isLoading = true
 
         // Valida que sean correctos
         val (isValid, errorMessage) = validateFieldsDatos(
@@ -68,6 +67,7 @@ class DatosViewModel(
             snackbarMessage = errorMessage
             onFailure(errorMessage)
         } else {
+            isLoading = true
             userRepository.guardarDatosUsuario(
                 userData(
                     altura = altura,

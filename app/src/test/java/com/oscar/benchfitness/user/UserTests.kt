@@ -2,6 +2,8 @@ package com.oscar.benchfitness.user
 
 import com.oscar.benchfitness.models.routines.Routine
 import com.oscar.benchfitness.models.user.userData
+import com.oscar.benchfitness.utils.validateLoginFields
+import com.oscar.benchfitness.utils.validateRegisterFields
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -102,5 +104,59 @@ class UserTests {
         val userModificado = userOriginal.copy(rutinaAsignada = nuevaRutina)
 
         assertEquals(nuevaRutina, userModificado.rutinaAsignada)
+    }
+
+    @Test
+    fun registrarUsuarioCorrecto() {
+        val userOriginal = USER_PLANTILLA
+
+        val (isValid) = validateRegisterFields(
+            username = userOriginal.username,
+            email = userOriginal.email,
+            acceptTerms = true,
+            password = "Lukas123",
+            confirmPassword = "Lukas123"
+        )
+
+        assertEquals(true, isValid)
+    }
+
+    @Test
+    fun registrarUsuarioIncorrecto() {
+        val userOriginal = USER_PLANTILLA
+
+        val (isValid) = validateRegisterFields(
+            username = userOriginal.username,
+            email = userOriginal.email,
+            acceptTerms = true,
+            password = "Lukas123",
+            confirmPassword = "Lukas12"
+        )
+
+        assertEquals(false, isValid)
+    }
+
+    @Test
+    fun loginUsuarioCorrecto() {
+        val userOriginal = USER_PLANTILLA
+
+        val (isValid) = validateLoginFields(
+            email = userOriginal.email,
+            password = "Lukas123",
+        )
+
+        assertEquals(true, isValid)
+    }
+
+    @Test
+    fun loginUsuarioIncorrecto() {
+        val userOriginal = USER_PLANTILLA
+
+        val (isValid) = validateLoginFields(
+            email = userOriginal.email,
+            password = "123",
+        )
+
+        assertEquals(false, isValid)
     }
 }
