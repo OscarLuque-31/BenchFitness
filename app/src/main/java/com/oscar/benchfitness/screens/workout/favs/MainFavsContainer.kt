@@ -24,26 +24,26 @@ fun MainFavsContainer(
     auth: FirebaseAuth,
     db: FirebaseFirestore,
 ) {
-
+    // Controlador de navegación de Favoritos
     val navController = rememberNavController()
 
     NavHost(navController, startDestination = Favs.route) {
 
         composable(Favs.route) {
-
             val favsViewModel = remember { FavsViewModel(auth, db) }
 
+            // Carga los ejercicios favoritos
             LaunchedEffect(Unit) {
                 favsViewModel.cargarEjerciciosFavs()
             }
 
             FavsScreen(navController = navController, favsViewModel)
-
         }
 
         composable(Ejercicio.route) {
             val ejercicioViewModel = remember { EjercicioViewModel(auth, db) }
 
+            // Recojo el ejercicio enviado a través del controlador
             val ejercicio = navController.previousBackStackEntry
                 ?.savedStateHandle
                 ?.get<ExerciseData>("ejercicio")
@@ -55,16 +55,13 @@ fun MainFavsContainer(
 
             LaunchedEffect(ejercicio) {
                 ejercicio?.let {
-
-                    println(it.url_image.replace("+", " "))
-
+                    // Obtiene la url firmada desde AWS Bucket S3
                     urlGIF =
                         exercisesRepository.obtenerURLFirmadaGif(it.url_image.replace("+", " "))
-
-                    println(urlGIF)
                 }
             }
 
+            // Si el ejercicio no es nulo lo muestra
             if (ejercicio != null) {
                 EjercicioScreen(
                     navController = navController,
@@ -74,8 +71,5 @@ fun MainFavsContainer(
                 )
             }
         }
-
     }
-
-
 }

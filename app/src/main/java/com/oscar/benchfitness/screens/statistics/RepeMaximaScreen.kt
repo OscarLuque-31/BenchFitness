@@ -37,12 +37,10 @@ import com.oscar.benchfitness.viewModels.statistics.CalculosViewModel
 
 @Composable
 fun RepeMaximaScreen(navController: NavController, viewModel: CalculosViewModel) {
-
     Column(modifier = Modifier.fillMaxWidth()) {
         GlobalHeader("Repetición Máxima")
         ColumnaRepeMaxima(navController, viewModel)
     }
-
 }
 
 @Composable
@@ -54,16 +52,13 @@ fun ColumnaRepeMaxima(navController: NavController, viewModel: CalculosViewModel
             .clip(RoundedCornerShape(20.dp))
             .background(negroOscuroBench)
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(20.dp)
         ) {
             FlechitaAtras(navController = navController)
-
             TituloYDefinicion()
-
             ColumnaPesoyRepes(viewModel)
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -77,19 +72,23 @@ fun ColumnaRepeMaxima(navController: NavController, viewModel: CalculosViewModel
                     backgroundColor = if (viewModel.esFormularioRepeMaxCompletado()) negroBench else Color.DarkGray
                 ) {
                     when {
+                        // Valida si el peso del ejercicio es válido
                         !viewModel.esPesoEjercicioValido() -> {
                             viewModel.mensajeError =
                                 "Peso inválido. Ingresa una peso entre 10 y 300 kilos."
                             viewModel.showDialog = true
                         }
 
+                        // Valida si las repeticiones son válidas
                         !viewModel.sonRepeticionesValidas() -> {
                             viewModel.mensajeError =
                                 "Repeticiones inválidas. Ingresa repeticiones entre 1 y 15"
                             viewModel.showDialog = true
                         }
 
+                        // Comprueba si el formulario es valido
                         viewModel.esFormularioRepeMaxValido() -> {
+                            // Si es valido calcula la repetición máxima
                             viewModel.calcularRepeMaxima()
                         }
 
@@ -100,7 +99,7 @@ fun ColumnaRepeMaxima(navController: NavController, viewModel: CalculosViewModel
                     }
                 }
             }
-            // Verificar si ya se calculó el RM
+            // Verifica si ya se calculó el RM
             if (viewModel.isCalculated) {
                 Box(
                     modifier = Modifier
@@ -127,9 +126,9 @@ fun ColumnaRepeMaxima(navController: NavController, viewModel: CalculosViewModel
                 }
             }
 
-            // Texto de advertencia al final
+            // Si se calcula el RM aparece este spacer para que el texto se posicione abajo
             if (!viewModel.isCalculated) {
-                Spacer(modifier = Modifier.weight(1f))  // Asegura que el texto quede al fondo
+                Spacer(modifier = Modifier.weight(1f))
             }
             Text(
                 "Ten en cuenta que el 1RM real puede variar según la técnica y el estado físico en el momento de realizar la prueba.",
@@ -140,8 +139,6 @@ fun ColumnaRepeMaxima(navController: NavController, viewModel: CalculosViewModel
             )
         }
     }
-
-
     InfoDialog(
         title = "Datos no válidos",
         showDialog = viewModel.showDialog,
@@ -176,7 +173,6 @@ fun TituloYDefinicion() {
         )
     }
 }
-
 
 @Composable
 fun ColumnaPesoyRepes(viewModel: CalculosViewModel) {

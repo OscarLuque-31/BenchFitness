@@ -15,14 +15,18 @@ import com.oscar.benchfitness.viewModels.workout.FavsViewModel
 
 @Composable
 fun FavsScreen(navController: NavController, viewModel: FavsViewModel) {
-    ListaEjerciciosFavoritos(navController , viewModel)
+    ListaEjerciciosFavoritos(navController, viewModel)
 }
 
 @Composable
 fun ListaEjerciciosFavoritos(navController: NavController, viewModel: FavsViewModel) {
     val ejercicios by viewModel.ejercicios.collectAsState()
 
-    LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 10.dp)) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp, vertical = 10.dp)
+    ) {
         items(ejercicios) { ejercicio ->
             CajaEjercicio(navController, ejercicio)
         }

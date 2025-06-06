@@ -24,7 +24,9 @@ class PerfilViewModel(
     private val authViewModel: AuthViewModel
 ) : ViewModel() {
 
+    // Variables necesarias para el perfil
     var usuario by mutableStateOf(userData())
+    val isGoogleUser = auth.currentUser?.providerData?.any { it.providerId == "google.com" } == true
 
     var numRutinas by mutableStateOf("0")
 
@@ -37,45 +39,31 @@ class PerfilViewModel(
     var showPasswordDialog by mutableStateOf(false)
     var showSuccessDialog by mutableStateOf(false)
 
-    var passwordError by mutableStateOf<String?>(null) // Variable para el error de password
-
+    var passwordError by mutableStateOf<String?>(null)
     var isLoading by mutableStateOf(true)
 
+    // Repositorios para guardar y recoger la información de base de datos
     private val routineRepository = RoutineRepository(auth, db)
     private val userRepository = UserRepository(auth, db)
 
-    val isGoogleUser = auth.currentUser?.providerData?.any { it.providerId == "google.com" } == true
 
+    /**
+     * Método que carga los datos necesarios para completar el perfil del usuario
+     */
     fun cargarPerfilUsuario() {
         isLoading = true
-        val user = auth.currentUser ?: return
-
-        viewModelScope.launch(Dispatchers.IO) {
-            val document = db.collection("users").document(user.uid).get().await()
-            val nombre = document.getString("username") ?: ""
-            val objetivo = document.getString("objetivo") ?: ""
-            val email = document.getString("email") ?: ""
-            val altura = document.getString("altura") ?: ""
-            val birthday = document.getString("birthday") ?: ""
+        viewModelScope.launch {
+            // Recoge la información del usuario
+            usuario = userRepository.getUserInformation()
+            // Recoge la cantidad de rutinas del usuario
             numRutinas = routineRepository.getNumberOfRoutines()
-
-            var userData = userData(
-                username = nombre,
-                objetivo = objetivo,
-                email = email,
-                birthday = birthday,
-                altura = altura
-            )
-
-            // Se actualiza el hilo principal
-            withContext(Dispatchers.Main) {
-                usuario = userData
-            }
             isLoading = false
         }
     }
 
-    // Lógica para cambiar la contraseña
+    /**
+     * Método que intenta cambiar la password si es válida
+     */
     fun intentarCambiarPassword(
         currentPassword: String,
         newPassword: String,
@@ -83,15 +71,19 @@ class PerfilViewModel(
     ) {
         passwordError = null // Resetear error
 
+        // Valida si la contraseña es valida
         val (isValid, errorMsg) = validatePassword(newPassword)
         when {
             newPassword != confirmPassword -> passwordError = "Las contraseñas no coinciden"
             !isValid -> passwordError = errorMsg
+            // Si no hay ningun error la cambia
             else -> cambiarPassword(currentPassword, newPassword)
         }
     }
 
-    // Función para cambiar la contraseña en Firebase
+    /**
+     * Método que cambia la contraseña definitivamente en Firebase Auth
+     */
     private fun cambiarPassword(
         currentPassword: String,
         newPassword: String
@@ -99,18 +91,18 @@ class PerfilViewModel(
         val user = auth.currentUser
         if (user != null && user.email != null) {
             val credential = EmailAuthProvider.getCredential(user.email!!, currentPassword)
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch {
                 try {
+                    // Comprueba el usuario con su credencial
                     user.reauthenticate(credential).await()
+                    // Cambia la contraseña al usuario
                     user.updatePassword(newPassword).await()
-                    withContext(Dispatchers.Main) {
-                        showPasswordDialog = false // Cierra el diálogo
-                        showSuccessDialog = true
-                    }
+
+                    showPasswordDialog = false // Cierra el diálogo
+                    showSuccessDialog = true
+
                 } catch (e: Exception) {
-                    withContext(Dispatchers.Main) {
-                        passwordError = "Error al cambiar la contraseña: ${e.localizedMessage}"
-                    }
+                    passwordError = "Error al cambiar la contraseña: ${e.localizedMessage}"
                 }
             }
         } else {
@@ -118,18 +110,24 @@ class PerfilViewModel(
         }
     }
 
+    /**
+     * Método parar la sesión del usuario
+     */
     fun cerrarSesion() {
         authViewModel.cerrarSesion()
     }
 
+    /**
+     * Método que guarda los cambios hechos en el perfil
+     */
     fun guardarCambios() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
+            // Actualiza el perfil con su nuevo Objetivo y Altura
             userRepository.updateProfileUser(newObjetivo, newAltura)
-            withContext(Dispatchers.Main) {
-                editObjetivo = false
-                editAltura = false
-                cargarPerfilUsuario()
-            }
+            editObjetivo = false
+            editAltura = false
+            // Carga de nuevo el perfil del usuario
+            cargarPerfilUsuario()
         }
     }
 }

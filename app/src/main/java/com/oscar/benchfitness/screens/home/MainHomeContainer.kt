@@ -20,18 +20,20 @@ import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.viewModels.home.GoalViewModel
 import com.oscar.benchfitness.viewModels.home.HomeViewModel
 
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainHomeContainer(
     auth: FirebaseAuth,
     db: FirebaseFirestore
 ) {
+    // Nav Controller interior para home
     val innerNavController = rememberNavController()
     val homeViewModel = remember { HomeViewModel(auth, db) }
+
     val user = homeViewModel.userData
     val isLoading = homeViewModel.isLoading
 
+    // Carga los datos del usuario
     LaunchedEffect(Unit) {
         homeViewModel.cargarDatosUsuario()
     }
@@ -58,11 +60,8 @@ fun MainHomeContainer(
                 }
             }
             composable(Goal.route) {
-
-                if (user != null) {
-                    val goalViewModel = remember { GoalViewModel(user) }
-                    GoalScreen(user, goalViewModel, navController = innerNavController)
-                }
+                val goalViewModel = remember { GoalViewModel(user) }
+                GoalScreen(user, goalViewModel, navController = innerNavController)
             }
         }
     }

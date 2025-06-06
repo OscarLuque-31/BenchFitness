@@ -1,6 +1,5 @@
 package com.oscar.benchfitness.screens.workout.exercises
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -57,7 +56,7 @@ fun EjercicioScreen(
     ejercicio: ExerciseData,
     urlGIF: String
 ) {
-
+    // Comprueba si el ejercicio es favorito
     LaunchedEffect(viewModel) {
         viewModel.checkIfFavoriteUI(ejercicio.id_ejercicio)
     }
@@ -78,7 +77,6 @@ fun EjercicioBodyContent(
     viewModel: EjercicioViewModel,
     urlGIF: String
 ) {
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -107,6 +105,7 @@ fun EjercicioBodyContent(
                 IconToggleButton(
                     checked = viewModel.isFavorite,
                     onCheckedChange = {
+                        // Cambia entre favorito y no
                         viewModel.toogleFavoriteUI(exerciseData = ejercicio)
                     }
                 ) {
@@ -125,27 +124,21 @@ fun EjercicioBodyContent(
 
 @Composable
 fun DatosEspecificosEjercicio(ejercicio: ExerciseData, urlGIF: String) {
-
-    // Columna principal
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
         FilaPrincipal(ejercicio)
         FilaEquipamiento(ejercicio.equipamiento)
         FilaGif(urlGIF)
         FilaInstrucciones(ejercicio.instrucciones)
-
     }
 }
 
 
 @Composable
 fun FilaPrincipal(ejercicio: ExerciseData) {
-    // Fila de categoria/tipo_fuerza y musculo principal y secundario
     Row(
         modifier = Modifier.height(200.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-
-        // Columna de categoria / fuerza
         Column(
             modifier = Modifier
                 .fillMaxHeight()
@@ -200,7 +193,6 @@ fun FilaPrincipal(ejercicio: ExerciseData) {
             }
         }
         Spacer(Modifier.width(10.dp))
-        // Columna de musculo principal y secundario
         Column(
             modifier = Modifier
                 .fillMaxHeight()
@@ -220,13 +212,13 @@ fun FilaPrincipal(ejercicio: ExerciseData) {
             ) {
                 IconButton(
                     onClick = { showInfoDialog = !showInfoDialog },
-                    modifier = Modifier.size(28.dp) // Tamaño más compacto
+                    modifier = Modifier.size(28.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Info,
                         contentDescription = "Info",
                         tint = rojoBench,
-                        modifier = Modifier.size(18.dp) // Tamaño del ícono más pequeño
+                        modifier = Modifier.size(18.dp)
                     )
                 }
             }
@@ -353,8 +345,6 @@ fun FilaInstrucciones(instrucciones: String) {
         }
     }
 }
-
-
 
 @Composable
 fun InfoIconos() {

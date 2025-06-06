@@ -18,15 +18,19 @@ class RutinasViewModel(
 
     var listaRutinas by mutableStateOf<List<Routine>>(emptyList())
 
-    private val routineRepository = RoutineRepository(auth,db)
+    // Repositorio para obtener las rutinas
+    private val routineRepository = RoutineRepository(auth, db)
 
+    /**
+     * Método que obtiene todas las rutinas del usuario
+     */
     fun obtenerRutinas() {
         viewModelScope.launch {
             try {
+                // Obtiene las rutinas
                 val rutinas = routineRepository.getAllRoutines()
                 listaRutinas = rutinas
             } catch (e: Exception) {
-                // Manejo de errores (puedes mostrar un mensaje de error si es necesario)
                 println("Error al obtener los ejercicios: ${e.message}")
             }
         }

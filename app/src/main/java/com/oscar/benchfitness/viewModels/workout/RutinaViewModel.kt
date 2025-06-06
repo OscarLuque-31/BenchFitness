@@ -9,12 +9,15 @@ import kotlinx.coroutines.launch
 
 class RutinaViewModel(auth: FirebaseAuth, db: FirebaseFirestore) : ViewModel() {
 
+    // Repositorio para manejar las rutinas
+    private val routineRepository = RoutineRepository(auth, db)
 
-    private val routineRepository = RoutineRepository(auth,db)
-
-
+    /**
+     * Método para eliminar la rutina del usuario en firestore
+     */
     fun eliminarRutina(nombre: String) {
         viewModelScope.launch {
+            // Elimina la rutina
             routineRepository.eliminarRutina(nombre)
         }
     }

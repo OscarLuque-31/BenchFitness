@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class GoalViewModel(userData: userData) : ViewModel() {
 
-    // --- Definición ---
+    // TEXTOS DEFINICION
     val TEXTO_DEFINICION_DF =
         "Es cuando consumes menos calorías de las que tu cuerpo necesita para mantener su peso. Esto obliga a tu cuerpo a usar sus reservas de energía (grasa) para cubrir la diferencia."
 
@@ -22,7 +22,7 @@ class GoalViewModel(userData: userData) : ViewModel() {
     val TEXTO_RECUERDA_DF =
         "No es bueno hacer un déficit demasiado grande, ya que puede afectar la masa muscular y la energía."
 
-    // --- Mantenimiento ---
+    // TEXTOS MANTENIMIENTO
     val TEXTO_MANTENIMIENTO_MT =
         "Es cuando consumes aproximadamente la misma cantidad de calorías que tu cuerpo necesita para mantener su peso actual. No se gana ni se pierde peso."
 
@@ -35,7 +35,7 @@ class GoalViewModel(userData: userData) : ViewModel() {
     val TEXTO_RECUERDA_MT =
         "Aunque no estés subiendo o bajando de peso, la calidad de los alimentos y el ejercicio siguen siendo clave para tu bienestar."
 
-    // --- Volumen ---
+    // TEXTOS VOLUMEN
     val TEXTO_VOLUMEN_VL =
         "Es cuando consumes más calorías de las que tu cuerpo necesita para mantener su peso. Esto le da al cuerpo energía extra para construir músculo."
 
@@ -48,9 +48,7 @@ class GoalViewModel(userData: userData) : ViewModel() {
     val TEXTO_RECUERDA_VL =
         "No se trata solo de comer más, sino de comer mejor. Elige proteínas, carbohidratos complejos y grasas saludables para un volumen limpio."
 
-
-    // Calorias
-
+    // Variables para las calorias de los diferentes objetivos
     private val _caloriasDefi = MutableStateFlow("")
     val caloriasDefi = _caloriasDefi.asStateFlow()
 
@@ -107,8 +105,5 @@ class GoalViewModel(userData: userData) : ViewModel() {
             genero = userData.genero,
             peso = userData.peso,
         )
-
     }
-
-
 }

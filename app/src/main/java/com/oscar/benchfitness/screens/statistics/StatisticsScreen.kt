@@ -37,7 +37,6 @@ import com.oscar.benchfitness.navegation.Superavit
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
 
-
 @Composable
 fun StatisticsScreen(navController: NavController) {
     Column {
@@ -57,7 +56,7 @@ fun ColumnaOpciones(navController: NavController) {
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(3.5f)  // Asigna peso a la fila superior
+                .weight(3.5f)
         ) {
             ColumnaPesoMantenerSuperavit(
                 navController,
@@ -69,14 +68,12 @@ fun ColumnaOpciones(navController: NavController) {
                 modifier = Modifier.weight(1f)
             )
         }
-
-        Spacer(Modifier.height(20.dp))  // Espacio entre secciones
-
+        Spacer(Modifier.height(20.dp))
         CajaRepeMaxima(
             navController,
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.5f)  // Peso para la caja inferior
+                .weight(0.5f)
         )
     }
 }
@@ -118,7 +115,6 @@ fun RowTituloCalculos() {
     }
 }
 
-
 @Composable
 fun CajaProgreso(navController: NavController, modifier: Modifier = Modifier) {
     Box(
@@ -132,7 +128,6 @@ fun CajaProgreso(navController: NavController, modifier: Modifier = Modifier) {
             contentScale = ContentScale.Crop,
             modifier = Modifier.matchParentSize()
         )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -145,7 +140,6 @@ fun CajaProgreso(navController: NavController, modifier: Modifier = Modifier) {
         ) {
             Text("Progreso", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = rojoBench)
         }
-
     }
 }
 
@@ -162,7 +156,6 @@ fun CajaPeso(navController: NavController, modifier: Modifier = Modifier) {
             contentScale = ContentScale.Crop,
             modifier = Modifier.matchParentSize()
         )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()

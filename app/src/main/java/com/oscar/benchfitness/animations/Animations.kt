@@ -41,13 +41,13 @@ fun SplashScreen(onFinish: () -> Unit) {
         // Fase 1: Aparece suavemente
         alpha.animateTo(1f, animationSpec = tween(1000))
 
-        // Fase 2: Mantener visible
+        // Fase 2: Se mantiene visible
         delay(500)
 
-        // Fase 3: Desvanecerse lentamente
+        // Fase 3: Se desvanece lentamente
         alpha.animateTo(0f, animationSpec = tween(500))
 
-        // Fase 4: Navegar a la siguiente pantalla
+        // Fase 4: Navega a la siguiente pantalla
         onFinish()
     }
 
@@ -84,7 +84,7 @@ fun LoadingScreenCircularProgress() {
 }
 
 @Composable
-fun LoadingScreen() {
+fun LoadingScreenLinearProgress() {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -96,8 +96,6 @@ fun LoadingScreen() {
         }
     }
 }
-
-
 
 @Composable
 fun AnimatedFavoriteStar(isFavorite: Boolean) {

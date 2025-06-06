@@ -36,12 +36,11 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
-import com.oscar.benchfitness.animations.LoadingScreen
+import com.oscar.benchfitness.animations.LoadingScreenLinearProgress
 import com.oscar.benchfitness.components.FlechitaAtras
 import com.oscar.benchfitness.components.GlobalDropDownMenu
 import com.oscar.benchfitness.components.GlobalHeader
@@ -67,18 +66,17 @@ import ir.ehsannarmani.compose_charts.models.PopupProperties
 @Composable
 fun PesoScreen(navController: NavController, viewModel: PesoViewModel) {
 
+    // Carga el historial de pesos del usuario
     LaunchedEffect(Unit) {
         viewModel.cargarHistorialPesos()
     }
 
-
     Column(modifier = Modifier.fillMaxWidth()) {
         GlobalHeader("Peso")
         if (viewModel.isLoading) {
-            LoadingScreen()
+            LoadingScreenLinearProgress()
         } else {
             ColumnaPeso(navController, viewModel)
-
         }
     }
 
@@ -86,7 +84,6 @@ fun PesoScreen(navController: NavController, viewModel: PesoViewModel) {
 
 @Composable
 fun ColumnaPeso(navController: NavController, viewModel: PesoViewModel) {
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -94,7 +91,6 @@ fun ColumnaPeso(navController: NavController, viewModel: PesoViewModel) {
             .clip(RoundedCornerShape(20.dp))
             .background(negroOscuroBench)
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -110,6 +106,7 @@ fun ColumnaPeso(navController: NavController, viewModel: PesoViewModel) {
             Spacer(Modifier.weight(1f))
             BotonAnadirPeso(
                 icono = Icons.Default.Add,
+                // Agrega el peso al historial de peso del usuario
                 onClick = { viewModel.abrirAgregarPeso() },
                 backgroundColor = negroBench,
                 modifier = Modifier.size(30.dp)
@@ -125,6 +122,7 @@ fun ColumnaPeso(navController: NavController, viewModel: PesoViewModel) {
             }
         }
 
+        // Dialogo de confirmación de agregar el peso
         if (viewModel.mostrarDialogoConfirmacion) {
             AlertDialog(
                 onDismissRequest = {
@@ -155,14 +153,14 @@ fun ColumnaPeso(navController: NavController, viewModel: PesoViewModel) {
                 textContentColor = Color.LightGray
             )
         }
-
-
     }
 }
 
 @Composable
 fun EstadisticaPeso(viewModel: PesoViewModel) {
     val datosPeso = viewModel.datosFiltrados
+
+    // Si el historial tiene menos de 2 datos no puede mostrar los datos
     if (datosPeso.size < 2) {
         Row(
             modifier = Modifier
@@ -184,7 +182,7 @@ fun EstadisticaPeso(viewModel: PesoViewModel) {
         return
     }
 
-
+    // Gráfico para mostrar las estadisticas del peso
     LineChart(
         modifier = Modifier
             .height(250.dp)
@@ -211,11 +209,11 @@ fun EstadisticaPeso(viewModel: PesoViewModel) {
         ),
         labelHelperProperties = LabelHelperProperties(
             enabled = true,
-            textStyle = TextStyle(color = Color.White) // Esto cambia el color a blanco
+            textStyle = TextStyle(color = Color.White)
         ),
         labelProperties = LabelProperties(
             enabled = true,
-            textStyle = TextStyle(color = Color.White) // Esto cambia el color a blanco
+            textStyle = TextStyle(color = Color.White)
         ),
         curvedEdges = true,
         gridProperties = GridProperties(
@@ -250,10 +248,7 @@ fun EstadisticaPeso(viewModel: PesoViewModel) {
             animationEnabled = true
         )
     )
-
-
 }
-
 
 @Composable
 fun BotonAnadirPeso(
@@ -291,7 +286,6 @@ fun BotonAnadirPeso(
 
 @Composable
 fun ResumenDiarioPeso(viewModel: PesoViewModel) {
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -357,7 +351,6 @@ fun InfoResumen(
     }
 }
 
-
 @Composable
 fun AgregarPesoDialog(viewModel: PesoViewModel) {
     Column(
@@ -389,9 +382,7 @@ fun AgregarPesoDialog(viewModel: PesoViewModel) {
                 fontStyle = FontStyle.Italic
             )
         }
-
         Spacer(Modifier.height(20.dp))
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -416,6 +407,8 @@ fun AgregarPesoDialog(viewModel: PesoViewModel) {
                     nombre = "",
                     text = viewModel.peso,
                     onValueChange = { newText ->
+
+                        // Valida que el peso sea correcto
                         viewModel.pesoInvalido = false
                         if (newText.contains(",")) {
                             viewModel.pesoInvalido = true
@@ -447,9 +440,7 @@ fun AgregarPesoDialog(viewModel: PesoViewModel) {
                     modifier = Modifier.padding(top = 10.dp)
                 )
             }
-
             Spacer(Modifier.height(20.dp))
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
@@ -459,9 +450,7 @@ fun AgregarPesoDialog(viewModel: PesoViewModel) {
                 ) {
                     Text("Cancelar", color = Color.Gray)
                 }
-
                 Spacer(Modifier.width(16.dp))
-
                 TextButton(
                     onClick = {
                         if (viewModel.peso.isNotBlank() && !viewModel.pesoInvalido) {
@@ -485,12 +474,12 @@ fun FiltroFechasPeso(
     GlobalDropDownMenu(
         nombreSeleccion = viewModel.filtroSeleccionado,
         opciones = listOf("Última semana", "Último mes", "Último año", "Todo"),
+        // Cambia el filtro para mostrar datos según la fecha
         onValueChange = { viewModel.seleccionarFiltro(it) },
         modifier = Modifier
             .fillMaxWidth(),
         backgroundColor = negroBench,
-        colorItemPulsado = negroOscuroBench.copy(alpha = 0.7f),
-
-        )
+        colorItemPulsado = negroOscuroBench.copy(alpha = 0.7f)
+    )
 }
 

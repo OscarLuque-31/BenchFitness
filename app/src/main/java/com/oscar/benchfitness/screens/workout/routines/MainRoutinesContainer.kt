@@ -21,40 +21,38 @@ fun MainRoutinesContainer(
     auth: FirebaseAuth,
     db: FirebaseFirestore,
 ) {
+    // Controlador de la navegación de las Routines
     val navController = rememberNavController()
-
 
     NavHost(navController, startDestination = Rutinas.route) {
 
         composable(Rutinas.route) {
             val rutinaViewModel = remember { RutinasViewModel(auth, db) }
 
+            // Obtiene las rutinas antes de entrar en la pantalla
             LaunchedEffect(Unit) {
                 rutinaViewModel.obtenerRutinas()
             }
 
             RutinasScreen(navController, rutinaViewModel)
         }
-        composable(CrearRutina.route) {
 
+        composable(CrearRutina.route) {
             val crearRutinaViewModel = remember { CrearRutinaViewModel(auth, db) }
             CrearRutinaScreen(navController, crearRutinaViewModel)
-
         }
-        composable(Rutina.route) {
 
+        composable(Rutina.route) {
             val rutinaViewModel = remember { RutinaViewModel(auth, db) }
 
+            // Obtiene la rutina a través de la navegación
             val rutina = navController.previousBackStackEntry
                 ?.savedStateHandle
                 ?.get<Routine>("rutina")
 
-
             if (rutina != null) {
                 RutinaScreen(navController, rutinaViewModel, rutina)
             }
-
         }
     }
-
 }

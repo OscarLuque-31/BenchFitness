@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -28,44 +27,45 @@ fun MainStatisticsContainer(
     auth: FirebaseAuth,
     db: FirebaseFirestore
 ) {
+    // Controlador de la navegación de las estadísticas
     val innerNavController = rememberNavController()
 
     Scaffold(containerColor = negroBench) {
         NavHost(
             navController = innerNavController,
             startDestination = Estadisticas.route,
-            modifier = Modifier // sin padding
         ) {
             composable(Estadisticas.route) {
                 StatisticsScreen(navController = innerNavController)
             }
+
             composable(Peso.route) {
                 val pesoViewModel = remember { PesoViewModel(auth, db) }
                 PesoScreen(viewModel = pesoViewModel, navController = innerNavController)
             }
+
             composable(Progreso.route) {
                 val progresoViewModel = remember { ProgresoViewModel(auth, db) }
-
                 ProgresoScreen(viewModel = progresoViewModel, navController = innerNavController)
             }
-            composable(Metabolismo.route) {
-                val calculosViewModel = remember { CalculosViewModel(auth, db) }
 
+            composable(Metabolismo.route) {
+                val calculosViewModel = remember { CalculosViewModel() }
                 MetabolismoScreen(viewModel = calculosViewModel, navController = innerNavController)
             }
-            composable(Deficit.route) {
-                val calculosViewModel = remember { CalculosViewModel(auth, db) }
 
+            composable(Deficit.route) {
+                val calculosViewModel = remember { CalculosViewModel() }
                 DeficitScreen(viewModel = calculosViewModel, navController = innerNavController)
             }
-            composable(RepeMaxima.route) {
-                val calculosViewModel = remember { CalculosViewModel(auth, db) }
 
+            composable(RepeMaxima.route) {
+                val calculosViewModel = remember { CalculosViewModel() }
                 RepeMaximaScreen(viewModel = calculosViewModel, navController = innerNavController)
             }
-            composable(Superavit.route) {
-                val calculosViewModel = remember { CalculosViewModel(auth, db) }
 
+            composable(Superavit.route) {
+                val calculosViewModel = remember { CalculosViewModel() }
                 SuperavitScreen(viewModel = calculosViewModel, navController = innerNavController)
             }
         }

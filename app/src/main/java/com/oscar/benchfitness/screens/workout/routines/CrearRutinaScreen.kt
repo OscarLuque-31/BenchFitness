@@ -71,6 +71,8 @@ import com.oscar.benchfitness.viewModels.workout.CrearRutinaViewModel
 
 @Composable
 fun CrearRutinaScreen(navController: NavController, viewModel: CrearRutinaViewModel) {
+
+    // Obtiene el nombre de todos los ejercicios
     LaunchedEffect(Unit) {
         viewModel.obtenerNombreEjercicios()
     }
@@ -98,7 +100,6 @@ fun CrearRutinaScreen(navController: NavController, viewModel: CrearRutinaViewMo
         }
     }
 }
-
 
 @Composable
 fun ColumnaCreacionRutina(navController: NavController, viewModel: CrearRutinaViewModel) {
@@ -131,10 +132,12 @@ fun ColumnaCreacionRutina(navController: NavController, viewModel: CrearRutinaVi
         BoxAnadirEjerciciosPorDia(viewModel, navController)
         Spacer(Modifier.height(20.dp))
 
+        // Abre el dialogo para agregar ejercicios
         if (viewModel.showDialog) {
             DialogAddExercise(
                 onDismiss = { viewModel.showDialog = false },
                 onAdd = { ejercicioRoutineEntry ->
+                    // Agrega el ejercicio al dia asignado
                     viewModel.agregarEjercicioAlDia(
                         dia = viewModel.diaSeleccionado,
                         entry = ExerciseRoutineEntry(
@@ -150,7 +153,6 @@ fun ColumnaCreacionRutina(navController: NavController, viewModel: CrearRutinaVi
         }
     }
 }
-
 
 @Composable
 fun FilaObjetivoRutina(viewModel: CrearRutinaViewModel) {
@@ -171,6 +173,7 @@ fun FilaObjetivoRutina(viewModel: CrearRutinaViewModel) {
             nombreSeleccion = viewModel.objetivo,
             onValueChange = {
                 viewModel.objetivo = it
+                // Da una recomendación al usuario según su objetivo
                 viewModel.obtenerRecomendacionesPorObjetivo()
             },
             opciones = objetivos,
@@ -217,19 +220,19 @@ fun BotonDia(dia: String, viewModel: CrearRutinaViewModel) {
 
                 val diaCompleto = interpretarDia(dia)
 
+                // Si se ha pulsado el dia se añade a los dias seleccinados
                 if (pulsado.value) {
                     viewModel.diasSeleccionados += diaCompleto
-
-                    // Seleccionarlo en el dropdown si no hay nada seleccionado o si no coincide con el día tocado
+                    // Si el dia seleccionado esta vacio se asigna el dia completo
                     if (viewModel.diaSeleccionado.isBlank()) {
                         viewModel.diaSeleccionado = diaCompleto
                     }
                 } else {
+                    // Si no esta pulsado se quita de los dias seleccionados
                     viewModel.diasSeleccionados -= diaCompleto
-
-                    // Si se deselecciona el día que estaba en el dropdown, quitarlo del dropdown también
+                    // Si el dia Seleccionado es igual al dia completo se quita del dropdown
                     if (viewModel.diaSeleccionado == diaCompleto) {
-                        // Aquí buscamos otro día si es posible
+                        // Si la lista no esta vacía se busca el primero que haya
                         if (viewModel.diasSeleccionados.isNotEmpty()) {
                             // Establecer el primer día de la lista seleccionada, si la lista no está vacía
                             viewModel.diaSeleccionado = viewModel.diasSeleccionados.first()
@@ -252,10 +255,9 @@ fun BotonDia(dia: String, viewModel: CrearRutinaViewModel) {
     }
 }
 
-
 @Composable
 fun FilaDropdownDias(viewModel: CrearRutinaViewModel) {
-    // Verifica si hay días seleccionados
+    // Verifica si hay días seleccionados y si el objetivo esta seleccionado
     if (viewModel.diasSeleccionados.isNotEmpty() && viewModel.objetivo != "Objetivo") {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -279,7 +281,7 @@ fun FilaDropdownDias(viewModel: CrearRutinaViewModel) {
             )
         }
     } else {
-        // Si no hay días seleccionados, no mostrar el Dropdown
+        // Si no hay días seleccionados, no muestra el Dropdown
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -288,7 +290,9 @@ fun FilaDropdownDias(viewModel: CrearRutinaViewModel) {
             Text(
                 text = "Selecciona al menos un día y un objetivo",
                 color = rojoBench,
-                fontSize = 16.sp
+                fontSize = 18.sp,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Normal
             )
         }
     }
@@ -316,6 +320,7 @@ fun BoxAnadirEjerciciosPorDia(viewModel: CrearRutinaViewModel, navController: Na
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Si la lista de ejercicios esta vacía te saldrá que añadas ejercicios
                 if (ejerciciosList.isEmpty()) {
                     Text(
                         "Añade ejercicios",
@@ -325,6 +330,7 @@ fun BoxAnadirEjerciciosPorDia(viewModel: CrearRutinaViewModel, navController: Na
                         modifier = Modifier.padding(10.dp)
                     )
                 }
+                // Si seleccionas el ejercicio puedes borrarlo de la lista
                 if (viewModel.ejercicioSeleccionado != null && ejerciciosList.isNotEmpty()) {
                     GlobalButton(
                         text = "Eliminar",
@@ -332,13 +338,13 @@ fun BoxAnadirEjerciciosPorDia(viewModel: CrearRutinaViewModel, navController: Na
                         backgroundColor = rojoBench,
                         modifier = Modifier.padding(10.dp)
                     ) {
+                        // Elimina el ejercicio del dia elegido
                         viewModel.eliminarEjercicioDelDia(
                             viewModel.diaSeleccionado,
                             entry = viewModel.ejercicioSeleccionado!!
                         )
                     }
                 }
-
                 GlobalButton(
                     colorText = rojoBench,
                     text = "Añadir",
@@ -358,8 +364,6 @@ fun BoxAnadirEjerciciosPorDia(viewModel: CrearRutinaViewModel, navController: Na
 
 @Composable
 fun ListaEjerciciosPorDia(viewModel: CrearRutinaViewModel, dia: String) {
-
-
     val ejerciciosList = viewModel.ejerciciosPorDia[dia] ?: emptyList()
 
     Column(
@@ -368,15 +372,14 @@ fun ListaEjerciciosPorDia(viewModel: CrearRutinaViewModel, dia: String) {
             .padding(10.dp)
     ) {
         EncabezadoNombreSerieReps(negroOscuroBench)
-
         Spacer(Modifier.height(10.dp))
 
-        // Lista de ejercicios
         LazyColumn(modifier = Modifier.heightIn(max = 400.dp)) {
             items(ejerciciosList) { ejercicio ->
 
                 val isSelected = viewModel.ejercicioSeleccionado == ejercicio
-                val backgroundColor = if (isSelected) rojoBench.copy(alpha = 0.2f) else negroOscuroBench
+                val backgroundColor =
+                    if (isSelected) rojoBench.copy(alpha = 0.2f) else negroOscuroBench
 
                 Row(
                     modifier = Modifier
@@ -399,13 +402,11 @@ fun ListaEjerciciosPorDia(viewModel: CrearRutinaViewModel, dia: String) {
                         modifier = Modifier
                     )
                 }
-
                 Spacer(Modifier.height(10.dp))
             }
         }
     }
 }
-
 
 @Composable
 fun DialogAddExercise(
@@ -416,17 +417,20 @@ fun DialogAddExercise(
     val errorMessage = remember { mutableStateOf("") }
     val searchQuery = remember { mutableStateOf("") }
 
+    // Si el texto buscado no esta vacio el ejercicio seleccionado estará vacio
     LaunchedEffect(searchQuery.value) {
         if (searchQuery.value.isNotEmpty()) {
             viewModel.nombreEjercicioSeleccionado = ""
         }
     }
 
+    // Filtra los ejercicios según la busqueda que hagamos
     val filteredExercises = remember(searchQuery.value, viewModel.listaEjercicios) {
         if (searchQuery.value.isEmpty()) viewModel.listaEjercicios
         else viewModel.listaEjercicios.filter { it.contains(searchQuery.value, ignoreCase = true) }
     }
 
+    // Altura dinamica para mejor diseño
     val dynamicHeight =
         when (viewModel.nombreEjercicioSeleccionado.isNotEmpty() || filteredExercises.isEmpty()) {
             true -> 0.55f
@@ -454,21 +458,15 @@ fun DialogAddExercise(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-
                 ExerciseSearchField(searchQuery)
-
                 ExerciseListOrSelected(
                     viewModel = viewModel,
                     filteredExercises = filteredExercises
                 )
-
                 Spacer(modifier = Modifier.height(16.dp))
-
                 SeriesRepsFields(viewModel)
-
                 MostrarRecomendacionActual(viewModel)
                 ErrorMessage(errorMessage)
-
                 ActionButtons(
                     onDismiss = onDismiss,
                     onAdd = onAdd,
@@ -505,6 +503,7 @@ fun ExerciseListOrSelected(
             .clip(RoundedCornerShape(10.dp))
             .background(negroBench)
     ) {
+        // Si el ejercicio seleccinado no esta vacio se puede deseleccionar el ejercicio
         if (viewModel.nombreEjercicioSeleccionado.isNotBlank()) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -531,6 +530,7 @@ fun ExerciseListOrSelected(
                 }
             }
         } else {
+            // Se filtran todos los ejercicios posibles a elegir
             if (filteredExercises.isNotEmpty()) {
                 LazyColumn(
                     modifier = Modifier
@@ -549,6 +549,7 @@ fun ExerciseListOrSelected(
                                     else negroOscuroBench
                                 )
                                 .clickable {
+                                    // Se selecciona el ejercicio elegido
                                     viewModel.seleccionarEjercicio(ejercicio)
                                 }
                         ) {
@@ -664,13 +665,16 @@ fun ActionButtons(
                 .weight(1f)
                 .padding(start = 8.dp),
             onClick = {
+                // Valida el ejercicio seleccionado
                 val error = viewModel.validarEjercicio(viewModel.diaSeleccionado)
 
                 if (error != null) {
                     errorMessage.value = error
                 } else {
                     errorMessage.value = ""
+                    // Crea la entrada del ejercicio
                     onAdd(viewModel.crearEntryEjercicio())
+                    // Resetea el formulario
                     viewModel.resetFormularioEjercicio()
                 }
             }
@@ -683,7 +687,7 @@ fun BotonCrearRutina(viewModel: CrearRutinaViewModel, navController: NavControll
     var mostrarDialogoError by remember { mutableStateOf(false) }
     var mostrarDialogoExito by remember { mutableStateOf(false) }
 
-    // Dialogo de error
+    // Dialogo de error si ocurre algo
     if (mostrarDialogoError && viewModel.errorRutina != null) {
         AlertDialog(
             onDismissRequest = { mostrarDialogoError = false },
@@ -719,7 +723,8 @@ fun BotonCrearRutina(viewModel: CrearRutinaViewModel, navController: NavControll
         AlertDialog(
             onDismissRequest = {
                 mostrarDialogoExito = false
-                navController.navigate(Rutinas.route) // Navegar al finalizar
+                // Navega a rutinas al finalizar
+                navController.navigate(Rutinas.route)
             },
             confirmButton = {
                 TextButton(onClick = {
@@ -751,16 +756,17 @@ fun BotonCrearRutina(viewModel: CrearRutinaViewModel, navController: NavControll
         )
     }
 
-    // Botón principal
     GlobalButton(
         colorText = rojoBench,
         text = "Crear rutina",
         modifier = Modifier.fillMaxWidth(),
         backgroundColor = negroBench
     ) {
+        // Valida la rutina entera
         val esValido = viewModel.validarRutina()
 
         if (esValido) {
+            // Guarda la rutina creada en las rutinas del usuario
             viewModel.guardarRutinaEnFirebase(
                 onSuccess = { mostrarDialogoExito = true },
                 onFailure = {
@@ -864,10 +870,10 @@ fun BoxExerciseEntry(
             .background(backgroundColor),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(modifier = Modifier.padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-
-            // Nombre del ejercicio (50% ancho)
+        Row(
+            modifier = Modifier.padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
                 modifier = Modifier.weight(0.5f),
                 text = nombre,
@@ -877,17 +883,13 @@ fun BoxExerciseEntry(
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis
             )
-
-            // Series (25% ancho)
             Text(
                 modifier = Modifier.weight(0.25f),
                 text = series,
                 color = verdePrincipiante,
                 fontSize = 15.sp,
-                textAlign = TextAlign.Center // Alineación centralizada
+                textAlign = TextAlign.Center
             )
-
-            // Repeticiones (25% ancho)
             Text(
                 modifier = Modifier.weight(0.25f),
                 text = repeticiones,

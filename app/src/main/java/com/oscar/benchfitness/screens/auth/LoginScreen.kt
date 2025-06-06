@@ -60,7 +60,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel) {
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
 
-    // Mostrar snackbar si hay error
+    // Muestra el Snackbar con el error si hay
     LaunchedEffect(viewModel.errorMessage) {
         viewModel.errorMessage?.let {
             snackbarHostState.showSnackbar(it)
@@ -106,7 +106,7 @@ fun LoginBodyContent(
     onPasswordChange: (String) -> Unit,
     onLoginClick: () -> Unit,
     onGoogleLoginClick: () -> Unit,
-    snackbarHostState: SnackbarHostState, // 👈 nuevo parámetro
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier
 ) {
     Column(
@@ -239,7 +239,7 @@ fun LoginTextFields(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 30.dp, vertical = 30.dp), // 👈 Aquí agregas el padding lateral
+            .padding(horizontal = 30.dp, vertical = 30.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -281,7 +281,7 @@ fun LoginTextFields(
 
 @Composable
 fun LoginButtonGoogle(
-    onGoogleLoginClick: () -> Unit  // Recibimos el callback
+    onGoogleLoginClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -291,7 +291,7 @@ fun LoginButtonGoogle(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
-            onClick = onGoogleLoginClick,  // Usamos el callback
+            onClick = onGoogleLoginClick,
             shape = MaterialTheme.shapes.medium,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.White,

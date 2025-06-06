@@ -28,11 +28,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.oscar.benchfitness.animations.LoadingScreen
+import com.oscar.benchfitness.animations.LoadingScreenLinearProgress
 import com.oscar.benchfitness.components.FlechitaAtras
 import com.oscar.benchfitness.components.GlobalDropDownMenu
 import com.oscar.benchfitness.components.GlobalHeader
-import com.oscar.benchfitness.models.statistics.ExerciseProgress
 import com.oscar.benchfitness.models.statistics.StatisticsExercise
 import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
@@ -51,15 +50,13 @@ import ir.ehsannarmani.compose_charts.models.Line
 import ir.ehsannarmani.compose_charts.models.PopupProperties
 import ir.ehsannarmani.compose_charts.models.StrokeStyle
 
-
 @Composable
 fun ProgresoScreen(navController: NavController, viewModel: ProgresoViewModel) {
 
+    // Carga el progreso de los ejercicios del usuario
     LaunchedEffect(Unit) {
         viewModel.cargarProgreso()
     }
-
-
 
     Column(
         modifier = Modifier
@@ -68,19 +65,16 @@ fun ProgresoScreen(navController: NavController, viewModel: ProgresoViewModel) {
     ) {
         GlobalHeader("Progreso")
         if (viewModel.isLoading) {
-            LoadingScreen()
+            LoadingScreenLinearProgress()
         } else {
             Column(
                 modifier = Modifier
                     .padding(top = 20.dp, start = 20.dp, end = 20.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-
                 ColumnaProgreso(navController, viewModel)
-
             }
         }
-
     }
 }
 
@@ -110,24 +104,33 @@ fun ColumnaProgreso(navController: NavController, viewModel: ProgresoViewModel) 
     }
 }
 
-
 @Composable
 fun EstadisticaProgreso(historial: List<StatisticsExercise>) {
     when {
+        // Si el historial no tiene datos saltará este mensaje
         historial.isEmpty() -> {
             MensajeSinDatos()
             return
         }
+
+        // Si solo tiene un dato saltará este mensaje
         historial.size == 1 -> {
             MensajeUnSoloDato()
             return
         }
+
+        // Si no mostrará los datos disponibles
         else -> {
+            // Reduce el numero de fechas a 3 para que no sobrepase la pantalla
             val fechasReducidas = historial.mapIndexed { index, it ->
                 if (index % maxOf(1, historial.size / 3) == 0) it.fecha else ""
             }
 
-            Column(Modifier.fillMaxWidth().padding(horizontal = 10.dp)) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp)
+            ) {
                 PesoMaximoChart(historial, fechasReducidas)
                 Spacer(modifier = Modifier.height(40.dp))
                 RepsPorSerieChart(historial, fechasReducidas)
@@ -135,28 +138,6 @@ fun EstadisticaProgreso(historial: List<StatisticsExercise>) {
                 KilosPorSerieChart(historial, fechasReducidas)
             }
         }
-    }
-}
-
-
-@Composable
-fun MensajeInsuficienteDatos() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(150.dp)
-            .clip(RoundedCornerShape(15.dp))
-            .background(rojoBench.copy(alpha = 0.1f)),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "Necesitas al menos 2 mediciones para ver la evolución del ejercicio.",
-            color = rojoBench,
-            fontSize = 18.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(16.dp)
-        )
     }
 }
 
@@ -232,6 +213,7 @@ fun PesoMaximoChart(historial: List<StatisticsExercise>, fechas: List<String>) {
 fun RepsPorSerieChart(historial: List<StatisticsExercise>, fechas: List<String>) {
     val maxSeries = historial.maxOf { it.series.size }
 
+    // Líneas que se muestran en la gráfica
     val lineas = (0 until maxSeries).map { index ->
         val values = historial.map { it.series.getOrNull(index)?.reps?.toDouble() ?: 0.0 }
         val color = Color.hsv((index * 60f) % 360, 0.7f, 0.9f)
@@ -318,6 +300,7 @@ fun RepsPorSerieChart(historial: List<StatisticsExercise>, fechas: List<String>)
 fun KilosPorSerieChart(historial: List<StatisticsExercise>, fechas: List<String>) {
     val maxSeries = historial.maxOf { it.series.size }
 
+    // Líneas que se muestran en la gráfica
     val lineas = (0 until maxSeries).map { index ->
         val values = historial.map { it.series.getOrNull(index)?.peso ?: 0.0 }
         val color = Color.hsv((index * 60f + 30f) % 360, 0.8f, 0.9f)
@@ -406,6 +389,7 @@ fun FiltroFechasProgreso(viewModel: ProgresoViewModel) {
     GlobalDropDownMenu(
         nombreSeleccion = viewModel.filtroSeleccionado,
         opciones = listOf("Última semana", "Último mes", "Último año", "Todo"),
+        // Cambia el filtro de fecha
         onValueChange = { viewModel.seleccionarFiltro(it) },
         modifier = Modifier
             .fillMaxWidth(),
@@ -436,7 +420,7 @@ fun ResumenDiarioProgreso(viewModel: ProgresoViewModel) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            // Ejercicio más trabajado centrado
+            // Ejercicio más trabajado
             InfoResumen(
                 titulo = "Más trabajado",
                 valor = viewModel.ejercicioTopHoy ?: "--",
@@ -444,15 +428,12 @@ fun ResumenDiarioProgreso(viewModel: ProgresoViewModel) {
                 color = Color.Yellow
             )
         }
-
         Spacer(modifier = Modifier.height(16.dp))
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Columna izquierda
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -480,7 +461,6 @@ fun ResumenDiarioProgreso(viewModel: ProgresoViewModel) {
     }
 }
 
-
 @Composable
 fun ElegirEjercicioProgreso(viewModel: ProgresoViewModel) {
     val ejercicios = viewModel.progresoTotal
@@ -490,6 +470,7 @@ fun ElegirEjercicioProgreso(viewModel: ProgresoViewModel) {
     GlobalDropDownMenu(
         selectedItem = viewModel.ejercicioSeleccionado,
         opciones = ejercicios,
+        // Selecciona el ejercicio del que ver el progreso
         onValueChange = { viewModel.seleccionarEjercicio(it) },
         itemText = { it.nombre },
         modifier = Modifier.fillMaxWidth(),

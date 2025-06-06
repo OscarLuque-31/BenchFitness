@@ -1,8 +1,6 @@
 package com.oscar.benchfitness.services
 
 import android.content.Context
-import android.provider.Settings.Global.getString
-import androidx.compose.ui.platform.LocalContext
 import com.oscar.benchfitness.R
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -14,14 +12,17 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 object RetrofitClient {
     // URL Base de mi API
     private const val BASE_URL = "https://api-benchfitness-production.up.railway.app/"
+
     // Contexto de la app
     private lateinit var appContext: Context
 
-    fun init(context: Context){
+    // Inicia el contexto de la aplicación
+    fun init(context: Context) {
         appContext = context.applicationContext
     }
 
     val apiService: ApiService by lazy {
+        // Obtiene mi API_KEY
         val apiKey = appContext.getString(R.string.API_KEY)
 
         // Crea un cliente con el que añade la api key en el header de la llamada
@@ -43,5 +44,4 @@ object RetrofitClient {
             .build()
             .create(ApiService::class.java)
     }
-
 }

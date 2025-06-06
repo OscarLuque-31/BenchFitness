@@ -10,19 +10,25 @@ class AuthViewModel(
     private val db: FirebaseFirestore
 ) : ViewModel() {
 
+    // Variable para ver si el usuario esta autenticado
     var isAuthenticated by mutableStateOf(auth.currentUser != null)
         private set
 
     var datosCompletados by mutableStateOf(false)
         private set
 
+    /**
+     * Método que verifica el estado del usuario
+     */
     fun verificarEstado() {
         val currentUser = auth.currentUser
         isAuthenticated = currentUser != null
 
         if (currentUser != null) {
+            // Comprueba si existe en base de datos
             db.collection("users").document(currentUser.uid).get()
                 .addOnSuccessListener { document ->
+                    // Comprueba que los datos esten completados
                     datosCompletados = document.getBoolean("datosCompletados") == true
                 }
                 .addOnFailureListener {
@@ -33,6 +39,9 @@ class AuthViewModel(
         }
     }
 
+    /**
+     * Método que cierra la sesión del usuario
+     */
     fun cerrarSesion() {
         auth.signOut()
         isAuthenticated = false

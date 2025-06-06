@@ -19,14 +19,21 @@ class EjercicioViewModel(
     var isFavorite by mutableStateOf(false)
         private set
 
-    val favsRepository = FavsRepository(auth, db)
+    // Repositorio para comprobar los favoritos
+    private val favsRepository = FavsRepository(auth, db)
 
+    /**
+     * Método que cambia el estado de favorito
+     */
     fun toogleFavoriteUI(exerciseData: ExerciseData) {
         viewModelScope.launch {
             isFavorite = favsRepository.toogleFavorite(exerciseData)
         }
     }
 
+    /**
+     * Método que comprueba si es favorito o no el ejercicio
+     */
     suspend fun checkIfFavoriteUI(exerciseId: String) {
         viewModelScope.launch {
             isFavorite = favsRepository.isFavorite(exerciseId)

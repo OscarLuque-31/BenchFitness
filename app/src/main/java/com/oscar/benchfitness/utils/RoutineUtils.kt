@@ -4,7 +4,6 @@ import com.oscar.benchfitness.models.routines.DayRoutine
 import com.oscar.benchfitness.models.routines.ExerciseRoutineEntry
 import com.oscar.benchfitness.models.routines.Routine
 
-
 // Rutina para Principiantes (3 días/semana - Full Body)
 fun crearRutinaPrincipiante(): Routine {
     return Routine(

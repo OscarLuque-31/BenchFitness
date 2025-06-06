@@ -27,8 +27,8 @@ fun MainPerfilContainer(
     navController: NavController,
     authViewModel: AuthViewModel
 ) {
+    // Controlador de la navegación del perfil
     val innerNavController = rememberNavController()
-
 
     Scaffold(containerColor = negroBench, topBar = {
         GlobalHeader("Perfil")
@@ -44,6 +44,7 @@ fun MainPerfilContainer(
             composable(Perfil.route) {
                 val perfilViewModel = remember { PerfilViewModel(auth, db, authViewModel) }
 
+                // Carga el perfil del usuario antes de entrar en la pantalla
                 LaunchedEffect(Unit) {
                     perfilViewModel.cargarPerfilUsuario()
                 }

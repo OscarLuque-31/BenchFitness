@@ -8,8 +8,9 @@ import kotlinx.coroutines.tasks.await
 
 class RoutineRepository(auth: FirebaseAuth, db: FirebaseFirestore) {
 
+    // Variable que representa la colección de rutinas del usuario
     private val routinesCollection = db.collection("users")
-        .document(auth.currentUser!!.uid)  // !! porque confiamos en la autenticación
+        .document(auth.currentUser!!.uid)
         .collection("routines")
 
     /**

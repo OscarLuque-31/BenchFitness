@@ -6,6 +6,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+/**
+ * Clase que representa una Rutina completa
+ */
 @Parcelize
 data class Routine(
     val nombre: String = "",
@@ -13,6 +16,7 @@ data class Routine(
     val dias: List<DayRoutine> = emptyList(),
     val fechaCreacion: String = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
 ) : Parcelable {
+
     fun toMap(): Map<String, Any> {
         return mapOf(
             "nombre" to nombre,

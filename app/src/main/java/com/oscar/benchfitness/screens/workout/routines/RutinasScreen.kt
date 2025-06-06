@@ -24,7 +24,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,10 +43,7 @@ fun RutinasScreen(navController: NavController, viewModel: RutinasViewModel) {
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        // Mostrar la lista de rutinas
         ListaRutinas(viewModel = viewModel, navController)
-
-        // Mostrar la opción para crear una nueva rutina
         BoxNuevaRutina(navController)
     }
 }
@@ -61,13 +57,12 @@ fun BoxNuevaRutina(navController: NavController) {
             .clip(RoundedCornerShape(20.dp))
             .background(negroOscuroBench)
             .clickable { navController.navigate(CrearRutina.route) }
-            .padding(horizontal = 50.dp), // Padding consistente
+            .padding(horizontal = 50.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween // Cambio clave
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        // Contenedor para el texto (misma estructura que las rutinas)
         Column(
-            modifier = Modifier.weight(1f), // Ocupa el espacio disponible
+            modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.Start
         ) {
             Text(
@@ -77,10 +72,7 @@ fun BoxNuevaRutina(navController: NavController) {
                 fontSize = 25.sp
             )
         }
-
         Spacer(modifier = Modifier.width(16.dp))
-
-        // Icono con tamaño fijo
         Image(
             painter = painterResource(id = R.drawable.anadir),
             contentDescription = "Añadir rutina",
@@ -94,7 +86,7 @@ fun ListaRutinas(viewModel: RutinasViewModel, navController: NavController) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Iteramos sobre las rutinas
+        // Itera las rutinas del usuario y crea sus componentes
         viewModel.listaRutinas.forEach { rutina ->
             Row(
                 modifier = Modifier
@@ -104,15 +96,15 @@ fun ListaRutinas(viewModel: RutinasViewModel, navController: NavController) {
                     .background(negroOscuroBench)
                     .clickable {
                         navController.currentBackStackEntry?.savedStateHandle?.set("rutina", rutina)
+                        // Navega a la pantalla de rutina para ver sus detalles
                         navController.navigate(Rutina.route)
                     }
-                    .padding(horizontal = 50.dp), // Padding consistente
+                    .padding(horizontal = 50.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween // Cambio clave
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Contenedor para el nombre de la rutina
                 Column(
-                    modifier = Modifier.weight(1f), // Ocupa el espacio disponible
+                    modifier = Modifier.weight(1f),
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
@@ -125,10 +117,7 @@ fun ListaRutinas(viewModel: RutinasViewModel, navController: NavController) {
                         lineHeight = 22.sp
                     )
                 }
-
                 Spacer(modifier = Modifier.width(30.dp))
-
-                // Contenedor para el objetivo (tamaño fijo)
                 Column(
                     horizontalAlignment = Alignment.End
                 ) {
@@ -137,77 +126,6 @@ fun ListaRutinas(viewModel: RutinasViewModel, navController: NavController) {
                         color = rojoBench,
                         fontWeight = FontWeight.Normal,
                         fontSize = 16.sp
-                    )
-                }
-            }
-            Spacer(Modifier.height(20.dp))
-        }
-    }
-}
-
-// VERSIÓN ALTERNATIVA: Si quieres un diseño más estructurado
-@Composable
-fun ListaRutinasAlternativa(viewModel: RutinasViewModel, navController: NavController) {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        viewModel.listaRutinas.forEach { rutina ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(130.dp)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(negroOscuroBench)
-                    .clickable {
-                        navController.currentBackStackEntry?.savedStateHandle?.set("rutina", rutina)
-                        navController.navigate(Rutina.route)
-                    }
-                    .padding(20.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Información de la rutina (ocupa 80% del ancho)
-                Column(
-                    modifier = Modifier
-                        .weight(0.8f)
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    // Nombre de la rutina
-                    Text(
-                        text = rutina.nombre,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        lineHeight = 20.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Objetivo de la rutina
-                    Text(
-                        text = rutina.objetivo,
-                        color = rojoBench,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 14.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-
-                // Espacio para icono o indicador (ocupa 20% del ancho)
-                Column(
-                    modifier = Modifier.weight(0.2f),
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    // Puedes agregar un icono aquí si quieres
-                    Text(
-                        text = "→",
-                        color = rojoBench,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
                     )
                 }
             }

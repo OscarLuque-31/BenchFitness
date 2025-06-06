@@ -19,10 +19,17 @@ class ExercisesRepository {
     /**
      * Método que recoge todos los ejercicios con los filtros de la API
      */
-    suspend fun obtenerEjerciciosConFiltro(nivel: String, categoria: String, musculo: String): List<ExerciseData> {
-        return apiService.obtenerEjerciciosFiltrados(nivel = nivel, categoria = categoria, musculo = musculo)
+    suspend fun obtenerEjerciciosConFiltro(
+        nivel: String,
+        categoria: String,
+        musculo: String
+    ): List<ExerciseData> {
+        return apiService.obtenerEjerciciosFiltrados(
+            nivel = nivel,
+            categoria = categoria,
+            musculo = musculo
+        )
     }
-
 
     /**
      * Método que recoge todos los ejercicios que empiecen por el nombre filtrado

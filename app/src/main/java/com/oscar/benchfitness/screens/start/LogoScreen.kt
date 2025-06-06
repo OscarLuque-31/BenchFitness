@@ -6,47 +6,39 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.ui.theme.negroClaroBench
 
 @Composable
-fun LogoScreen(navController: NavController){
-    Scaffold { paddingValues ->
-        LogoBodyContent(
-            navController = navController,
-            modifier = Modifier.padding(paddingValues))
-    }
+fun LogoScreen() {
+    LogoBodyContent()
 }
 
 @Composable
-fun LogoBodyContent(navController: NavController, modifier: Modifier) {
+fun LogoBodyContent() {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = negroClaroBench)
     ) {
-        // Columna principal centrada
         ColumnaPrincipalLogo(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.65f) // Ocupa el espacio disponible
+                .weight(0.65f)
         )
     }
 }
+
 @Composable
 fun ColumnaPrincipalLogo(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.Center, // Centra verticalmente
-        horizontalAlignment = Alignment.CenterHorizontally // Centra horizontalmente
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
             painter = painterResource(id = R.drawable.logo_marca),
@@ -55,19 +47,3 @@ fun ColumnaPrincipalLogo(modifier: Modifier = Modifier) {
     }
 }
 
-
-@Preview()
-@Composable
-fun LogoPreview(){
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = negroClaroBench)
-    ) {
-        // Columna principal centrada
-        ColumnaPrincipalLogo(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.65f) // Ocupa el espacio disponible
-        )
-    }}

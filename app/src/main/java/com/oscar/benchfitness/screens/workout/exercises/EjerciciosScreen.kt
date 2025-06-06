@@ -36,10 +36,12 @@ import com.oscar.benchfitness.models.exercises.ExerciseData
 import com.oscar.benchfitness.navegation.Ejercicio
 import com.oscar.benchfitness.ui.theme.amarilloAvanzado
 import com.oscar.benchfitness.ui.theme.azulIntermedio
+import com.oscar.benchfitness.ui.theme.negroBench
 import com.oscar.benchfitness.ui.theme.negroClaroBench
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
 import com.oscar.benchfitness.ui.theme.verdePrincipiante
+import com.oscar.benchfitness.utils.colorPorNivel
 import com.oscar.benchfitness.viewModels.workout.EjerciciosViewModel
 
 @Composable
@@ -99,6 +101,7 @@ fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
                 colorText = Color.White,
                 backgroundColor = negroOscuroBench,
                 onDone = {
+                    // Filtra el ejercicio por nombre
                     viewModel.filtrarBusquedaNombre(viewModel.busqueda)
                 },
                 imeAction = ImeAction.Search
@@ -149,12 +152,12 @@ fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
                             .height(50.dp),
                         backgroundColor = negroOscuroBench,
                         colorText = rojoBench
-
                     )
                     Spacer(Modifier.height(20.dp))
                     GlobalButton(
                         text = "Aplicar búsqueda",
                         onClick = {
+                            // Aplica la búsqueda y retorna los datos
                             viewModel.onClickBuscar()
                             viewModel.filtrosVisibles = false
                         },
@@ -166,10 +169,11 @@ fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
                     GlobalButton(
                         text = "Resetear filtros",
                         onClick = {
+                            // Carga los ejercicios desde 0 sin filtros
                             viewModel.cargarEjercicios()
                             viewModel.filtrosVisibles = false
                         },
-                        backgroundColor = negroClaroBench,
+                        backgroundColor = negroOscuroBench,
                         colorText = rojoBench,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -183,16 +187,22 @@ fun FiltrosEjercicio(viewModel: EjerciciosViewModel) {
 fun ListaEjercicios(navController: NavController, viewModel: EjerciciosViewModel) {
     val ejercicios by viewModel.ejercicios.collectAsState()
 
+    // Si no se encuentran ejercicios con el filtro aparece este mensaje
     if (ejercicios.isEmpty()) {
-        Column (modifier = Modifier.fillMaxSize(),
+        Column(
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally) {
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-            Text("No se encontraron ejercicios",
+            Text(
+                "No se encontraron ejercicios",
                 fontSize = 20.sp,
                 color = rojoBench,
-                fontWeight = FontWeight.Medium)
+                fontWeight = FontWeight.Medium
+            )
         }
+        // Si aparecen se mostrarán todos los ejercicios del filtro
     } else {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(ejercicios) { ejercicio ->
@@ -204,14 +214,15 @@ fun ListaEjercicios(navController: NavController, viewModel: EjerciciosViewModel
 
 @Composable
 fun CajaEjercicio(navController: NavController, ejercicio: ExerciseData) {
-
     Column(
         modifier = Modifier
             .height(150.dp)
             .padding(bottom = 25.dp)
             .clip(RoundedCornerShape(20.dp))
             .clickable {
+                // Envia el ejercicio por el controlador de navegación
                 navController.currentBackStackEntry?.savedStateHandle?.set("ejercicio", ejercicio)
+                // Navega al ejercicio para ver sus detalles
                 navController.navigate(Ejercicio.route)
             }) {
         Row(
@@ -252,18 +263,10 @@ fun CajaEjercicio(navController: NavController, ejercicio: ExerciseData) {
             Text(
                 text = ejercicio.nivel,
                 fontSize = 15.sp,
+                // Según el nivel tendra un color u otro
                 color = colorPorNivel(ejercicio.nivel)
 
             )
         }
-    }
-}
-
-fun colorPorNivel(nivel: String): Color {
-    return when (nivel) {
-        "Principiante" -> verdePrincipiante
-        "Intermedio" -> azulIntermedio
-        "Avanzado" -> amarilloAvanzado
-        else -> Color.White
     }
 }

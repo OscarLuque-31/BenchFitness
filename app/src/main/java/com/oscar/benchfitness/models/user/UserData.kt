@@ -4,8 +4,10 @@ import android.os.Parcelable
 import com.oscar.benchfitness.models.routines.Routine
 import kotlinx.parcelize.Parcelize
 
+/**
+ * Clase que representa los datos de un usuario
+ */
 @Parcelize
-// Clase que representa los datos que se recogen del usuario
 data class userData(
     val uid: String = "",
     val username: String = "",

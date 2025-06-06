@@ -14,12 +14,15 @@ import com.oscar.benchfitness.ui.theme.BenchfitnessTheme
 
 class MainActivity : ComponentActivity() {
 
+    // Instancia de FirebaseAuth
     private lateinit var auth: FirebaseAuth
-    private lateinit var db: FirebaseFirestore
 
+    // Instancia de FirebaseFireStore
+    private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Se inicializan las variables
         auth = Firebase.auth
         db = FirebaseFirestore.getInstance()
 
@@ -29,7 +32,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BenchfitnessTheme {
-               AppNavegation(auth,db)
+                AppNavegation(auth, db)
             }
         }
     }

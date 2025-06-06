@@ -54,7 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.oscar.benchfitness.R
-import com.oscar.benchfitness.animations.LoadingScreen
+import com.oscar.benchfitness.animations.LoadingScreenLinearProgress
 import com.oscar.benchfitness.components.GlobalButton
 import com.oscar.benchfitness.components.GlobalDropDownMenu
 import com.oscar.benchfitness.components.GlobalTextField
@@ -86,11 +86,10 @@ fun HomeBodyContent(
     navController: NavController,
     viewModel: HomeViewModel
 ) {
-
+    // Comprueba si la rutina está asignada
     LaunchedEffect(Unit) {
         viewModel.comprobarRutinaAsignada()
     }
-
 
     Column(
         modifier = Modifier
@@ -132,7 +131,6 @@ fun ObjetivoUsuario(objetivo: String) {
         Text(
             text = "Objetivo", color = Color.White, fontWeight = FontWeight.Normal, fontSize = 20.sp
         )
-
         Row(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
@@ -191,7 +189,7 @@ fun RecomendacionObjetivo(
                     IconButton(
                         onClick = {
                             showInfoDialog = !showInfoDialog
-                        }, modifier = Modifier.size(20.dp) // Tamaño más compacto
+                        }, modifier = Modifier.size(20.dp)
                     ) {
                         Icon(Icons.Filled.Info, contentDescription = "Info", tint = rojoBench)
                     }
@@ -242,11 +240,8 @@ fun RecomendacionObjetivo(
     }
 }
 
-
 @Composable
 fun BloqueApuntarRutina(modifier: Modifier = Modifier, viewModel: HomeViewModel) {
-
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -259,7 +254,6 @@ fun BloqueApuntarRutina(modifier: Modifier = Modifier, viewModel: HomeViewModel)
                 .fillMaxWidth()
                 .padding(20.dp)
         ) {
-            // Título "Rutina de hoy"
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -278,6 +272,7 @@ fun BloqueApuntarRutina(modifier: Modifier = Modifier, viewModel: HomeViewModel)
                         color = Color.White
                     )
                     Spacer(Modifier.width(10.dp))
+                    // Si la rutina está asignada se muestra el nombre
                     if (viewModel.isRutinaAsignada) {
                         Text(
                             viewModel.userData.rutinaAsignada.nombre,
@@ -286,10 +281,11 @@ fun BloqueApuntarRutina(modifier: Modifier = Modifier, viewModel: HomeViewModel)
                             color = rojoBench,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.fillMaxWidth(0.6f) // Ocupa el 60% del ancho disponible
+                            modifier = Modifier.fillMaxWidth(0.6f)
                         )
                     }
                 }
+                // Si la rutina está asignada se muestran los botones de apuntar y editar rutina
                 if (viewModel.isRutinaAsignada) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (viewModel.entrenamientoDelDia != null) {
@@ -323,19 +319,19 @@ fun BloqueApuntarRutina(modifier: Modifier = Modifier, viewModel: HomeViewModel)
                 }
             }
 
-            // Dialog cambiar rutina
+            // Dialog para cambiar rutina
             if (viewModel.cambiarRutina) {
                 DialogoCambiarRutina(viewModel)
             }
 
-            // Dialog cambiar rutina
+            // Dialog para apuntar rutina
             if (viewModel.apuntarRutina) {
                 DialogoApuntarRutina(viewModel)
             }
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            // Contenedor de "Sin asignar"
+            // Contenedor de las rutinas
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -346,8 +342,8 @@ fun BloqueApuntarRutina(modifier: Modifier = Modifier, viewModel: HomeViewModel)
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Si no hay rutinas
                 if (viewModel.rutinas.isEmpty()) {
-
                     Text(
                         "No hay rutinas que asignar",
                         style = MaterialTheme.typography.bodySmall,
@@ -355,8 +351,9 @@ fun BloqueApuntarRutina(modifier: Modifier = Modifier, viewModel: HomeViewModel)
                         color = rojoBench
                     )
                 } else if (viewModel.isRoutineLoading) {
-                    LoadingScreen()
+                    LoadingScreenLinearProgress()
                 } else {
+                    // Si la rutina está asignada muestra los datos de la rutina
                     if (viewModel.isRutinaAsignada) {
 
                         Column(
@@ -366,6 +363,7 @@ fun BloqueApuntarRutina(modifier: Modifier = Modifier, viewModel: HomeViewModel)
                             DatosRutinaXDia(viewModel)
                         }
 
+                        // Si no muestra un dropdown para elegir la rutina
                     } else {
                         Column(
                             modifier = Modifier
@@ -414,6 +412,7 @@ fun BloqueApuntarRutina(modifier: Modifier = Modifier, viewModel: HomeViewModel)
 @Composable
 fun DatosRutinaXDia(viewModel: HomeViewModel) {
 
+    // Carga el dia de entrenamiento
     LaunchedEffect(viewModel.userData.rutinaAsignada) {
         viewModel.cargarDiaEntrenamiento()
     }
@@ -446,6 +445,7 @@ fun DatosRutinaXDia(viewModel: HomeViewModel) {
                 )
             }
         }
+        // Si es nulo el día de hoy pondrá que no hay entrenamiento
     } ?: run {
         Box(
             modifier = Modifier
@@ -462,7 +462,6 @@ fun DatosRutinaXDia(viewModel: HomeViewModel) {
         }
     }
 }
-
 
 @Composable
 fun InfoObjetivo(objetivo: String) {
@@ -549,7 +548,7 @@ fun DialogoApuntarRutina(viewModel: HomeViewModel) {
     val showError = remember { mutableStateOf(false) }
     val errorMessage = remember { mutableStateOf("") }
 
-    // Auto cerrar el snackbar después de 3 segundos
+    // Auto cierra el snackbar después de 3 segundos
     LaunchedEffect(showError.value) {
         if (showError.value) {
             delay(4000)
@@ -557,10 +556,12 @@ fun DialogoApuntarRutina(viewModel: HomeViewModel) {
         }
     }
 
+    // Inicializa el progreso de los ejercicios diarios
     LaunchedEffect(dia) {
         dia?.let { viewModel.initDailyExerciseProgress(it) }
     }
 
+    // Si no es nulo y tiene progreso muestra el dialogo
     if (dia != null && progresoDiario.isNotEmpty()) {
         Dialog(onDismissRequest = { viewModel.apuntarRutina = false }) {
             Column(
@@ -579,6 +580,7 @@ fun DialogoApuntarRutina(viewModel: HomeViewModel) {
                 )
 
                 LazyColumn {
+                    // Por cada ejercicio tiene progreso y comprueba si se completa los datos
                     itemsIndexed(dia.ejercicios) { ejercicioIndex, ejercicio ->
                         val progresoEjercicio = progresoDiario[ejercicioIndex]
                         val ejecucionHoy =
@@ -608,6 +610,7 @@ fun DialogoApuntarRutina(viewModel: HomeViewModel) {
                                     modifier = Modifier.weight(1f)
                                 )
                                 Spacer(Modifier.width(10.dp))
+                                // Si está completado aparece el check
                                 if (completado) {
                                     Icon(
                                         imageVector = Icons.Filled.Check,
@@ -713,6 +716,7 @@ fun DialogoApuntarRutina(viewModel: HomeViewModel) {
                                     colorText = negroBench,
                                     tamanyoLetra = 15.sp,
                                     onClick = {
+                                        // Valida las repeticiones
                                         val allSetsValid = ejecucionHoy.series.all { set ->
                                             val repsValid =
                                                 viewModel.isValidReps(set.reps.toString())
@@ -721,6 +725,7 @@ fun DialogoApuntarRutina(viewModel: HomeViewModel) {
                                             repsValid && pesoValid
                                         }
 
+                                        // Si son válidas marca el ejercicio como completado
                                         if (allSetsValid) {
                                             viewModel.marcarEjercicioCompletado(ejercicio.nombre)
                                             expandedItems[ejercicio.nombre] = false
@@ -746,7 +751,6 @@ fun DialogoApuntarRutina(viewModel: HomeViewModel) {
                         Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
-
                 GlobalButton(
                     text = "Cerrar",
                     backgroundColor = rojoBench,

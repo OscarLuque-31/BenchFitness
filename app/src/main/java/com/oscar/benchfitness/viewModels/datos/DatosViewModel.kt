@@ -24,6 +24,7 @@ class DatosViewModel(
     private val db: FirebaseFirestore
 ) : ViewModel() {
 
+    // Variables necesarias para los datos
     var altura by mutableStateOf("")
     var genero by mutableStateOf("Sexo")
     var peso by mutableStateOf("")
@@ -32,19 +33,13 @@ class DatosViewModel(
     var objetivo by mutableStateOf("Objetivo fitness")
     var birthday by mutableStateOf("")
     var isLoading by mutableStateOf(false)
-    var rutinaPorDefecto by mutableStateOf(Routine())
-
-    // Agregar un estado para el mensaje del Snackbar
     var snackbarMessage by mutableStateOf<String?>(null)
+    private var rutinaPorDefecto by mutableStateOf(Routine())
 
+    // Repositorios para guardar los datos en base de datos
     private val userRepository = UserRepository(auth, db)
     private val statisticsWeightRepository = StatisticsWeightRepository(auth, db)
     private val routineRepository = RoutineRepository(auth, db)
-
-
-    fun dismissSnackbar() {
-        snackbarMessage = null
-    }
 
     /**
      * Método que guarda los datos del usuario en base de datos
@@ -68,6 +63,7 @@ class DatosViewModel(
             onFailure(errorMessage)
         } else {
             isLoading = true
+            // Guarda los datos del usuario en base de datos
             userRepository.guardarDatosUsuario(
                 userData(
                     altura = altura,
@@ -80,29 +76,39 @@ class DatosViewModel(
                 ),
                 onSuccess = {
                     isLoading = false
-                    onSuccess()},
+                    onSuccess()
+                },
                 onFailure = { error ->
                     isLoading = false
                     onFailure(error)
                 }
             )
             viewModelScope.launch {
+                // Asigna el primer peso del usuario a su progreso de peso
                 statisticsWeightRepository.saveWeightExecution(newProgress = StatisticsWeight(peso = peso.toDouble()))
+                // Asigna una rutina por defecto según su experiencia
                 asignarRutinaSegunExperiencia(experiencia)
             }
         }
     }
 
-
+    /**
+     * Método que asigna una rutina al usuario según su experiencia
+     */
     private suspend fun asignarRutinaSegunExperiencia(experiencia: String) {
         when (experiencia) {
             "Principiante" -> rutinaPorDefecto = crearRutinaPrincipiante()
             "Intermedio" -> rutinaPorDefecto = crearRutinaIntermedio()
             "Avanzado" -> rutinaPorDefecto = crearRutinaAvanzado()
         }
-
+        // Guarda la rutina al usuario
         routineRepository.saveRoutine(rutinaPorDefecto)
     }
 
-
+    /**
+     * Método que limpia el snackbar
+     */
+    fun clearSnackbar() {
+        snackbarMessage = null
+    }
 }

@@ -2,6 +2,7 @@ package com.oscar.benchfitness.utils
 
 class CalorieCalculator {
 
+    // Constantes para calcular el metabolismo
     private val INDICE_PESO = 10
     private val INDICE_ALTURA = 6.25
     private val INDICE_EDAD = 5
@@ -64,7 +65,6 @@ class CalorieCalculator {
         peso: String,
         edad: String
     ): Double {
-
         return if (genero == "Hombre") {
             ((INDICE_PESO * peso.toDouble()) + (INDICE_ALTURA * altura.toInt()) - (INDICE_EDAD * edad.toInt()) + INDICE_GENERO_HOMBRE) * indiceNivelActividad(
                 nivelActividad
@@ -74,11 +74,10 @@ class CalorieCalculator {
                 nivelActividad
             )
         }
-
     }
 
     /**
-     * Método que calcula el metabolismo base
+     * Método que calcula el metabolismo base de una persona
      */
     fun calcularMetabolismo(
         altura: String,

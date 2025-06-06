@@ -2,22 +2,23 @@ package com.oscar.benchfitness.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.oscar.benchfitness.models.statistics.ExerciseProgress
-import com.oscar.benchfitness.models.statistics.StatisticsExercise
 import com.oscar.benchfitness.models.statistics.StatisticsWeight
 import com.oscar.benchfitness.models.statistics.WeightProgress
 import kotlinx.coroutines.tasks.await
 
 class StatisticsWeightRepository(auth: FirebaseAuth, db: FirebaseFirestore) {
 
-
+    // Variable que representa la colección de estadisticas de peso del usuario
     private val statisticsWeightCollection = db.collection("users")
         .document(auth.currentUser!!.uid)
         .collection("statisticsWeight")
 
+    // Id del documento
     private val weightDocumentId = "Peso"
 
-    // Guardar o actualizar una ejecución dentro del historial de un ejercicio
+    /**
+     * Guarda o actualiza una ejecución dentro del historial de un ejercicio
+     */
     suspend fun saveWeightExecution(newProgress: StatisticsWeight) {
         val existingDoc = statisticsWeightCollection.document(weightDocumentId).get().await()
         val existingProgress = if (existingDoc.exists()) {
@@ -35,17 +36,11 @@ class StatisticsWeightRepository(auth: FirebaseAuth, db: FirebaseFirestore) {
         statisticsWeightCollection.document(weightDocumentId).set(updatedExercise).await()
     }
 
+    /**
+     * Obtiene todas las entradas de peso del usuario
+     */
     suspend fun getAllWeightProgress(): WeightProgress? {
         val docSnapshot = statisticsWeightCollection.document(weightDocumentId).get().await()
         return if (docSnapshot.exists()) docSnapshot.toObject(WeightProgress::class.java) else null
     }
-
-
-    suspend fun getLatestWeight(): StatisticsWeight? {
-        val progress = getAllWeightProgress()
-        return progress?.historial?.maxByOrNull { it.fecha }
-    }
-
-
-
 }

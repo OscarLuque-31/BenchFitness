@@ -90,7 +90,9 @@ class UserRepository(
         }
     }
 
-
+    /**
+     * Método para actualizar el perfil del usuario
+     */
     fun updateProfileUser(objetivo: String, altura: String) {
         val user = auth.currentUser ?: return
 
@@ -105,7 +107,9 @@ class UserRepository(
         }
     }
 
-
+    /**
+     * Método para asignar la rutina al usuario
+     */
     suspend fun asignarRutina(rutina: Routine) {
         val user = auth.currentUser ?: return
 
@@ -113,7 +117,10 @@ class UserRepository(
         userCollection.document(user.uid).update("isRutinaAsignada", true).await()
     }
 
-    suspend fun isRutinaAsignada(): Boolean{
+    /**
+     * Método para comprobar si hay alguna rutina asignada
+     */
+    suspend fun isRutinaAsignada(): Boolean {
         val user = auth.currentUser ?: return false
 
         val document = userCollection.document(user.uid).get().await()
@@ -123,6 +130,9 @@ class UserRepository(
         return rutinaAsignada
     }
 
+    /**
+     * Método para obtener toda la información del usuario
+     */
     suspend fun getUserInformation(): userData {
         val user = auth.currentUser ?: return userData()
         return try {
@@ -134,6 +144,9 @@ class UserRepository(
         }
     }
 
+    /**
+     * Método para desasignar la rutina del usuario
+     */
     suspend fun desasignarRutina() {
         val user = auth.currentUser ?: return
         userCollection.document(user.uid)
@@ -145,13 +158,14 @@ class UserRepository(
             ).await()
     }
 
-
+    /**
+     * Método para asignar el peso al usuario
+     */
     suspend fun asignarPeso(peso: String) {
         val user = auth.currentUser ?: return
 
         userCollection.document(user.uid).update("peso", peso).await()
     }
-
 }
 
 

@@ -42,7 +42,6 @@ object MainFavs {
     const val route = "MainFavs"
 }
 
-
 @Serializable
 object Logo {
     const val route = "Logo"

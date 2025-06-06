@@ -24,7 +24,7 @@ fun MainExercisesContainer(
     auth: FirebaseAuth,
     db: FirebaseFirestore,
 ) {
-
+    // Controlador de la navegación de los ejercicios
     val navController = rememberNavController()
 
     NavHost(navController, startDestination = Ejercicios.route) {
@@ -42,10 +42,10 @@ fun MainExercisesContainer(
             )
         }
 
-
         composable(Ejercicio.route) {
             val ejercicioViewModel = remember { EjercicioViewModel(auth, db) }
 
+            // Recojo el ejercicio enviado a través del controlador
             val ejercicio = navController.previousBackStackEntry
                 ?.savedStateHandle
                 ?.get<ExerciseData>("ejercicio")
@@ -57,16 +57,12 @@ fun MainExercisesContainer(
 
             LaunchedEffect(ejercicio) {
                 ejercicio?.let {
-
-                    println(it.url_image.replace("+", " "))
-
-                    urlGIF =
-                        exercisesRepository.obtenerURLFirmadaGif(it.url_image.replace("+", " "))
-
-                    println(urlGIF)
+                    // Obtiene la url firmada desde AWS Bucket S3
+                    urlGIF = exercisesRepository.obtenerURLFirmadaGif(it.url_image.replace("+", " "))
                 }
             }
 
+            // Si el ejercicio no es nulo lo muestra
             if (ejercicio != null) {
                 EjercicioScreen(
                     navController = navController,
@@ -77,6 +73,4 @@ fun MainExercisesContainer(
             }
         }
     }
-
-
 }

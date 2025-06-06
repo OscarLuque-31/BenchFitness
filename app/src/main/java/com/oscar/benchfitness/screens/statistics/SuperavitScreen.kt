@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
- import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,12 +25,10 @@ import com.oscar.benchfitness.components.GlobalHeader
 import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.viewModels.statistics.CalculosViewModel
 
-
 @Composable
 fun SuperavitScreen(navController: NavController, viewModel: CalculosViewModel) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         GlobalHeader("Superávit")
         ColumnaSuperavit(navController, viewModel)
@@ -54,8 +52,7 @@ fun ColumnaSuperavit(navController: NavController, viewModel: CalculosViewModel)
             FlechitaAtras(navController = navController)
             Spacer(modifier = Modifier.height(20.dp))
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
             ) {
                 Text(
                     "Calculadora superávit",
@@ -65,10 +62,9 @@ fun ColumnaSuperavit(navController: NavController, viewModel: CalculosViewModel)
                 )
             }
             Spacer(modifier = Modifier.height(20.dp))
-            FormularioCalorias(
-                viewModel = viewModel,
-                onClick = { viewModel.calcularCaloriasSuperavit() }
-            )
+            FormularioCalorias(viewModel = viewModel,
+                // Calcula las calorías para un superavit
+                onClick = { viewModel.calcularCaloriasSuperavit() })
         }
     }
 }

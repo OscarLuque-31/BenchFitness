@@ -5,13 +5,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.models.exercises.ExerciseData
 import kotlinx.coroutines.tasks.await
 
-
 class FavsRepository(auth: FirebaseAuth, db: FirebaseFirestore) {
 
+    // Variable que representa la colección de ejercicios favs del usuario
     private val favoritesCollection = db.collection("users")
         .document(auth.currentUser!!.uid)
         .collection("favorites")
-
 
     /**
      * Método que obtiene todas las rutinas desde base de datos
@@ -33,6 +32,9 @@ class FavsRepository(auth: FirebaseAuth, db: FirebaseFirestore) {
         }
     }
 
+    /**
+     * Método que cambia el ejercicio de a favorito y viceversa
+     */
     suspend fun toogleFavorite(exerciseData: ExerciseData): Boolean {
         val documentRef = favoritesCollection.document(exerciseData.id_ejercicio)
 
@@ -50,10 +52,11 @@ class FavsRepository(auth: FirebaseAuth, db: FirebaseFirestore) {
             e.printStackTrace()
             false
         }
-
-
     }
 
+    /**
+     * Método que comprueba si el ejercicio es favorito
+     */
     suspend fun isFavorite(exerciseId: String): Boolean {
         return try {
             favoritesCollection.document(exerciseId).get().await().exists()

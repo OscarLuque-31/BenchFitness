@@ -8,12 +8,19 @@ import kotlinx.coroutines.tasks.await
 
 class StatisticsExercisesRepository(auth: FirebaseAuth, db: FirebaseFirestore) {
 
-    private val statisticsExercisesCollection = db.collection("users")
-        .document(auth.currentUser!!.uid)
-        .collection("statisticsExercises")
+    // Variable que representa la colección de estadisticas de ejercicios del usuario
+    private val statisticsExercisesCollection =
+        db.collection("users")
+            .document(auth.currentUser!!.uid)
+            .collection("statisticsExercises")
 
-    // Guardar o actualizar una ejecución dentro del historial de un ejercicio
-    suspend fun saveOrUpdateExerciseExecution(exerciseName: String, newProgress: StatisticsExercise) {
+
+    /**
+     * Guardar o actualiza una ejecución dentro del historial de un ejercicio
+     */
+    suspend fun saveOrUpdateExerciseExecution(
+        exerciseName: String, newProgress: StatisticsExercise
+    ) {
         val existingDoc = statisticsExercisesCollection.document(exerciseName).get().await()
         val existingProgress = if (existingDoc.exists()) {
             existingDoc.toObject(ExerciseProgress::class.java)
@@ -22,20 +29,24 @@ class StatisticsExercisesRepository(auth: FirebaseAuth, db: FirebaseFirestore) {
         }
 
         // Reemplaza la ejecución si ya existe una con la misma fecha
-        val updatedHistorial = existingProgress!!.historial
-            .filterNot { it.fecha == newProgress.fecha } + newProgress
+        val updatedHistorial =
+            existingProgress!!.historial.filterNot { it.fecha == newProgress.fecha } + newProgress
 
         val updatedExercise = existingProgress.copy(historial = updatedHistorial)
         statisticsExercisesCollection.document(exerciseName).set(updatedExercise).await()
     }
 
-    // Obtener progreso de un ejercicio por nombre
+    /**
+     * Obtiene el progreso de un ejercicio por nombre
+     */
     suspend fun getExerciseProgressByName(exerciseName: String): ExerciseProgress? {
         val docSnapshot = statisticsExercisesCollection.document(exerciseName).get().await()
         return if (docSnapshot.exists()) docSnapshot.toObject(ExerciseProgress::class.java) else null
     }
 
-    // Obtener todas las ejecuciones registradas
+    /**
+     * Obtiene todas las ejecuciones registradas
+     */
     suspend fun getAllExerciseProgress(): List<ExerciseProgress> {
         val snapshot = statisticsExercisesCollection.get().await()
         return snapshot.toObjects(ExerciseProgress::class.java)

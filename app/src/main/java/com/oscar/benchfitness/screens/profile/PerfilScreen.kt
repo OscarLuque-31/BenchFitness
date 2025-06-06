@@ -1,6 +1,5 @@
 package com.oscar.benchfitness.screens.profile
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,7 +37,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.oscar.benchfitness.R
 import com.oscar.benchfitness.components.GlobalButton
@@ -55,6 +53,7 @@ import com.oscar.benchfitness.viewModels.profile.PerfilViewModel
 @Composable
 fun PerfilScreen(navController: NavController, viewModel: PerfilViewModel) {
 
+    // Dialogo para cerrar sesión
     if (viewModel.showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { viewModel.showLogoutDialog = !viewModel.showLogoutDialog },
@@ -72,7 +71,9 @@ fun PerfilScreen(navController: NavController, viewModel: PerfilViewModel) {
                     modifier = Modifier
                         .clickable {
                             viewModel.showLogoutDialog = !viewModel.showLogoutDialog
+                            // Cierra sesión
                             viewModel.cerrarSesion()
+                            // Navega al inicio
                             navController.navigate(Inicio.route) {
                                 popUpTo(0) { inclusive = true }
                             }
@@ -145,6 +146,7 @@ fun ColumnaNombreRutinas(viewModel: PerfilViewModel) {
             )
             Spacer(Modifier.width(20.dp))
             Text(
+                // Muestra el número de rutinas
                 if (viewModel.numRutinas.toInt() == 1) "${viewModel.numRutinas} rutina" else "${viewModel.numRutinas} rutinas",
                 color = Color.White,
                 fontSize = 23.sp,
@@ -156,7 +158,6 @@ fun ColumnaNombreRutinas(viewModel: PerfilViewModel) {
 
 @Composable
 fun ColumnaDatos(modifier: Modifier, viewModel: PerfilViewModel) {
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -182,6 +183,7 @@ fun ColumnaDatos(modifier: Modifier, viewModel: PerfilViewModel) {
             }
             DialogEditarDato(viewModel)
             DatosPerfil(viewModel)
+            // Si el usuario no es de google puede cambiar su contraseña
             if (!viewModel.isGoogleUser) {
                 GlobalButton(
                     text = "Cambiar contraseña",
@@ -191,12 +193,15 @@ fun ColumnaDatos(modifier: Modifier, viewModel: PerfilViewModel) {
                 ) { viewModel.showPasswordDialog = !viewModel.showPasswordDialog }
             }
 
+            // Muestra el dialogo para cambiar la contraseña
             if (viewModel.showPasswordDialog) {
                 CambiarPasswordDialog(
                     onDismiss = { viewModel.showPasswordDialog = !viewModel.showPasswordDialog },
                     perfilViewModel = viewModel
                 )
             }
+
+            // Muestra el dialogo de confirmación de cambio de contraseña
             if (viewModel.showSuccessDialog) {
                 AlertDialog(
                     onDismissRequest = {
@@ -317,6 +322,7 @@ fun DialogEditarDato(viewModel: PerfilViewModel) {
         "Masa muscular"
     )
 
+    // Puede editar el objetivo o la altura por separado
     if (viewModel.editObjetivo || viewModel.editAltura) {
         AlertDialog(
             onDismissRequest = {
@@ -385,6 +391,7 @@ fun DialogEditarDato(viewModel: PerfilViewModel) {
                     modifier = Modifier
                         .clickable {
                             val error = when {
+                                // Valida el objetivo y la altura antes de guardar los cambios
                                 viewModel.editObjetivo -> validarObjetivo(newObjetivo = viewModel.newObjetivo)
                                 viewModel.editAltura -> validarAltura(newAltura = viewModel.newAltura)
                                 else -> null
@@ -395,6 +402,7 @@ fun DialogEditarDato(viewModel: PerfilViewModel) {
                                 showError = true
                             } else {
                                 showError = false
+                                // Guarda los cambios en base de datos
                                 viewModel.guardarCambios()
                             }
                         }
@@ -477,7 +485,12 @@ fun CambiarPasswordDialog(
         confirmButton = {
             Text("Cambiar", color = rojoBench, modifier = Modifier
                 .clickable {
-                    perfilViewModel.intentarCambiarPassword(currentPassword, newPassword, confirmPassword)
+                    // Intenta cambiar la password y comprueba si es válida (si lo es la cambia)
+                    perfilViewModel.intentarCambiarPassword(
+                        currentPassword,
+                        newPassword,
+                        confirmPassword
+                    )
                 }
                 .padding(10.dp))
         },

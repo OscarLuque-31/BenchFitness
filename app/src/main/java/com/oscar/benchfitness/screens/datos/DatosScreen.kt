@@ -28,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -50,15 +49,13 @@ import com.oscar.benchfitness.viewModels.datos.DatosViewModel
 
 @Composable
 fun DatosScreen(navController: NavController, viewModel: DatosViewModel) {
-    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
 
-
-    // Mostrar el snackbar si el mensaje cambia
+    // Muestra el snackbar si hay un error
     LaunchedEffect(viewModel.snackbarMessage) {
         viewModel.snackbarMessage?.let {
             snackbarHostState.showSnackbar(it)
-            viewModel.dismissSnackbar() // Limpiar mensaje después de mostrarlo
+            viewModel.clearSnackbar()
         }
     }
 
@@ -68,8 +65,10 @@ fun DatosScreen(navController: NavController, viewModel: DatosViewModel) {
         DatosBodyContent(
             viewModel = viewModel,
             onStartClick = {
+                // Guarda los datos en base de datos
                 viewModel.guardarDatosUsuario(
                     onSuccess = {
+                        // Redirige al usuario a la pantalla principal
                         navController.navigate(Main.route) {
                             popUpTo(Inicio.route) { inclusive = true }
                         }
@@ -102,7 +101,6 @@ fun DatosBodyContent(
             modifierImagen = Modifier.size(120.dp)
         )
 
-        // Mostrar el Snackbar con el mensaje
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier
@@ -176,7 +174,8 @@ fun ContenedorDatos(
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
-                        .fillMaxWidth().padding(vertical = 10.dp)
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp)
                 )
             }
         }
@@ -184,7 +183,8 @@ fun ContenedorDatos(
             "Empezar", negroBench,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(65.dp).padding(top = 12.5.dp),
+                .height(65.dp)
+                .padding(top = 12.5.dp),
             colorText = Color.White,
         ) {
             onStartClick()
@@ -254,11 +254,10 @@ fun FilaPesoYExperiencia(viewModel: DatosViewModel) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        // GlobalTextField para el peso
         GlobalTextField(
             nombre = "Peso",
-            text = viewModel.peso, // Valor del peso
-            onValueChange = { viewModel.peso = it }, // Actualizar el estado del peso
+            text = viewModel.peso,
+            onValueChange = { viewModel.peso = it },
             trailingIcon = {
                 Text(
                     "kg",
@@ -278,12 +277,10 @@ fun FilaPesoYExperiencia(viewModel: DatosViewModel) {
             )
         )
         Spacer(Modifier.width(30.dp))
-
-        // GlobalDropDownMenu para la experiencia
         GlobalDropDownMenu(
             nombreSeleccion = viewModel.experiencia,
             onValueChange = { viewModel.experiencia = it },
-            opciones = opcionesExperiencia, // Lista de opciones de experiencia
+            opciones = opcionesExperiencia,
             modifier = Modifier
                 .height(50.dp),
             backgroundColor = Color.White, colorText = negroOscuroBench,
@@ -291,7 +288,6 @@ fun FilaPesoYExperiencia(viewModel: DatosViewModel) {
         )
     }
 }
-
 
 @Composable
 fun ColumnaNivelYObjetivo(viewModel: DatosViewModel) {

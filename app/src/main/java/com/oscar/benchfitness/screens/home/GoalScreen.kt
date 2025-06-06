@@ -40,10 +40,12 @@ import com.oscar.benchfitness.viewModels.home.GoalViewModel
 @Composable
 fun GoalScreen(userData: userData, goalViewModel: GoalViewModel, navController: NavController) {
 
+    // Calcula todas las calorias del usuario
     LaunchedEffect(Unit) {
         goalViewModel.calcularTodasLasCalorias(userData)
     }
 
+    // Según el objetivo tendrá las instrucciones de su objetivo
     when (userData.objetivo) {
         "Perder peso" -> MainColumn(
             userData = userData,
@@ -178,11 +180,13 @@ fun ColumnaDatosYCalculos(
             TextoInfo("¿Cuánto déficit es seguro?", textoSeguridad)
             Spacer(modifier = Modifier.height(10.dp))
             TextoInfo("Recuerda:", textoRecuerda)
-            ColumnaObjetivos(userData.objetivo,
+            ColumnaObjetivos(
+                userData.objetivo,
                 caloriasDefi = caloriasDefi.value,
                 caloriasMeta = caloriasMeta.value,
                 caloriasMan = caloriasMan.value,
-                caloriasVol = caloriasVol.value)
+                caloriasVol = caloriasVol.value
+            )
         }
     }
 }
@@ -266,6 +270,5 @@ fun ColumnaObjetivos(
             CajaObjetivoCalorias("Déficit", caloriasDefi)
         }
     }
-
 }
 

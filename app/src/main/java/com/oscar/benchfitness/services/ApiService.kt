@@ -20,7 +20,6 @@ interface ApiService {
     @GET("categorias")
     suspend fun obtenerCategorias(): List<Categories>
 
-
     @GET("ejercicios")
     suspend fun obtenerEjerciciosFiltrados(
         @Query("nivel") nivel: String = "",

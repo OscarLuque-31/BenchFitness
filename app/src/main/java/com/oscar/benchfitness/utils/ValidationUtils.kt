@@ -7,7 +7,7 @@ private val REGEX_PASSWORD = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+\$".toRegex()
 private val EMAIL_REGEX = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")
 
 /**
- * Método para validar los datos del registro con validación de contraseña mejorada
+ * Método para validar los datos del registro
  */
 fun validateRegisterFields(
     username: String,
@@ -17,32 +17,46 @@ fun validateRegisterFields(
     acceptTerms: Boolean
 ): Pair<Boolean, String> {
     return when {
+        // El nombre de usuario no puede estar en blanco
         username.isBlank() -> Pair(false, "El nombre de usuario no puede estar vacío.")
+
+        // El nombre de usuario no puede tener mas longitud que la indicada
         username.length > MAX_USERNAME_LENGTH -> Pair(false, "El nombre de usuario no puede tener más de $MAX_USERNAME_LENGTH caracteres.")
+
+        // El email no puede estar en blanco y tiene que pasar el regex
         email.isBlank() || !EMAIL_REGEX.matches(email) ->
             Pair(false, "Ingresa un email válido.")
+
+        // La contraseña tiene que tener un minimo de caracteres
         password.length < MIN_PASSWORD_LENGTH ->
             Pair(false, "La contraseña debe tener al menos $MIN_PASSWORD_LENGTH caracteres.")
+
+        // Debe pasar el regex
         !REGEX_PASSWORD.matches(password) ->
             Pair(false, "La contraseña debe contener al menos una mayúscula, una minúscula y un número.")
+
+        // Tienen que coincidir las contraseñas
         password != confirmPassword -> Pair(false, "Las contraseñas no coinciden.")
+
+        // Tiene que aceptar los terminos
         !acceptTerms -> Pair(false, "Debes aceptar los términos y condiciones.")
         else -> Pair(true, "")
     }
 }
-
 
 /**
  * Método para validar los datos del login
  */
 fun validateLoginFields(email: String, password: String): Pair<Boolean, String> {
     return when {
+        // El email no puede estar en blanco y tiene que pasar el regex
         email.isBlank() || !EMAIL_REGEX.matches(email) -> Pair(
             false,
             "Ingresa un email válido"
         )
 
-        password.length < 6 -> Pair(false, "Completa correctamente los campos restantes")
+        // La contraseña tiene que tener mas de 6 caracteres
+        password.length < MIN_PASSWORD_LENGTH -> Pair(false, "Completa correctamente los campos restantes")
         else -> Pair(true, "")
     }
 }
@@ -59,47 +73,53 @@ fun validateFieldsDatos(
     experiencia: String,
     birthday: String
 ): Pair<Boolean, String> {
-    // Validación de la altura: debe ser un número entero
+    // La altura debe ser un número entero
     val alturaValida = altura.toIntOrNull()
     if (altura.isBlank()) return Pair(false, "La altura es obligatoria")
     if (alturaValida == null) return Pair(false, "La altura debe ser un número entero válido")
 
-    // Validación del género: no puede estar vacío ni ser el valor predeterminado
+    // El género no puede estar vacío ni ser el valor predeterminado
     if (genero.isBlank() || genero == "Sexo") return Pair(false, "El género es obligatorio")
 
-    // Validación del nivel de actividad: no puede estar vacío ni ser el valor predeterminado
+    // El nivel de actividad no puede estar vacío ni ser el valor predeterminado
     if (nivelActividad.isBlank() || nivelActividad == "Nivel de actividad física") {
         return Pair(false, "Debes seleccionar un nivel de actividad")
     }
 
-    // Validación del objetivo: no puede estar vacío ni ser el valor predeterminado
+    // El objetivo no puede estar vacío ni ser el valor predeterminado
     if (objetivo.isBlank() || objetivo == "Objetivo fitness") {
         return Pair(false, "Debes seleccionar un objetivo fitness")
     }
 
-    // Validación del peso: debe ser un número decimal válido (float o double)
+    // El peso debe ser un número decimal válido
     val pesoValido = peso.toDoubleOrNull()
     if (peso.isBlank()) return Pair(false, "El peso es obligatorio")
     if (pesoValido == null || peso.count { it == '.'} > 1) {
         return Pair(false, "El peso debe ser un número válido")
     }
 
-    // Validación de la experiencia: no puede estar vacío ni ser el valor predeterminado
+    // La experiencia no puede estar vacío ni ser el valor predeterminado
     if (experiencia.isBlank() || experiencia == "Experiencia") {
         return Pair(false, "Debes seleccionar tu nivel de experiencia")
     }
 
-    // Validación del cumpleaños: no puede estar vacío
+    // El cumpleaños no puede estar vacío
     if (birthday.isBlank()) return Pair(false, "Selecciona una fecha de nacimiento.")
 
-    // Si todo es válido
+    // Si todo es valido
     return Pair(true, "")
 }
 
+/**
+ * Valida el objetivo del usuario al cambiarlo en el perfil
+ */
 fun validarObjetivo(newObjetivo: String): String? {
     return if (newObjetivo.isBlank()) "Por favor selecciona un objetivo válido." else null
 }
 
+/**
+ * Valida la altura del usuario al cambiarla en el perfil
+ */
 fun validarAltura(newAltura: String): String? {
     val alturaInt = newAltura.toIntOrNull()
     return if (alturaInt == null || alturaInt !in 80..250)
@@ -107,6 +127,9 @@ fun validarAltura(newAltura: String): String? {
     else null
 }
 
+/**
+ * Valida la contraseña del usuario al cambiarla en el perfil
+ */
 fun validatePassword(password: String): Pair<Boolean, String> {
     return when {
         password.length < MIN_PASSWORD_LENGTH ->

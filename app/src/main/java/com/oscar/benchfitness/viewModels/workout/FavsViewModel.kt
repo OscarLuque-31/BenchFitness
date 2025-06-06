@@ -12,12 +12,16 @@ import kotlinx.coroutines.launch
 
 class FavsViewModel(auth: FirebaseAuth, db: FirebaseFirestore) : ViewModel() {
 
-    val favsRepository = FavsRepository(auth, db)
-
+    // Ejercicios favoritos
     private val _ejercicios = MutableStateFlow<List<ExerciseData>>(emptyList())
     val ejercicios: StateFlow<List<ExerciseData>> = _ejercicios
 
+    // Repositorio para comprobar los favoritos
+    private val favsRepository = FavsRepository(auth, db)
 
+    /**
+     * Método que carga los ejercicios favoritos del usuario
+     */
     fun cargarEjerciciosFavs() {
         viewModelScope.launch {
             try {
@@ -29,6 +33,4 @@ class FavsViewModel(auth: FirebaseAuth, db: FirebaseFirestore) : ViewModel() {
             }
         }
     }
-
-
 }

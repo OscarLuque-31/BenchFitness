@@ -98,7 +98,6 @@ class EjerciciosViewModel(
         resetearFiltrosNoElegidos()
     }
 
-
     /**
      * Método que filtra la búsqueda según los filtros
      */
@@ -141,7 +140,9 @@ class EjerciciosViewModel(
 
     }
 
-
+    /**
+     * Método que parsea los filtros para cuando se vayan a resetear
+     */
     private fun parsearFiltros() {
         if (nivel == "Nivel") {
             nivel = ""
@@ -154,6 +155,9 @@ class EjerciciosViewModel(
         }
     }
 
+    /**
+     * Método que reseta los filtros no elegidos por el usuario
+     */
     private fun resetearFiltrosNoElegidos() {
         if (nivel.isEmpty()) {
             nivel = "Nivel"
@@ -166,6 +170,9 @@ class EjerciciosViewModel(
         }
     }
 
+    /**
+     * Método que reseta los filtros desde 0
+     */
     private fun resetearFiltros() {
         nivel = "Nivel"
         musculo = "Músculo"

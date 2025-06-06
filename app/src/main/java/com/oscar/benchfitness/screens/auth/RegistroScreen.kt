@@ -37,7 +37,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.oscar.benchfitness.animations.LoadingScreen
 import com.oscar.benchfitness.animations.LoadingScreenCircularProgress
 import com.oscar.benchfitness.components.GlobalButton
 import com.oscar.benchfitness.components.GlobalTextField
@@ -50,17 +49,15 @@ import com.oscar.benchfitness.ui.theme.negroOscuroBench
 import com.oscar.benchfitness.ui.theme.rojoBench
 import com.oscar.benchfitness.viewModels.auth.RegistroViewModel
 
-
 @Composable
 fun RegistroScreen(navController: NavController, viewModel: RegistroViewModel) {
     val snackbarHostState = remember { SnackbarHostState() }
-    val context = LocalContext.current
 
-    // Mostrar snackbar si hay error
+    // Muestra el snackbar si hay error
     LaunchedEffect(viewModel.errorMessage) {
         viewModel.errorMessage?.let {
             snackbarHostState.showSnackbar(it)
-            viewModel.clearError() // Este método debes agregarlo en tu viewmodel
+            viewModel.clearError()
         }
     }
 
@@ -80,7 +77,6 @@ fun RegistroScreen(navController: NavController, viewModel: RegistroViewModel) {
     }
 }
 
-
 @Composable
 fun RegisterBodyContent(
     navController: NavController,
@@ -91,7 +87,6 @@ fun RegisterBodyContent(
     Column(
         modifier = modifier
     ) {
-        // Barra de arriba
         RegisterTopBar(navController)
         Spacer(modifier = Modifier.weight(0.3f))
         // Snackbar
@@ -116,7 +111,7 @@ fun RegisterBodyContent(
                 }
             }
         )
-        // Datos a recoger en el login
+        // Datos a recoger en el registro
         RegisterDatos(navController, viewModel)
     }
 }
@@ -185,8 +180,6 @@ fun RegisterDatos(navController: NavController, viewModel: RegistroViewModel) {
 
 @Composable
 fun RegisterTextFields(navController: NavController, viewModel: RegistroViewModel) {
-    val context = LocalContext.current
-
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -206,7 +199,6 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
             colorText = negroOscuroBench
         )
         Spacer(modifier = Modifier.height(25.dp))
-
         GlobalTextField(
             nombre = "Email",
             text = viewModel.email,
@@ -218,8 +210,6 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
             colorText = negroOscuroBench
         )
         Spacer(modifier = Modifier.height(25.dp))
-
-
         GlobalTextField(
             nombre = "Contraseña",
             text = viewModel.password,
@@ -232,7 +222,6 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
             colorText = negroOscuroBench
         )
         Spacer(modifier = Modifier.height(25.dp))
-
         GlobalTextField(
             nombre = "Repetir contraseña",
             text = viewModel.confirmPassword,
@@ -245,12 +234,10 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
             colorText = negroOscuroBench
         )
         Spacer(modifier = Modifier.height(25.dp))
-
         ConfirmarTerminosYCondiciones(
             checked = viewModel.acceptTerms,
             onCheckedChange = { viewModel.acceptTerms = it })
         Spacer(modifier = Modifier.height(25.dp))
-
         GlobalButton(
             "Registrar",
             rojoBench,
@@ -259,8 +246,10 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
                 .height(55.dp),
             colorText = Color.White
         ) {
+            // Registra el usuario en base de datos
             viewModel.registerUser(
                 onSuccess = {
+                    // Navega a la pantalla de datos
                     navController.navigate(Datos.route) {
                         popUpTo(Inicio.route) {
                             inclusive = true
@@ -273,10 +262,8 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
     }
 }
 
-
 @Composable
 fun ConfirmarTerminosYCondiciones(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
-
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start

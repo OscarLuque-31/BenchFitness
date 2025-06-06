@@ -75,7 +75,6 @@ fun ColumnaDatosRutina(rutina: Routine, navController: NavController, viewModel:
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-
             Text(rutina.nombre, color = rojoBench, fontSize = 30.sp, fontWeight = FontWeight.Normal)
         }
         Spacer(Modifier.height(10.dp))
@@ -120,11 +119,11 @@ fun ColumnaDatosRutina(rutina: Routine, navController: NavController, viewModel:
                 })
         }
 
+        // Abre el dialogo para borrar la rutina
         if (showDialog) {
             AlertDialog(
                 onDismissRequest = { showDialog = false },
                 confirmButton = {
-                    // Usamos tus propios botones aquí
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -143,6 +142,7 @@ fun ColumnaDatosRutina(rutina: Routine, navController: NavController, viewModel:
                             backgroundColor = rojoBench,
                             colorText = negroOscuroBench,
                             onClick = {
+                                // Elimina la rutina del usuario
                                 viewModel.eliminarRutina(rutina.nombre)
                                 showDialog = false
                                 navController.popBackStack()
@@ -177,10 +177,10 @@ fun ColumnaDatosRutina(rutina: Routine, navController: NavController, viewModel:
 
 @Composable
 fun DatosRutina(rutina: Routine) {
-
     val ordenDiasSemana =
         listOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
 
+    // Itera los dias de la rutina del usuario y las ordena por orden semanal
     rutina.dias
         .sortedBy { dia -> ordenDiasSemana.indexOf(dia.dia) }
         .forEach { dia ->
@@ -209,6 +209,7 @@ fun DatosRutina(rutina: Routine) {
 
                     Spacer(Modifier.height(10.dp))
                     EncabezadoNombreSerieReps(negroOscuroBench)
+                    // Itera los ejercicios del dia correspondiente
                     dia.ejercicios.forEach { ejercicio ->
                         BoxExerciseEntry(
                             nombre = ejercicio.nombre,

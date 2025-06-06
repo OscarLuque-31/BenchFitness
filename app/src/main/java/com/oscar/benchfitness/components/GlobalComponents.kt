@@ -102,7 +102,7 @@ fun GlobalTextField(
     onDone: () -> Unit = {},
     imeAction: ImeAction = ImeAction.Done,
     onFocusChange: (FocusState) -> Unit = {},
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(imeAction = imeAction)
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -143,11 +143,9 @@ fun GlobalTextField(
                 keyboardController?.hide()
             }
         ),
-        keyboardOptions = keyboardOptions,
+        keyboardOptions = keyboardOptions,)
 
-        )
 }
-
 
 @Composable
 fun GlobalButton(
@@ -190,7 +188,6 @@ fun DatePickerField(onDateSelected: (String) -> Unit) {
     val selectedDate = state.selectedDateMillis?.let {
         convertMillisToDate(it)
     } ?: ""
-
 
     TextField(
         value = selectedDate,
@@ -253,7 +250,9 @@ fun DatePickerField(onDateSelected: (String) -> Unit) {
     }
 }
 
-// Función auxiliar para crear los colores del DatePicker
+/**
+ * Función auxiliar para crear los colores del DatePicker
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun createDatePickerColors() = DatePickerDefaults.colors(
@@ -278,7 +277,9 @@ private fun createDatePickerColors() = DatePickerDefaults.colors(
     dateTextFieldColors = createTextFieldColors()
 )
 
-// Función auxiliar para crear los colores del TextField
+/**
+ * Función auxiliar para crear los colores del TextField
+ */
 @Composable
 private fun createTextFieldColors() = TextFieldDefaults.colors(
     focusedTextColor = Color.White,
@@ -309,6 +310,10 @@ private fun createTextFieldColors() = TextFieldDefaults.colors(
     disabledTrailingIconColor = rojoBench.copy(alpha = 0.5f)
 )
 
+
+/**
+ * Versión de GlobalDropDown para Genéricos
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T> GlobalDropDownMenu(
@@ -403,7 +408,9 @@ fun <T> GlobalDropDownMenu(
     }
 }
 
-// Version para strings
+/**
+ * Versión del GlobalDropDown para Strings
+ */
 @Composable
 fun GlobalDropDownMenu(
     nombreSeleccion: String,
@@ -432,7 +439,6 @@ fun GlobalDropDownMenu(
 fun GlobalHeader(text: String) {
     CabeceraBenchFitness(text)
 }
-
 
 @Composable
 fun CabeceraBenchFitness(text: String) {
@@ -516,7 +522,6 @@ fun NavigationIcon(
         targetValue = if (isSelected) rojoBench else negroOscuroBench,
         label = ""
     )
-
     IconButton(
         onClick = onClick,
         modifier = Modifier
@@ -532,7 +537,6 @@ fun NavigationIcon(
         )
     }
 }
-
 
 @Composable
 fun AdaptiveGifRow(
@@ -556,22 +560,22 @@ fun AdaptiveGifRow(
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
     ) {
-        // Mostrar el Placeholder mientras se carga
+        // Muestra el Placeholder mientras se carga
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(aspectRatio)
         ) {
-            // Este es el placeholder que se muestra mientras la imagen está cargando
+            // Placeholder que se muestra mientras la imagen está cargando
             placeholder()
         }
 
-        // Cargar la imagen (y reemplazar el placeholder cuando se cargue)
+        // Carga la imagen (y reemplaza el placeholder cuando se cargue)
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(url)
                 .decoderFactory(GifDecoder.Factory())
-                .crossfade(true)  // Animación suave entre placeholder y la imagen cargada
+                .crossfade(true)
                 .build(),
             contentDescription = null,
             modifier = Modifier
@@ -716,7 +720,6 @@ fun FormularioCalorias(
     }
 }
 
-
 @Composable
 fun PesoAlturaInputs(viewModel: CalculosViewModel) {
     Row(
@@ -783,7 +786,6 @@ fun EdadGeneroInputs(viewModel: CalculosViewModel, opcionesGenero: List<String>)
     }
 }
 
-
 @Composable
 fun ResultadoCaloriasYLegal(calorias: String) {
     Column(
@@ -794,7 +796,6 @@ fun ResultadoCaloriasYLegal(calorias: String) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.weight(1f))
-
         if (calorias.isNotBlank()) {
             Text(
                 "$calorias kcal",
@@ -803,9 +804,7 @@ fun ResultadoCaloriasYLegal(calorias: String) {
                 textAlign = TextAlign.Center
             )
         }
-
         Spacer(modifier = Modifier.weight(1f))
-
         Text(
             "Este cálculo es solo una aproximación. Consulta a un profesional de la salud para un cálculo más específico.",
             fontSize = 12.sp,

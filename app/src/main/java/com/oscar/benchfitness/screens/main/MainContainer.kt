@@ -32,6 +32,7 @@ fun MainContainer(
     authViewModel: AuthViewModel
 ) {
 
+    // Controlador principal de la navegación
     val innerNavController = rememberNavController()
 
     Scaffold(containerColor = negroBench, bottomBar = {

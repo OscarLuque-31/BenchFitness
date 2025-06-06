@@ -45,6 +45,7 @@ fun MainWorkoutContainer(
     auth: FirebaseAuth,
     db: FirebaseFirestore
 ) {
+    // Controlador principal de la sección de Workout
     val innerNavController = rememberNavController()
 
     Scaffold(containerColor = negroBench, topBar = {
@@ -69,14 +70,12 @@ fun MainWorkoutContainer(
             composable(MainFavs.route) {
                 MainFavsContainer(auth, db)
             }
-
         }
     }
 }
 
 @Composable
 fun CabeceraOpcionesEjerciciosScreen(navController: NavController) {
-
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -100,6 +99,7 @@ fun CabeceraOpcionesEjerciciosScreen(navController: NavController) {
         ) {
             ExerciseHeaderOption(
                 text = "Ejercicios",
+                // Si la actual ruta es igual a la ruta que voy a viajar se cambia el color a rojo
                 selected = currentRoute == MainExercises.route,
                 onClick = {
                     navController.navigate(MainExercises.route) {
@@ -107,7 +107,6 @@ fun CabeceraOpcionesEjerciciosScreen(navController: NavController) {
                     }
                 }
             )
-
             ExerciseHeaderOption(
                 text = "Rutinas",
                 selected = currentRoute == MainRoutines.route,
@@ -117,7 +116,6 @@ fun CabeceraOpcionesEjerciciosScreen(navController: NavController) {
                     }
                 }
             )
-
             ExerciseHeaderOption(
                 text = "Favs",
                 selected = currentRoute == MainFavs.route,
@@ -128,7 +126,6 @@ fun CabeceraOpcionesEjerciciosScreen(navController: NavController) {
                 }
             )
         }
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()

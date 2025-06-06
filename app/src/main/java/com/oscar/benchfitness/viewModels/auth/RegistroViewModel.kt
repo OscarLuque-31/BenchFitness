@@ -17,6 +17,7 @@ class RegistroViewModel(
     db: FirebaseFirestore
 ) : ViewModel() {
 
+    // Variables necesarias en la pantalla Registro
     var username by mutableStateOf("")
     var email by mutableStateOf("")
     var password by mutableStateOf("")
@@ -25,7 +26,7 @@ class RegistroViewModel(
     var errorMessage by mutableStateOf<String?>(null)
     var isLoading by mutableStateOf(false)
 
-
+    // User repository para manejar al usuario en base de datos
     private val userRepository = UserRepository(auth, db)
 
     /**
@@ -33,7 +34,7 @@ class RegistroViewModel(
      */
     fun registerUser(onSuccess: () -> Unit, onFailure: (String) -> Unit) {
 
-        // Valida los datos
+        // Valida los datos del registro
         val (isValid, errorMessage) = validateRegisterFields(
             username= username,
             email = email,
@@ -51,21 +52,23 @@ class RegistroViewModel(
         isLoading = true
 
         viewModelScope.launch {
+            // Registra al usuario en base de datos con los datos mínimos
             val result = userRepository.registerUser(
                 email = email,
                 password = password,
                 username = username,
             )
-
             result.fold(
                 onSuccess = { onSuccess() },
                 onFailure = { onFailure(it.message ?: "Error en el registro")}
             )
-
             isLoading = false
         }
     }
 
+    /**
+     * Método que limpia el mensaje de error
+     */
     fun clearError() {
         errorMessage = null
     }

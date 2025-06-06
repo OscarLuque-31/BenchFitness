@@ -11,11 +11,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.oscar.benchfitness.utils.CalorieCalculator
 import java.util.Locale
 
-class CalculosViewModel(
-    auth: FirebaseAuth,
-    db: FirebaseFirestore
-) : ViewModel() {
+class CalculosViewModel : ViewModel() {
 
+    // Variables necesarias para los calculos
     var peso by mutableStateOf("")
     var pesoEjercicio by mutableStateOf("")
     var altura by mutableStateOf("")
@@ -25,7 +23,7 @@ class CalculosViewModel(
     var calorias by mutableStateOf("")
     var repeticiones by mutableStateOf("")
     var rm by mutableDoubleStateOf(0.0)
-    var isCalculated by mutableStateOf(false)  // Nueva variable para verificar si se calculó el RM
+    var isCalculated by mutableStateOf(false)
 
 
     var showDialog by mutableStateOf(false)
@@ -40,7 +38,7 @@ class CalculosViewModel(
     )
     val opcionesGenero = listOf("Hombre", "Mujer")
 
-    // ======== VALIDACIONES =========
+    // VALIDACIONES DE LAS VARIABLES
 
     fun esEdadValida(): Boolean {
         val e = edad.toIntOrNull() ?: return false
@@ -85,8 +83,10 @@ class CalculosViewModel(
         return esFormularioRepeMaxCompletado() && esPesoEjercicioValido() && sonRepeticionesValidas()
     }
 
-    // ======== ACCIONES =========
 
+    /**
+     * Método para calcular las calorias de superavit
+     */
     fun calcularCaloriasSuperavit() {
         calorias = CalorieCalculator().calcularCaloriasConObjetivo(
             "Masa muscular",
@@ -98,6 +98,9 @@ class CalculosViewModel(
         )
     }
 
+    /**
+     * Método para calcular las calorias de deficit
+     */
     fun calcularCaloriasDeficit() {
         calorias = CalorieCalculator().calcularCaloriasConObjetivo(
             "Perder peso",
@@ -109,6 +112,9 @@ class CalculosViewModel(
         )
     }
 
+    /**
+     * Método para calcular las calorias de mantener
+     */
     fun calcularCaloriasMantener() {
         calorias = CalorieCalculator().calcularCaloriasConObjetivo(
             "Mantener peso",
@@ -120,6 +126,9 @@ class CalculosViewModel(
         )
     }
 
+    /**
+     * Método para calcular la repeticion maxima para un ejercicio
+     */
     fun calcularRepeMaxima(){
         if (repeticiones.toInt() <= 0 || repeticiones.toInt() >= 37) rm = 0.0
 
