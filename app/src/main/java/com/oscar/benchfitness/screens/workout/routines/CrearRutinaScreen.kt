@@ -772,6 +772,9 @@ fun BotonCrearRutina(viewModel: CrearRutinaViewModel, navController: NavControll
                 onFailure = {
                     viewModel.errorRutina = "Error: ${it.message}"
                     mostrarDialogoError = true
+                },
+                onNombreDuplicado = {
+                    mostrarDialogoError = true
                 }
             )
         } else {

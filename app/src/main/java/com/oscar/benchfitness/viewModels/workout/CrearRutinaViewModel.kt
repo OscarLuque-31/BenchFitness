@@ -95,13 +95,15 @@ class CrearRutinaViewModel(auth: FirebaseAuth, db: FirebaseFirestore) : ViewMode
      */
     fun guardarRutinaEnFirebase(
         onSuccess: (String) -> Unit,
-        onFailure: (Exception) -> Unit
+        onFailure: (Exception) -> Unit,
+        onNombreDuplicado: () -> Unit
     ) {
         viewModelScope.launch {
             try {
                 // Si la rutina ya existe salta un aviso
                 if (nombreRutinaYaExiste(nombreRutina)) {
                     errorRutina = "Ya existe una rutina con este nombre."
+                    onNombreDuplicado()
                     return@launch
                 }
                 val routine = crearRutinaCompleta()
