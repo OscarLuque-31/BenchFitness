@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +38,11 @@ import com.oscar.benchfitness.viewModels.workout.RutinasViewModel
 
 @Composable
 fun RutinasScreen(navController: NavController, viewModel: RutinasViewModel) {
+
+    LaunchedEffect(Unit) {
+        viewModel.obtenerRutinas()
+    }
+
     Column(
         modifier = Modifier
             .padding(start = 20.dp, end = 20.dp, top = 20.dp)
