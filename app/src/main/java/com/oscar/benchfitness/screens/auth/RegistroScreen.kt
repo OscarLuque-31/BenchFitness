@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
@@ -27,12 +28,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -264,6 +268,8 @@ fun RegisterTextFields(navController: NavController, viewModel: RegistroViewMode
 
 @Composable
 fun ConfirmarTerminosYCondiciones(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    var showDialog by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start
@@ -279,12 +285,47 @@ fun ConfirmarTerminosYCondiciones(checked: Boolean, onCheckedChange: (Boolean) -
                 checkmarkColor = Color.White
             )
         )
-        Text(
-            "Confirmo que he leído y acepto los términos y condiciones de la aplicación, incluyendo las políticas de privacidad y el uso de datos.",
-            fontSize = 12.sp,
-            color = Color.White,
-            textAlign = TextAlign.Justify
-        )
+        TextButton(onClick = { showDialog = true }) {
+            Text(
+                "Confirmo que he leído y acepto los términos y condiciones de la aplicación, incluyendo las políticas de privacidad y el uso de datos.",
+                fontSize = 14.sp,
+                color = rojoBench,
+                textAlign = TextAlign.Justify,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                confirmButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text(
+                            "Aceptar",
+                            color = rojoBench
+                        )
+                    }
+                },
+                containerColor = negroOscuroBench,
+                titleContentColor = Color.White,
+                textContentColor = Color.White,
+                title = {
+                    Text(
+                        "Términos y Condiciones",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = rojoBench
+                    )
+                },
+                text = {
+                    Text(
+                        "Esta aplicación almacena datos de entrenamiento como nombre, correo electrónico y progresos físicos. Estos datos se guardan en Firebase y no se comparten con terceros. Puedes solicitar eliminar tus datos en cualquier momento. La aplicación requiere acceso a Internet para funcionar correctamente.",
+                        fontSize = 15.sp,
+                        textAlign = TextAlign.Justify
+                    )
+                }
+            )
+        }
+
     }
 }
 
