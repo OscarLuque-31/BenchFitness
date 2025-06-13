@@ -285,7 +285,9 @@ fun ConfirmarTerminosYCondiciones(checked: Boolean, onCheckedChange: (Boolean) -
                 checkmarkColor = Color.White
             )
         )
-        TextButton(onClick = { showDialog = true }) {
+        TextButton(onClick = { showDialog = true },
+            shape = RoundedCornerShape(0.dp)
+        ) {
             Text(
                 "Confirmo que he leído y acepto los términos y condiciones de la aplicación, incluyendo las políticas de privacidad y el uso de datos.",
                 fontSize = 14.sp,
